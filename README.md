@@ -1,4 +1,4 @@
-# CleanNotes
+# CleanMind
 
 CleanNotes is a modern Android application for creating and managing notes. It is built to demonstrate the use of Clean Architecture along with modern Android development practices and Jetpack libraries.
 
