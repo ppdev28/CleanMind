@@ -1,17 +1,27 @@
 package com.example.cleannotes.presentation.ui.theme
+
 import androidx.compose.ui.graphics.Color
 
-// Light Theme - Icon Colors (Based on ic_launcher_foreground.xml)
-val MainBlue = Color(0xFF89ABE3)       // Main shape color from the icon
-val DarkBlueAccent = Color(0xFF637EAB) // Darker details/accents from the icon
-val LightBlueBG = Color(0xFFE8F1FF)    // Light blue background from the icon
+// Neutral surfaces keep blue reserved for actions, focus and selected states.
+val Gray0 = Color(0xFFFFFFFF)
+val Gray50 = Color(0xFFFAFAFA)
+val Gray100 = Color(0xFFF5F5F5)
+val Gray150 = Color(0xFFEEEEEE)
+val Gray200 = Color(0xFFE5E5E5)
+val Gray300 = Color(0xFFD4D4D4)
+val Gray400 = Color(0xFFA3A3A3)
+val Gray500 = Color(0xFF737373)
+val Gray600 = Color(0xFF525252)
+val Gray700 = Color(0xFF404040)
+val Gray750 = Color(0xFF333333)
+val Gray800 = Color(0xFF292929)
+val Gray850 = Color(0xFF222222)
+val Gray900 = Color(0xFF1C1C1C)
+val Gray950 = Color(0xFF121212)
 
-val OffWhiteBG = Color(0xFFF8FAFC)     // Main app background (slight blue-gray tint)
-val DarkCharcoalText = Color(0xFF1E293B) // Dark text for readability
-
-// Dark Theme Colors
-val MainBlueDark = Color(0xFFA5C5FF)   // Lighter, desaturated blue for dark mode
-val DarkBlueAccentDark = Color(0xFF829FCF)
-val DarkSurface = Color(0xFF1E293B)    // Dark elevated surfaces
-val NearBlackBG = Color(0xFF0F172A)    // Very dark blueish-black
-val OffWhiteText = Color(0xFFF1F5F9)
+val AccentBlue = Color(0xFF3E7194)
+val AccentBlueLight = Color(0xFFA1BDD2)
+val BlueContainer = Color(0xFFE7EEF3)
+val BlueContainerDark = Color(0xFF293F50)
+val BlueInk = Color(0xFF24465E)
+val BlueInkDark = Color(0xFFDAE6EF)

@@ -1,40 +1,44 @@
 package com.example.cleannotes.di
 
-import android.app.Application
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.SharedPreferencesMigration
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import com.example.cleannotes.data.preferences.DataStoreUserPreferencesRepository
+import com.example.cleannotes.data.preferences.UserPreferencesRepository
+import com.example.cleannotes.data.repository.NoteRepository
 import com.example.cleannotes.data.repository.NoteRepositoryImpl
+import com.example.cleannotes.data.source.NoteDao
 import com.example.cleannotes.data.source.NoteDatabase
-import com.example.cleannotes.domain.repository.NoteRepository
-import com.example.cleannotes.domain.usecase.GetNotesUseCase
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+private val Context.userPreferences by preferencesDataStore(
+    name = "user_preferences",
+    produceMigrations = { context -> listOf(SharedPreferencesMigration(context, "appearance")) }
+)
+
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object StorageModule {
+    @Provides @Singleton
+    fun database(@ApplicationContext context: Context): NoteDatabase = Room.databaseBuilder(context, NoteDatabase::class.java, NoteDatabase.DATABASE_NAME)
+        .addMigrations(NoteDatabase.MIGRATION_2_3)
+        .build()
+    @Provides fun noteDao(database: NoteDatabase): NoteDao = database.noteDao
+    @Provides @Singleton fun preferences(@ApplicationContext context: Context): DataStore<Preferences> = context.userPreferences
+}
 
-    @Provides
-    @Singleton
-    fun provideNoteDatabase(app: Application): NoteDatabase {
-        return Room.databaseBuilder(
-                app,
-                NoteDatabase::class.java,
-                NoteDatabase.DATABASE_NAME
-            ).fallbackToDestructiveMigration(false).build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideNoteRepository(db: NoteDatabase): NoteRepository {
-        return NoteRepositoryImpl(db.noteDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetNotesUseCase(repository: NoteRepository): GetNotesUseCase {
-        return GetNotesUseCase(repository)
-    }
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds @Singleton abstract fun notes(implementation: NoteRepositoryImpl): NoteRepository
+    @Binds @Singleton abstract fun preferences(implementation: DataStoreUserPreferencesRepository): UserPreferencesRepository
 }

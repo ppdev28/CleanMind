@@ -1,224 +1,88 @@
 package com.example.cleannotes.presentation.ui.settings
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import com.example.cleannotes.R
+import com.example.cleannotes.model.ThemeMode
+import com.example.cleannotes.presentation.ui.design.*
 
 @Composable
-fun SettingsScreen(
-	navController: NavController
-) {
-	var pushNotifications by remember { mutableStateOf(false) }
-	var selectedTheme by remember { mutableStateOf("Light Mode") }
+fun SettingsScreen(state: SettingsUiState, onThemeChange: (ThemeMode) -> Unit, onBack: () -> Unit, onRetry: () -> Unit, onHome: () -> Unit = onBack) {
+    val context = LocalContext.current
+    val preferences = remember { context.getSharedPreferences("capture_preferences", android.content.Context.MODE_PRIVATE) }
+    var notifications by remember { mutableStateOf(NotificationManagerCompat.from(context).areNotificationsEnabled()) }
+    var sound by remember { mutableStateOf(preferences.getBoolean("sound", false)) }
+    var reduced by remember { mutableStateOf(Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f) }
+    var advanced by remember { mutableStateOf(false) }
+    val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { notifications = it }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        notifications = NotificationManagerCompat.from(context).areNotificationsEnabled()
+        reduced = Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
+    }
+    Scaffold(contentWindowInsets = WindowInsets.statusBars) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).navigationBarsPadding().padding(horizontal = 24.dp).padding(top = 8.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                DesignIconButton(R.drawable.figma_back, "Volver", onClick = onBack)
+                Text("Ajustes", style = MaterialTheme.typography.headlineMedium)
+            }
+            Text("A tu ritmo", style = MaterialTheme.typography.titleLarge)
+            Text("Solo las ayudas que te sirvan.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            PreferenceRow("Notificaciones", notifications) {
+                if (!notifications && Build.VERSION.SDK_INT >= 33) permission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                else context.startActivity(if (Build.VERSION.SDK_INT >= 26) Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName) else Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")))
+            }
+            PreferenceRow("Sonido", sound) { sound = !sound; preferences.edit().putBoolean("sound", sound).apply() }
+            PreferenceRow("Animación reducida", reduced) { context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+            DesignRow("Tamaño del texto", R.drawable.figma_arrow, "Usar el tamaño del dispositivo") { context.startActivity(Intent(Settings.ACTION_DISPLAY_SETTINGS)) }
+            Text("La app respeta el texto ampliado y la preferencia de movimiento del dispositivo.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Clean Notes", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Button(onClick = onHome, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp), shape = RoundedCornerShape(16.dp)) { Text("Volver a Inicio") }
+            TextButton(onClick = { advanced = !advanced }, modifier = Modifier.fillMaxWidth()) { Text("Apariencia y almacenamiento") }
+            if (advanced) {
+                Text("Apariencia", style = MaterialTheme.typography.titleMedium)
+                ThemeMode.entries.forEach { mode ->
+                    val label = when (mode) { ThemeMode.SYSTEM -> "Como el dispositivo"; ThemeMode.LIGHT -> "Claro"; ThemeMode.DARK -> "Oscuro" }
+                    Surface(onClick = { onThemeChange(mode) }, shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surface) {
+                        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp).heightIn(min = 56.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                            RadioButton(state.themeMode == mode, onClick = { onThemeChange(mode) })
+                        }
+                    }
+                }
+                StorageSettings()
+            }
+            if (state.hasError) {
+                Text("No se pudo guardar la preferencia", color = MaterialTheme.colorScheme.error)
+                TextButton(onClick = onRetry) { Text("Reintentar") }
+            }
+        }
+    }
+}
 
-	Scaffold(
-		containerColor = MaterialTheme.colorScheme.background,
-		modifier = Modifier.padding(top = 24.dp),
-		topBar = {
-			Column(
-				modifier = Modifier
-					.fillMaxWidth()
-					.background(Color.White)
-			) {
-				Row(
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(horizontal = 24.dp, vertical = 24.dp),
-					verticalAlignment = Alignment.CenterVertically
-				) {
-					Icon(
-						imageVector = Icons.Default.Settings,
-						contentDescription = "Settings",
-						modifier = Modifier.size(28.dp),
-						tint = Color.Black
-					)
-					Spacer(modifier = Modifier.width(12.dp))
-					Text(
-						text = "Settings",
-						fontSize = 24.sp,
-						fontWeight = FontWeight.Bold,
-						color = Color.Black
-					)
-				}
-				HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f), thickness = 1.dp)
-			}
-		},
-		bottomBar = {
-			Column(
-				modifier = Modifier
-					.fillMaxWidth()
-					.background(Color.White)
-			) {
-				HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f), thickness = 1.dp)
-				Button(
-					onClick = { navController.popBackStack() },
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(horizontal = 24.dp, vertical = 24.dp)
-						.height(56.dp),
-					colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-					shape = RoundedCornerShape(12.dp)
-				) {
-					Text(
-						text = "Save Changes",
-						color = Color.White,
-						fontSize = 16.sp,
-						fontWeight = FontWeight.Medium
-					)
-				}
-			}
-		}
-	) { padding ->
-		Column(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(padding)
-				.padding(horizontal = 24.dp)
-		) {
-			Spacer(modifier = Modifier.height(32.dp))
-
-			// Notifications Section
-			Text(
-				text = "Notifications",
-				fontSize = 20.sp,
-				fontWeight = FontWeight.Bold,
-				color = Color.Black
-			)
-			Spacer(modifier = Modifier.height(16.dp))
-			Row(
-				modifier = Modifier.fillMaxWidth(),
-				horizontalArrangement = Arrangement.SpaceBetween,
-				verticalAlignment = Alignment.CenterVertically
-			) {
-				Text(
-					text = "Push Notifications",
-					fontSize = 16.sp,
-					color = Color.Black
-				)
-				// Usando un Box para simular el rectángulo de la imagen
-				Box(
-					modifier = Modifier
-						.width(48.dp)
-						.height(24.dp)
-						.clip(RoundedCornerShape(4.dp))
-						.border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-						.clickable { pushNotifications = !pushNotifications }
-						.background(if (pushNotifications) Color.Black else Color.Transparent)
-				)
-			}
-
-			Spacer(modifier = Modifier.height(48.dp))
-
-			// Theme Section
-			Text(
-				text = "Theme",
-				fontSize = 20.sp,
-				fontWeight = FontWeight.Bold,
-				color = Color.Black
-			)
-			Spacer(modifier = Modifier.height(8.dp))
-
-			// Light Mode
-			Row(
-				verticalAlignment = Alignment.CenterVertically,
-				modifier = Modifier
-					.fillMaxWidth()
-					.clickable { selectedTheme = "Light Mode" }
-					.padding(vertical = 8.dp)
-			) {
-				RadioButton(
-					selected = selectedTheme == "Light Mode",
-					onClick = { selectedTheme = "Light Mode" },
-					colors = RadioButtonDefaults.colors(
-						selectedColor = Color.Black,
-						unselectedColor = Color.Gray
-					)
-				)
-				Text(
-					text = "Light Mode",
-					fontSize = 16.sp,
-					color = Color.Black
-				)
-			}
-
-			// Dark Mode
-			Row(
-				verticalAlignment = Alignment.CenterVertically,
-				modifier = Modifier
-					.fillMaxWidth()
-					.clickable { selectedTheme = "Dark Mode" }
-					.padding(vertical = 8.dp)
-			) {
-				RadioButton(
-					selected = selectedTheme == "Dark Mode",
-					onClick = { selectedTheme = "Dark Mode" },
-					colors = RadioButtonDefaults.colors(
-						selectedColor = Color.Black,
-						unselectedColor = Color.Gray
-					)
-				)
-				Text(
-					text = "Dark Mode",
-					fontSize = 16.sp,
-					color = Color.Black
-				)
-			}
-
-			Spacer(modifier = Modifier.height(32.dp))
-
-			// Storage Section
-			Text(
-				text = "Storage",
-				fontSize = 20.sp,
-				fontWeight = FontWeight.Bold,
-				color = Color.Black
-			)
-			Spacer(modifier = Modifier.height(16.dp))
-			Text(
-				text = "Select storage",
-				fontSize = 16.sp,
-				color = Color.Black,
-				modifier = Modifier
-					.fillMaxWidth()
-					.clickable { /* Handle storage selection */ }
-					.padding(vertical = 8.dp)
-			)
-		}
-	}
+@Composable
+private fun PreferenceRow(label: String, selected: Boolean, onClick: () -> Unit) {
+    Surface(onClick = onClick, shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surface) {
+        Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+            Text(if (selected) "✓ Sí" else "— No", style = MaterialTheme.typography.bodyMedium, color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
 }

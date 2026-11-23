@@ -1,81 +1,83 @@
 package com.example.cleannotes.presentation.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-	primary = MainBlueDark,
-	secondary = DarkBlueAccentDark,
-	tertiary = LightBlueBG,
-	background = NearBlackBG,
-	surface = DarkSurface,
-	onPrimary = NearBlackBG,
-	onSecondary = OffWhiteText,
-	onTertiary = DarkCharcoalText,
-	onBackground = OffWhiteText,
-	onSurface = OffWhiteText
+private val LightColors = lightColorScheme(
+    primary = Gray900, onPrimary = Gray0,
+    primaryContainer = Gray200, onPrimaryContainer = Gray900,
+    inversePrimary = AccentBlueLight,
+    secondary = Gray600, onSecondary = Gray0,
+    secondaryContainer = Gray150, onSecondaryContainer = Gray900,
+    tertiary = AccentBlue, onTertiary = Gray0,
+    tertiaryContainer = BlueContainer, onTertiaryContainer = BlueInk,
+    background = Gray100, onBackground = Gray900,
+    surface = Gray50, onSurface = Gray900,
+    surfaceVariant = Gray150, onSurfaceVariant = Gray600,
+    surfaceDim = Gray200, surfaceBright = Gray0,
+    surfaceContainerLowest = Gray0, surfaceContainerLow = Gray50,
+    surfaceContainer = Gray150, surfaceContainerHigh = Gray150, surfaceContainerHighest = Gray200,
+    surfaceTint = Color.Transparent,
+    inverseSurface = Gray800, inverseOnSurface = Gray100,
+    outline = Gray500, outlineVariant = Gray300,
+    error = Color(0xFFB3261E), onError = Gray0,
+    errorContainer = Color(0xFFFCE8E6), onErrorContainer = Color(0xFF601410),
+    scrim = Color.Black,
+    primaryFixed = BlueContainer, primaryFixedDim = AccentBlueLight,
+    onPrimaryFixed = BlueInk, onPrimaryFixedVariant = BlueInk,
+    secondaryFixed = Gray200, secondaryFixedDim = Gray300,
+    onSecondaryFixed = Gray900, onSecondaryFixedVariant = Gray600,
+    tertiaryFixed = BlueContainer, tertiaryFixedDim = AccentBlueLight,
+    onTertiaryFixed = BlueInk, onTertiaryFixedVariant = BlueInk
 )
 
-private val LightColorScheme = lightColorScheme(
-	primary = MainBlue,
-	secondary = DarkBlueAccent,
-	tertiary = LightBlueBG,
-	background = OffWhiteBG,
-	surface = Color.White,
-	onPrimary = DarkCharcoalText, // Provides contrast against MainBlue (e.g. inside FAB)
-	onSecondary = Color.White,
-	onTertiary = DarkCharcoalText,
-	onBackground = DarkCharcoalText,
-	onSurface = DarkCharcoalText
+private val DarkColors = darkColorScheme(
+    primary = Color(0xFFF2F2F2), onPrimary = Color(0xFF101010),
+    primaryContainer = Color(0xFF303030), onPrimaryContainer = Color(0xFFF2F2F2),
+    inversePrimary = AccentBlue,
+    secondary = Gray300, onSecondary = Gray900,
+    secondaryContainer = Gray800, onSecondaryContainer = Gray200,
+    tertiary = AccentBlueLight, onTertiary = BlueInk,
+    tertiaryContainer = BlueContainerDark, onTertiaryContainer = BlueInkDark,
+    background = Color(0xFF101010), onBackground = Color(0xFFF2F2F2),
+    surface = Color(0xFF191919), onSurface = Color(0xFFF2F2F2),
+    surfaceVariant = Gray800, onSurfaceVariant = Gray400,
+    surfaceDim = Gray950, surfaceBright = Gray750,
+    surfaceContainerLowest = Color(0xFF0D0D0D), surfaceContainerLow = Color(0xFF191919),
+    surfaceContainer = Gray850, surfaceContainerHigh = Gray800, surfaceContainerHighest = Gray750,
+    surfaceTint = Color.Transparent,
+    inverseSurface = Gray200, inverseOnSurface = Gray900,
+    outline = Gray500, outlineVariant = Color(0xFF303030),
+    error = Color(0xFFF2B8B5), onError = Color(0xFF601410),
+    errorContainer = Color(0xFF5C2523), onErrorContainer = Color(0xFFFCE8E6),
+    scrim = Color.Black,
+    primaryFixed = BlueContainer, primaryFixedDim = AccentBlueLight,
+    onPrimaryFixed = BlueInk, onPrimaryFixedVariant = BlueInk,
+    secondaryFixed = Gray200, secondaryFixedDim = Gray300,
+    onSecondaryFixed = Gray900, onSecondaryFixedVariant = Gray600,
+    tertiaryFixed = BlueContainer, tertiaryFixedDim = AccentBlueLight,
+    onTertiaryFixed = BlueInk, onTertiaryFixedVariant = BlueInk
 )
 
 @Composable
-fun CleanNotesTheme(
-	darkTheme: Boolean = isSystemInDarkTheme(),
-	// Dynamic color is available on Android 12+
-	dynamicColor: Boolean = false, // Disabled to enforce the custom theme colors
-	content: @Composable () -> Unit
-) {
-	val colorScheme = when {
-		dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-			val context = LocalContext.current
-			if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-		}
-
-		darkTheme -> DarkColorScheme
-		else -> LightColorScheme
-	}
-	val view = LocalView.current
-	if (!view.isInEditMode) {
-		SideEffect {
-			val window = (view.context as Activity).window
-
-			@Suppress("DEPRECATION")
-			window.statusBarColor = Color.Transparent.toArgb()
-
-			WindowCompat.setDecorFitsSystemWindows(window, false)
-
-			val insetsController = WindowCompat.getInsetsController(window, view)
-			insetsController.isAppearanceLightStatusBars = !darkTheme
-		}
-	}
-
-	MaterialTheme(
-		colorScheme = colorScheme,
-		typography = Typography,
-		content = content
-	)
+fun CleanNotesTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            WindowCompat.getInsetsController(window, view).apply {
+                isAppearanceLightStatusBars = !darkTheme
+                isAppearanceLightNavigationBars = !darkTheme
+            }
+        }
+    }
+    MaterialTheme(colorScheme = if (darkTheme) DarkColors else LightColors, typography = Typography, content = content)
 }

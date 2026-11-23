@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.CleanNotes" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.CleanNotes" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorAccent">@color/app_accent</item>
+        <item name="android:windowBackground">@color/app_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/app_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+    <style name="Theme.CleanNotes.Dialog.Light" parent="android:Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorAccent">#1C1C1C</item>
+        <item name="android:colorBackground">#FAFAFA</item>
+        <item name="android:windowBackground">#FAFAFA</item>
+        <item name="android:textColorPrimary">#1C1C1C</item>
+        <item name="android:textColorSecondary">#525252</item>
+    </style>
+    <style name="Theme.CleanNotes.Dialog.Dark" parent="android:Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">#F2F2F2</item>
+        <item name="android:colorBackground">#1C1C1C</item>
+        <item name="android:windowBackground">#1C1C1C</item>
+        <item name="android:textColorPrimary">#EEEEEE</item>
+        <item name="android:textColorSecondary">#A3A3A3</item>
+    </style>
 </resources>

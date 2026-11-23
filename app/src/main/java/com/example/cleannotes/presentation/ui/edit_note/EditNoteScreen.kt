@@ -1,199 +1,183 @@
 package com.example.cleannotes.presentation.ui.edit_note
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.outlined.AttachFile
-import androidx.compose.material.icons.outlined.FormatAlignJustify
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.outlined.CenterFocusStrong
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.example.cleannotes.presentation.ui.edit_note.viewmodel.EditNoteViewModel
-import com.example.cleannotes.presentation.ui.theme.CleanNotesTheme
-
-@Composable
-fun EditNoteScreen(
-	navController: NavController,
-	viewModel: EditNoteViewModel = hiltViewModel()
-) {
-	val titleState = viewModel.noteTitle.value
-	val contentState = viewModel.noteContent.value
-
-	CleanNotesTheme {
-		Scaffold(
-			topBar = {
-				EditNoteTopBar(
-					title = titleState,
-					onBackClick = { navController.navigateUp() },
-					onShareClick = { /* Implementar compartir */ },
-					onMoreClick = { /* Implementar más opciones */ }
-				)
-			},
-			bottomBar = {
-				EditNoteBottomBar(
-					onListClick = { /* Implementar lista */ },
-					onAttachClick = { /* Implementar adjuntar */ },
-					onFormatClick = { /* Implementar formato */ },
-				)
-			}
-		) { padding ->
-			EditNoteContent(
-				title = titleState,
-				content = contentState,
-				onTitleChange = { viewModel.onEvent(EditNoteEvent.EnteredTitle(it)) },
-				onContentChange = { viewModel.onEvent(EditNoteEvent.EnteredContent(it)) },
-				modifier = Modifier.padding(padding)
-			)
-		}
-	}
-}
+import androidx.compose.ui.unit.sp
+import com.example.cleannotes.R
+import com.example.cleannotes.model.CheckItem
+import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.presentation.ui.design.*
+import com.example.cleannotes.presentation.ui.edit_note.richtext.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditNoteTopBar(
-	title: String,
-	onBackClick: () -> Unit,
-	onShareClick: () -> Unit,
-	onMoreClick: () -> Unit
-) {
-	TopAppBar(
-		title = {},
-		navigationIcon = {
-			IconButton(onClick = onBackClick) {
-				Icon(
-					imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-					contentDescription = "Atrás"
-				)
-			}
-		},
-		actions = {
-			IconButton(onClick = onShareClick) {
-				Icon(
-					imageVector = Icons.Outlined.Share,
-					contentDescription = "Compartir"
-				)
-			}
-			IconButton(onClick = onMoreClick) {
-				Icon(
-					imageVector = Icons.Default.MoreHoriz,
-					contentDescription = "Más opciones"
-				)
-			}
-		}
-	)
+fun EditNoteScreen(state: EditNoteUiState, onEvent: (EditNoteEvent) -> Unit, onSaveAndClose: () -> Unit, onBack: () -> Unit, quickCapture: Boolean = false) {
+    val document = remember(state.content) { NoteDocument.decode(state.content) }
+    val latestDocument by rememberUpdatedState(document)
+    val change: (NoteDocument) -> Unit = { onEvent(EditNoteEvent.EnteredContent(it.encode())) }
+    val controller = rememberRichEditorController(document) { onEvent(EditNoteEvent.EnteredContent(it)) }
+    val enabled = !state.isLoading && !state.loadFailed && !state.isClosing
+    var focus by rememberSaveable { mutableStateOf(false) }
+    var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
+    var imageMenu by rememberSaveable { mutableStateOf(false) }
+    var formatting by rememberSaveable { mutableStateOf(false) }
+    var share by rememberSaveable { mutableStateOf(false) }
+    var more by remember { mutableStateOf(false) }
+    var discard by remember { mutableStateOf(false) }
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val notifications = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { allowed ->
+        if (!allowed) scope.launch { snackbar.showSnackbar("Activa las notificaciones en Ajustes para recibir el aviso.") }
+    }
+    val close: () -> Unit = {
+        if (state.loadFailed) onBack()
+        else if (state.saveStatus == SaveStatus.ERROR && state.hasChanges) discard = true
+        else onSaveAndClose()
+    }
+    BackHandler { if (focus) focus = false else close() }
+    val status = when {
+        state.loadFailed -> "No se pudo abrir"
+        state.saveStatus == SaveStatus.ERROR -> "No se pudo guardar"
+        state.saveStatus == SaveStatus.SAVING -> "Guardando…"
+        state.saveStatus == SaveStatus.SAVED -> "✓ Guardado"
+        else -> "Borrador"
+    }
+    LaunchedEffect(controller.error) {
+        controller.error?.let { snackbar.showSnackbar(it); controller.error = null }
+    }
+    LaunchedEffect(quickCapture, controller.editor) {
+        if (quickCapture) controller.editor?.let { view ->
+            view.requestFocus()
+            view.post { (view.context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager).showSoftInput(view, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT) }
+        }
+    }
+    fun addItem() { change(document.copy(checklist = document.checklist + CheckItem(java.util.UUID.randomUUID().toString()))) }
+    if (discard) AlertDialog(onDismissRequest = { discard = false }, title = { Text("Hay cambios sin guardar") }, text = { Text("Puedes seguir editando o descartar los cambios pendientes.") },
+        confirmButton = { TextButton(onClick = { discard = false; onBack() }) { Text("Descartar") } }, dismissButton = { TextButton(onClick = { discard = false }) { Text("Seguir editando") } })
+    if (share) ExportMenu(state.title, document) { share = false }
+    if (reminder) ReminderSheet(state.title, document, onConfirm = {
+        change(it); reminder = false
+        if (it.reminder != null && android.os.Build.VERSION.SDK_INT >= 33 && context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) notifications.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+    }, onDismiss = { reminder = false })
+    if (formatting) ModalBottomSheet(onDismissRequest = { formatting = false }, containerColor = MaterialTheme.colorScheme.background) {
+        EditorBottomBar(document, controller, enabled, status, state.saveStatus == SaveStatus.ERROR, { formatting = false; share = true }, initialFormatting = true)
+    }
+    if (imageMenu) ModalBottomSheet(onDismissRequest = { imageMenu = false }, containerColor = MaterialTheme.colorScheme.background) {
+        Column(Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text("Añadir imagen", style = MaterialTheme.typography.titleLarge)
+            DesignRow("Elegir imagen", R.drawable.figma_notes) { imageMenu = false; controller.chooseImage() }
+            TextButton(onClick = { imageMenu = false; controller.takePhoto() }) { Text("Hacer foto") }
+            TextButton(onClick = { imageMenu = false; if (controller.editor?.pasteImage() != true) controller.error = "Copia una imagen para pegarla aquí." }) { Text("Pegar imagen") }
+        }
+    }
+    Scaffold(
+        modifier = Modifier.imePadding(), snackbarHost = { DesignSnackbarHost(snackbar) },
+        topBar = {
+            Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 24.dp).padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                DesignIconButton(if (focus) R.drawable.figma_close else R.drawable.figma_back, if (focus) "Salir de concentración" else "Volver") { if (focus) focus = false else close() }
+                Text(if (focus) "Salir de concentración" else status, Modifier.weight(1f).padding(start = 8.dp), style = MaterialTheme.typography.bodyMedium,
+                    color = if (state.saveStatus == SaveStatus.ERROR) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant)
+                if (!focus) IconToggleButton(checked = document.pinned, enabled = enabled, onCheckedChange = { change(document.copy(pinned = it)) }, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Outlined.PushPin, if (document.pinned) "Desfijar nota" else "Fijar nota", tint = if (document.pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        },
+        bottomBar = {
+            if (!focus) Surface(color = MaterialTheme.colorScheme.background) {
+                Column(Modifier.navigationBarsPadding()) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        CaptureTool("Lista", R.drawable.figma_list, enabled, Modifier.weight(1f), ::addItem)
+                        CaptureTool("Imagen", 0, enabled && !controller.importing, Modifier.weight(1f)) { imageMenu = true }
+                        CaptureTool("Recordar", R.drawable.figma_bell, enabled, Modifier.weight(1f)) { reminder = true }
+                    }
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(onClick = { formatting = true }, enabled = enabled, modifier = Modifier.weight(1f)) { Text("Aa · Selecciona texto para dar formato", style = MaterialTheme.typography.bodySmall) }
+                        Box {
+                            IconButton(onClick = { more = true }) { Icon(Icons.Outlined.MoreVert, "Más opciones") }
+                            DropdownMenu(more, { more = false }) {
+                                DropdownMenuItem(text = { Text("Compartir") }, onClick = { more = false; share = true })
+                                DropdownMenuItem(text = { Text("Deshacer") }, enabled = controller.canUndo, onClick = { more = false; controller.editor?.undoEdit() })
+                                DropdownMenuItem(text = { Text("Rehacer") }, enabled = controller.canRedo, onClick = { more = false; controller.editor?.redoEdit() })
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ) { padding ->
+        if (state.isLoading) Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+        else Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(top = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            if (!focus && !quickCapture) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Surface(onClick = { focus = true }, enabled = enabled, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(14.dp)) {
+                        Row(Modifier.heightIn(min = 48.dp).padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) { Icon(Icons.Outlined.CenterFocusStrong, null); Text("Concentrarme", style = MaterialTheme.typography.bodyMedium) }
+                    }
+                    Surface(onClick = {
+                        val before = document.archived
+                        change(document.copy(archived = !before))
+                        scope.launch { if (snackbar.showSnackbar(if (before) "Nota restaurada" else "Nota archivada", "Deshacer") == SnackbarResult.ActionPerformed) change(latestDocument.copy(archived = before)) }
+                    }, enabled = enabled, shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
+                        Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) { DesignIcon(R.drawable.figma_archive, if (document.archived) "Desarchivar nota" else "Archivar nota") }
+                    }
+                }
+            }
+            if (!focus) Text("Título opcional", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            BasicTextField(state.title, { onEvent(EditNoteEvent.EnteredTitle(it)) }, enabled = enabled, modifier = Modifier.fillMaxWidth().semantics { contentDescription = "Título" },
+                textStyle = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface, fontSize = if (focus) 30.sp else 28.sp, lineHeight = if (focus) 39.sp else 36.sp), cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                decorationBox = { field -> Box { if (state.title.isBlank()) Text("Sin título", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onSurfaceVariant); field() } })
+            BasicTextField(document.subtitle, { change(document.copy(subtitle = it)) }, enabled = enabled, modifier = Modifier.fillMaxWidth().semantics { contentDescription = "Subtítulo" },
+                textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant), cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                decorationBox = { field -> Box { if (document.subtitle.isBlank() && !focus) Text("Subtítulo (opcional)", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant); field() } })
+            RichEditorContent(document, enabled, controller, { onEvent(EditNoteEvent.EnteredContent(it)) }, focus)
+            document.checklist.forEach { item ->
+                key(item.id) {
+                    Row(Modifier.heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Checkbox(item.done, { checked -> change(document.copy(checklist = document.checklist.map { if (it.id == item.id) it.copy(done = checked) else it })) }, enabled = enabled)
+                        BasicTextField(item.text, { text -> change(document.copy(checklist = document.checklist.map { if (it.id == item.id) it.copy(text = text) else it })) }, enabled = enabled,
+                            modifier = Modifier.weight(1f).semantics { contentDescription = "Elemento de lista" }, singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next), keyboardActions = KeyboardActions(onNext = { addItem() }),
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface, textDecoration = if (item.done) TextDecoration.LineThrough else null),
+                            decorationBox = { field -> Box { if (item.text.isEmpty()) Text("Elemento de lista", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant); field() } })
+                    }
+                }
+            }
+            NoteImageStrip(document, enabled) { onEvent(EditNoteEvent.EnteredContent(it)) }
+            if (document.images.isNotEmpty()) Text("${document.images.size} ${if (document.images.size == 1) "imagen" else "imágenes"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (document.reminder != null && !document.reminderCompleted && !focus) DesignRow("Recordatorio", R.drawable.figma_bell, java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.SHORT, java.text.DateFormat.SHORT).format(document.reminder.at)) { reminder = true }
+            if (quickCapture) Text("Puedes organizarlo después.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (controller.importing) LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
+    }
 }
 
 @Composable
-fun EditNoteContent(
-	title: String,
-	content: String,
-	onTitleChange: (String) -> Unit,
-	onContentChange: (String) -> Unit,
-	modifier: Modifier = Modifier
-) {
-	val scrollState = rememberScrollState()
-	Column(
-		modifier = modifier
-			.fillMaxSize()
-			.padding(16.dp)
-			.verticalScroll(scrollState)
-	) {
-		// Card for Title
-		Card(
-			elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-			colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-			modifier = Modifier.fillMaxWidth()
-		) {
-			TextField(
-				value = title,
-				onValueChange = { onTitleChange(it) },
-				placeholder = { Text("Title") },
-				textStyle = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-				colors = TextFieldDefaults.colors(
-					focusedContainerColor = Color.Transparent,
-					unfocusedContainerColor = Color.Transparent,
-					disabledContainerColor = Color.Transparent,
-					focusedIndicatorColor = Color.Transparent,
-					unfocusedIndicatorColor = Color.Transparent,
-					disabledIndicatorColor = Color.Transparent,
-				),
-				modifier = Modifier.padding(16.dp)
-			)
-		}
-
-		Spacer(modifier = Modifier.height(16.dp))
-
-		// Card for Content
-		TextField(
-			value = content,
-			onValueChange = { onContentChange(it) },
-			placeholder = { Text("Content") },
-			textStyle = MaterialTheme.typography.bodyLarge,
-			colors = TextFieldDefaults.colors(
-				focusedContainerColor = Color.Transparent,
-				unfocusedContainerColor = Color.Transparent,
-				disabledContainerColor = Color.Transparent,
-				focusedIndicatorColor = Color.Transparent,
-				unfocusedIndicatorColor = Color.Transparent,
-				disabledIndicatorColor = Color.Transparent,
-			),
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(16.dp)
-		)
-	}
-	Spacer(modifier = Modifier.height(16.dp))
-}
-
-@Composable
-fun EditNoteBottomBar(
-	onListClick: () -> Unit,
-	onAttachClick: () -> Unit,
-	onFormatClick: () -> Unit
-) {
-	BottomAppBar(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
-		Row(
-			modifier = Modifier.fillMaxWidth(),
-			horizontalArrangement = Arrangement.SpaceEvenly
-		) {
-			IconButton(onClick = onListClick) {
-				Icon(Icons.AutoMirrored.Outlined.List, contentDescription = "Lista")
-			}
-			IconButton(onClick = onAttachClick) {
-				Icon(Icons.Outlined.AttachFile, contentDescription = "Adjuntar")
-			}
-			IconButton(onClick = onFormatClick) {
-				Icon(Icons.Outlined.FormatAlignJustify, contentDescription = "Formato")
-			}
-		}
-	}
+private fun CaptureTool(label: String, icon: Int, enabled: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    Surface(onClick = onClick, enabled = enabled, modifier = modifier, shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
+        Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) { if (icon == 0) Icon(Icons.Outlined.Image, null) else DesignIcon(icon); Spacer(Modifier.width(8.dp)); Text(label, style = MaterialTheme.typography.bodyMedium) }
+    }
 }

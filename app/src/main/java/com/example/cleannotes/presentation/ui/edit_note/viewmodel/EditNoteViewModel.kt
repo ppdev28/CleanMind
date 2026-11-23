@@ -1,113 +1,142 @@
 package com.example.cleannotes.presentation.ui.edit_note.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cleannotes.domain.model.InvalidNoteException
-import com.example.cleannotes.domain.model.Note
-import com.example.cleannotes.domain.usecase.AddNoteUseCase
-import com.example.cleannotes.domain.usecase.GetNoteUseCase
+import com.example.cleannotes.data.repository.NoteRepository
+import com.example.cleannotes.model.Note
 import com.example.cleannotes.presentation.ui.edit_note.EditNoteEvent
+import com.example.cleannotes.presentation.ui.edit_note.EditNoteUiState
+import com.example.cleannotes.presentation.ui.edit_note.SaveStatus
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
-@HiltViewModel
-class EditNoteViewModel @Inject constructor(
-	private val getNoteUseCase: GetNoteUseCase,
-	private val addNoteUseCase: AddNoteUseCase,
-	savedStateHandle: SavedStateHandle
+@HiltViewModel(assistedFactory = EditNoteViewModel.Factory::class)
+class EditNoteViewModel @AssistedInject constructor(
+    private val repository: NoteRepository,
+    private val savedStateHandle: SavedStateHandle,
+    @Assisted private val noteId: Int?,
+    @Assisted private val reminder: Boolean
 ) : ViewModel() {
-	
-	private val _noteTitle = mutableStateOf("")
-	val noteTitle: State<String> = _noteTitle
-	
-	private val _noteContent = mutableStateOf("")
-	val noteContent: State<String> = _noteContent
-	
-	private val _eventFlow = MutableSharedFlow<UiEvent>()
-	val eventFlow = _eventFlow.asSharedFlow()
-	
-	private var currentNoteId: Int? = null
-	private var saveJob: Job? = null
-	
-	init {
-		val isReminder = savedStateHandle.get<Boolean>("isReminder") ?: false
-		if (isReminder) {
-			_noteContent.value = "Remember"
-		}
+    @AssistedFactory interface Factory { fun create(noteId: Int?, reminder: Boolean): EditNoteViewModel }
 
-		savedStateHandle.get<Int>("noteId")?.let { noteId ->
-			if (noteId != -1) {
-				viewModelScope.launch {
-					getNoteUseCase(noteId)?.also { note ->
-						currentNoteId = note.id
-						_noteTitle.value = note.title
-						_noteContent.value = note.content
-					}
-				}
-			}
-		}
-	}
-	
-	fun onEvent(event: EditNoteEvent) {
-		when (event) {
-			is EditNoteEvent.EnteredTitle -> {
-				_noteTitle.value = event.value
-			}
-			
-			is EditNoteEvent.EnteredContent -> {
-				_noteContent.value = event.value
-			}
-		}
-		// En cada evento de edición, cancelamos el trabajo anterior y lanzamos uno nuevo
-		saveJob?.cancel()
-		saveJob = viewModelScope.launch {
-			// Esperamos 500ms antes de guardar
-			delay(500L)
-			saveNote()
-		}
-	}
-	
-	private fun saveNote() {
-		viewModelScope.launch {
-			try {
-				// Creamos la nota a guardar
-				val noteToSave = Note(
-					title = noteTitle.value,
-					content = noteContent.value,
-					timestamp = System.currentTimeMillis(),
-					id = currentNoteId
-				)
-				// Guardamos la nota
-				addNoteUseCase(noteToSave)
-				
-				// Si la nota es nueva (sin ID), la volvemos a obtener para tener el ID actualizado
-				if (currentNoteId == null) {
-					// Esto es una simplificación. Idealmente, AddNoteUseCase devolvería el ID.
-					// Para evitar una lógica compleja, asumimos que el guardado fue exitoso
-					// y la próxima vez que se abra la nota ya tendrá un ID.
-				}
-				
-				_eventFlow.emit(UiEvent.SaveNote)
-			} catch (e: InvalidNoteException) {
-				_eventFlow.emit(
-					UiEvent.ShowSnackbar(
-						message = e.message ?: "No se pudo guardar la nota"
-					)
-				)
-			}
-		}
-	}
-	
-	sealed class UiEvent {
-		data class ShowSnackbar(val message: String) : UiEvent()
-		object SaveNote : UiEvent()
-	}
+    private val _uiState = MutableStateFlow(EditNoteUiState(
+        title = savedStateHandle["draftTitle"] ?: "",
+        content = savedStateHandle["draftContent"] ?: "",
+        isReminder = savedStateHandle["draftReminder"] ?: reminder,
+        hasChanges = savedStateHandle["hasChanges"] ?: false
+    ))
+    val uiState = _uiState.asStateFlow()
+    private var currentNoteId: Int? = savedStateHandle["savedNoteId"] ?: noteId
+    private var savedTitle = ""
+    private var savedContent = ""
+    private var debounceJob: Job? = null
+    private val saveMutex = Mutex()
+
+    init {
+        currentNoteId?.let { id ->
+            _uiState.update { it.copy(isLoading = true) }
+            viewModelScope.launch {
+                try {
+                    val note = repository.getNote(id) ?: error("Note not found")
+                    savedTitle = note.title
+                    savedContent = note.content
+                    val restoredDraft = savedStateHandle.contains("draftTitle")
+                    _uiState.update { state ->
+                        val title = if (restoredDraft) state.title else note.title
+                        val content = if (restoredDraft) state.content else note.content
+                        val changed = title != savedTitle || content != savedContent
+                        state.copy(title = title, content = content, isReminder = note.isReminder, hasChanges = changed,
+                            saveStatus = if (changed) SaveStatus.IDLE else SaveStatus.SAVED)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    _uiState.update { it.copy(loadFailed = true, saveStatus = SaveStatus.ERROR) }
+                } finally {
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    fun onEvent(event: EditNoteEvent) {
+        val state = uiState.value
+        if (state.isLoading || state.loadFailed || state.isClosing || state.exitRequested) return
+        val edited = when (event) {
+            is EditNoteEvent.EnteredTitle -> state.copy(title = event.value)
+            is EditNoteEvent.EnteredContent -> state.copy(content = event.value)
+        }
+        val changed = edited.title != savedTitle || edited.content != savedContent
+        _uiState.value = edited.copy(hasChanges = changed, saveStatus = if (!changed && currentNoteId != null) SaveStatus.SAVED else SaveStatus.IDLE)
+        rememberDraft()
+        debounceJob?.cancel()
+        debounceJob = viewModelScope.launch {
+            delay(600)
+            // Do not cancel a database write when the user types again.
+            viewModelScope.launch { persist() }
+        }
+    }
+
+    fun saveAndClose() {
+        if (uiState.value.isClosing || uiState.value.exitRequested) return
+        _uiState.update { it.copy(isClosing = true) }
+        debounceJob?.cancel()
+        viewModelScope.launch {
+            try {
+                // Always join an in-flight write, even if the user reverted the draft.
+                if (!persist()) return@launch
+                _uiState.update { it.copy(exitRequested = true) }
+            } finally {
+                _uiState.update { it.copy(isClosing = false) }
+            }
+        }
+    }
+
+    private suspend fun persist(): Boolean = saveMutex.withLock {
+        val state = uiState.value
+        if (state.isLoading || state.loadFailed) return@withLock false
+        if (!state.hasChanges) return@withLock true
+        val document = com.example.cleannotes.model.NoteDocument.decode(state.content)
+        val fallback = listOf(document.subtitle, document.text.lineSequence().firstOrNull().orEmpty(), document.checklist.firstOrNull()?.text.orEmpty())
+            .firstOrNull { it.isNotBlank() }?.take(80) ?: "Sin título"
+        if (state.title.isBlank() && document.text.isBlank() && document.subtitle.isBlank() && document.images.isEmpty() && document.checklist.isEmpty()) return@withLock true
+        _uiState.update { it.copy(saveStatus = SaveStatus.SAVING) }
+        try {
+            currentNoteId = repository.saveNote(Note(currentNoteId, state.title.ifBlank { fallback }, state.content, System.currentTimeMillis(), state.isReminder))
+            savedStateHandle["savedNoteId"] = currentNoteId
+            savedTitle = state.title
+            savedContent = state.content
+            _uiState.update {
+                val changed = it.title != savedTitle || it.content != savedContent
+                it.copy(hasChanges = changed, saveStatus = if (changed) SaveStatus.IDLE else SaveStatus.SAVED)
+            }
+            rememberDraft()
+            true
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            _uiState.update { it.copy(saveStatus = SaveStatus.ERROR) }
+            false
+        }
+    }
+
+    private fun rememberDraft() {
+        val state = uiState.value
+        savedStateHandle["draftTitle"] = state.title
+        savedStateHandle["draftContent"] = state.content
+        savedStateHandle["draftReminder"] = state.isReminder
+        savedStateHandle["hasChanges"] = state.hasChanges
+    }
 }

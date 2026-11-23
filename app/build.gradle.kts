@@ -1,6 +1,7 @@
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.compose)
+	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.ksp)
 	alias(libs.plugins.hilt.android)
 }
@@ -34,6 +35,8 @@ android {
 		targetCompatibility = JavaVersion.VERSION_11
 	}
 
+	testOptions { unitTests.isIncludeAndroidResources = true }
+
 	buildFeatures {
 		compose = true
 	}
@@ -60,6 +63,9 @@ dependencies {
 	ksp(libs.hilt.compiler)
 
 	testImplementation(libs.junit)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.robolectric)
+	testImplementation(libs.kotlinx.coroutines.test)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -67,7 +73,13 @@ dependencies {
 	debugImplementation(libs.androidx.compose.ui.tooling)
 	debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-	implementation(libs.androidx.hilt.navigation.compose)
+	implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
 	implementation(libs.androidx.material.icons.extended)
 }
 
@@ -76,3 +88,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 		jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
 	}
 }
+
+ksp { arg("room.schemaLocation", "$projectDir/schemas") }
