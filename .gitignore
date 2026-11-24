@@ -13,3 +13,13 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local IDE state; share only the team code style.
+.idea/*
+!.idea/codeStyles/
+.idea/codeStyles/*
+!.idea/codeStyles/Project.xml
+!.idea/codeStyles/codeStyleConfig.xml
+
+# Kotlin compiler caches
+.kotlin/
