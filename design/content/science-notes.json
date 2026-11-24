@@ -1,0 +1,35 @@
+{
+    "folder": "Ciencia",
+    "notes": [
+        {
+            "title": "Luz en viaje",
+            "subtitle": "Luz y distancia",
+            "text": "En un segundo, la luz recorre\ncasi 300.000 km por el espacio.\nAl mirar una estrella distante,\nvemos parte de su pasado."
+        },
+        {
+            "title": "Gravedad",
+            "subtitle": "Mundos en movimiento",
+            "text": "La masa curva el espacio y el tiempo.\nLos mundos siguen esa curva.\nCada planeta avanza y cae a la vez,\ntrazando su camino alrededor del Sol."
+        },
+        {
+            "title": "Hojas y luz",
+            "subtitle": "Una hoja al Sol",
+            "text": "Una hoja recibe luz del Sol.\nCon agua y CO2 forma glucosa.\nLa clorofila inicia el proceso,\nque libera O2 hacia el aire."
+        },
+        {
+            "title": "Materia",
+            "subtitle": "Enlaces y propiedades",
+            "text": "Los electrones forman enlaces\nque unen las piezas de la materia.\nUn cambio en esa estructura\npuede crear propiedades nuevas."
+        },
+        {
+            "title": "ADN",
+            "subtitle": "Cuatro bases",
+            "text": "Cuatro bases ordenan el ADN.\nSu secuencia guarda instrucciones.\nCada copia transmite esa huella\nentre generaciones de seres vivos."
+        },
+        {
+            "title": "El planeta azul",
+            "subtitle": "Mar y clima",
+            "text": "El mar absorbe parte del calor\nque gana nuestro planeta.\nSus corrientes lo llevan lejos\ny ayudan a regular el clima."
+        }
+    ]
+}

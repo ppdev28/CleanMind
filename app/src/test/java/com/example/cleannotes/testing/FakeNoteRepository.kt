@@ -11,6 +11,7 @@ class FakeNoteRepository : NoteRepository {
 	private val updates = MutableStateFlow<List<Note>>(emptyList())
 	var writeDelay = 0L
 	var failWrites = false
+	var failOnWrite: Int? = null
 	var failReads = false
 	var failDeletes = false
 	var writes = 0
@@ -40,7 +41,7 @@ class FakeNoteRepository : NoteRepository {
 
 	override suspend fun saveNote(note: Note): Int {
 		delay(writeDelay)
-		if (failWrites) error("Storage unavailable")
+		if (failWrites || writes + 1 == failOnWrite) error("Storage unavailable")
 		require(note.title.isNotBlank())
 		val id = note.id ?: ((notes.keys.maxOrNull() ?: 0) + 1)
 		notes[id] = note.copy(id = id)

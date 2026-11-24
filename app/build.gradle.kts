@@ -35,6 +35,9 @@ android {
 		targetCompatibility = JavaVersion.VERSION_11
 	}
 
+	sourceSets.getByName("debug").assets.srcDir(rootProject.file("design/content"))
+	sourceSets.getByName("test").resources.srcDir(rootProject.file("design/content"))
+
 	testOptions { unitTests.isIncludeAndroidResources = true }
 
 	buildFeatures {
