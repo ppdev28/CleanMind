@@ -24,6 +24,7 @@ class RichNoteEditor(context: Context) : EditText(context) {
 	private val redo = ArrayDeque<NoteDocument>()
 
 	init {
+		importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
 		gravity = Gravity.TOP or Gravity.START
 		background = null
 		setPadding(0, 0, 0, 24)

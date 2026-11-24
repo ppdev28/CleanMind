@@ -177,6 +177,7 @@ class DesignUiTest {
 			}
 		}
 		screenshot("editor-dark")
+		compose.onNodeWithContentDescription("Cuerpo de la nota").assertExists()
 		compose.onNodeWithText("Concentrarme").performClick()
 		compose.onNodeWithText("Recordar").assertDoesNotExist()
 		screenshot("focus-dark")

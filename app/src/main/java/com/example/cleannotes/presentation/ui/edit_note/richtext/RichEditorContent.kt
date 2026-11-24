@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.cleannotes.data.attachments.NoteImages
@@ -148,7 +150,10 @@ fun RichEditorContent(
 			view.hint = "Nota"
 			view.bind(document)
 		},
-		modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+		modifier =
+			Modifier.fillMaxWidth().heightIn(min = 48.dp).semantics {
+				contentDescription = "Cuerpo de la nota"
+			},
 	)
 }
 

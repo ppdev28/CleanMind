@@ -3,6 +3,7 @@ package com.example.cleannotes.editor
 import android.app.Application
 import android.graphics.Typeface
 import android.text.style.StyleSpan
+import android.view.View
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.TextMark
 import com.example.cleannotes.presentation.ui.edit_note.richtext.RichNoteEditor
@@ -16,6 +17,12 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28], application = Application::class)
 class RichEditorTest {
+	@Test
+	fun nativeEditorRemainsAvailableToAccessibilityServices() {
+		val editor = RichNoteEditor(RuntimeEnvironment.getApplication())
+		assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_YES, editor.importantForAccessibility)
+	}
+
 	@Test
 	fun legacyTextIsNotTreatedAsMarkup() {
 		assertEquals("<b>hola</b>", NoteDocument.decode("<b>hola</b>").text)
