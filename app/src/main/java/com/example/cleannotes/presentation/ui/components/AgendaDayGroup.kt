@@ -1,5 +1,6 @@
 package com.example.cleannotes.presentation.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -26,7 +27,10 @@ fun AgendaDayGroup(notes: List<Note>, onOpen: (Note) -> Unit, onOptions: (Note) 
 		)
 			.format(Date(at))
 			.replaceFirstChar { it.titlecase(locale) }
-	Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+	Column(
+		Modifier.fillMaxWidth().animateContentSize(),
+		verticalArrangement = Arrangement.spacedBy(12.dp),
+	) {
 		Text(
 			fullDate,
 			style = MaterialTheme.typography.bodySmall,

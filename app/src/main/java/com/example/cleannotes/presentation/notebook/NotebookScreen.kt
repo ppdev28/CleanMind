@@ -1,6 +1,8 @@
 package com.example.cleannotes.presentation.notebook
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -20,6 +22,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -37,6 +40,7 @@ import com.example.cleannotes.presentation.ui.components.DeleteNoteDialog
 import com.example.cleannotes.presentation.ui.design.*
 import com.example.cleannotes.presentation.ui.edit_note.ExportMenu
 import com.example.cleannotes.presentation.ui.folders.*
+import com.example.cleannotes.presentation.ui.motion.AppMotion
 import com.example.cleannotes.presentation.util.DateUtils
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -63,8 +67,11 @@ fun NotebookScreen(
 	onDeleteFolder: (Int) -> Unit = {},
 	onMoveNote: (Note, Int?) -> Unit = { _, _ -> },
 	onClearFolderError: () -> Unit = {},
+	active: Boolean = true,
 ) {
-	BackHandler(enabled = state.selectedTab != NotesTab.HOME) { onTabSelected(NotesTab.HOME) }
+	BackHandler(enabled = active && state.selectedTab != NotesTab.HOME) {
+		onTabSelected(NotesTab.HOME)
+	}
 	var filter by rememberSaveable { mutableStateOf("Todas") }
 	var grid by rememberSaveable { mutableStateOf(false) }
 	var options by remember { mutableStateOf<Note?>(null) }
@@ -102,11 +109,11 @@ fun NotebookScreen(
 		)
 	}
 	val snackbar = remember { SnackbarHostState() }
+	val tabStates = rememberSaveableStateHolder()
 	val scope = rememberCoroutineScope()
 	var pendingArchive by remember { mutableStateOf<Pair<Note, Boolean>?>(null) }
 	val active = state.allNotes.filterNot { NoteDocument.decode(it.content).archived }
 	val notes = state.allNotes.filterNot { it.isReminder }
-	val notesTab = state.selectedTab in listOf(NotesTab.NOTES, NotesTab.SEARCH)
 	fun archive(note: Note) {
 		val archived = NoteDocument.decode(note.content).archived
 		pendingArchive = note to archived
@@ -265,206 +272,232 @@ fun NotebookScreen(
 						Text("Reintentar")
 					}
 				}
-			if (state.isLoading)
-				Box(
-					Modifier.fillMaxSize(),
-					contentAlignment = Alignment.Center,
-				) {
-					CircularProgressIndicator()
-				}
-			else
-				when {
-					state.selectedTab == NotesTab.HOME ->
-						LazyColumn(
-							contentPadding =
-								PaddingValues(
-									start = 24.dp,
-									end = 24.dp,
-									top = 8.dp,
-									bottom = 24.dp,
-								),
-							verticalArrangement = Arrangement.spacedBy(16.dp),
-						) {
-							item {
-								SearchEntry(
-									"",
-									{
-										onQueryChange(it)
-										onTabSelected(NotesTab.SEARCH)
-									},
-									onClick = { onTabSelected(NotesTab.SEARCH) },
-								)
-							}
-
-							val agendaNotes = active.filterNot { it.isReminder }
-							val days =
-								agendaNotes
-									.sortedWith(
-										compareByDescending<Note> { it.creationTimestamp() }
-											.thenByDescending { it.id }
-									)
-									.groupBy { DateUtils.dayKey(it.creationTimestamp()) }
-							items(days.entries.toList(), key = { "agenda-${it.key}" }) { (_, notesOfDay) ->
-								AgendaDayGroup(notesOfDay, onOpenNote) { options = it }
-							}
-							if (agendaNotes.isEmpty())
-								item {
-									EmptyDesignState(
-										"Un lugar para tus ideas",
-										"Todavía no hay notas. Guarda lo que quieras retomar.",
-										"Crear una nota",
-									) {
-										onQuickCreate()
-									}
-								}
-						}
-
-					notesTab -> {
-						val filtered =
-							(if (state.selectedTab == NotesTab.SEARCH) state.allNotes else notes)
-								.filter { note ->
-									val doc = NoteDocument.decode(note.content)
-									val matchesFilter =
-										when (filter) {
-											"Archivadas" -> doc.archived
-											"Fijadas" -> doc.pinned && !doc.archived
-											"Con imágenes" ->
-												doc.images.isNotEmpty() && !doc.archived
-
-											else -> !doc.archived
-										}
-									matchesFilter &&
-											(state.selectedTab != NotesTab.NOTES ||
-													state.selectedFolderId == null ||
-													(if (state.selectedFolderId == 0) note.folderId == null
-													else note.folderId == state.selectedFolderId)) &&
-											(state.query.isBlank() ||
-													note.title.contains(
-														state.query,
-														true,
-													) ||
-													NoteDocument.plainText(note.content)
-														.contains(state.query, true))
-								}
-						val header: @Composable () -> Unit = {
-							Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-								SearchEntry(state.query, onQueryChange)
-								if (state.selectedTab == NotesTab.NOTES)
-									FolderStrip(
-										state.folders,
-										notes,
-										state.selectedFolderId,
-										onFolderSelected,
-									) {
-										managingFolders = true
-										onClearFolderError()
-									}
-								Row(
-									Modifier.fillMaxWidth()
-										.horizontalScroll(rememberScrollState())
-										.selectableGroup(),
-									horizontalArrangement = Arrangement.spacedBy(4.dp),
+			AnimatedContent(
+				targetState = state.isLoading to state.selectedTab,
+				modifier = Modifier.fillMaxSize(),
+				transitionSpec = {
+					AppMotion.content(targetState.second.ordinal >= initialState.second.ordinal)
+				},
+				label = "notebookSection",
+			) { (loading, selectedTab) ->
+				val notesTab = selectedTab in listOf(NotesTab.NOTES, NotesTab.SEARCH)
+				if (loading)
+					Box(
+						Modifier.fillMaxSize(),
+						contentAlignment = Alignment.Center,
+					) {
+						CircularProgressIndicator()
+					}
+				else
+					tabStates.SaveableStateProvider(selectedTab) {
+						when {
+							selectedTab == NotesTab.HOME ->
+								LazyColumn(
+									contentPadding =
+										PaddingValues(
+											start = 24.dp,
+											end = 24.dp,
+											top = 8.dp,
+											bottom = 24.dp,
+										),
+									verticalArrangement = Arrangement.spacedBy(16.dp),
 								) {
-									listOf("Todas", "Fijadas", "Con imágenes", "Archivadas")
-										.forEach { label ->
-											Surface(
-												modifier =
-													Modifier.selectable(
-														filter == label,
-														role = Role.Tab,
-														onClick = { filter = label },
-													),
-												color =
-													if (filter == label)
-														MaterialTheme.colorScheme.primaryContainer
-													else MaterialTheme.colorScheme.background,
-												shape = RoundedCornerShape(12.dp),
+									item {
+										SearchEntry(
+											"",
+											{
+												onQueryChange(it)
+												onTabSelected(NotesTab.SEARCH)
+											},
+											onClick = { onTabSelected(NotesTab.SEARCH) },
+										)
+									}
+
+									val agendaNotes = active.filterNot { it.isReminder }
+									val days =
+										agendaNotes
+											.sortedWith(
+												compareByDescending<Note> { it.creationTimestamp() }
+													.thenByDescending { it.id }
+											)
+											.groupBy { DateUtils.dayKey(it.creationTimestamp()) }
+									items(days.entries.toList(), key = { "agenda-${it.key}" }) { (_, notesOfDay) ->
+										Column(Modifier.animateItem()) {
+											AgendaDayGroup(notesOfDay, onOpenNote) { options = it }
+										}
+									}
+									if (agendaNotes.isEmpty())
+										item {
+											EmptyDesignState(
+												"Un lugar para tus ideas",
+												"Todavía no hay notas. Guarda lo que quieras retomar.",
+												"Crear una nota",
 											) {
-												Row(
-													Modifier.heightIn(min = 48.dp)
-														.padding(horizontal = 10.dp),
-													verticalAlignment = Alignment.CenterVertically,
-													horizontalArrangement =
-														Arrangement.spacedBy(6.dp),
-												) {
-													if (filter == label)
-														Icon(
-															MindIcons.Check,
-															null,
-															Modifier.size(16.dp),
-														)
-													Text(
-														label,
-														style = MaterialTheme.typography.bodySmall,
-													)
-												}
+												onQuickCreate()
 											}
 										}
 								}
-								Row(
-									Modifier.fillMaxWidth(),
-									verticalAlignment = Alignment.CenterVertically,
-								) {
-									Text(
-										if (state.query.isBlank())
-											(state.folders
-												.firstOrNull { it.id == state.selectedFolderId }
-												?.name
-												?: if (state.selectedFolderId == 0) "Sin carpeta"
-												else "Tus notas")
-										else "Coincidencias en título y contenido",
-										Modifier.weight(1f),
-										style = MaterialTheme.typography.bodyMedium,
-										color = MaterialTheme.colorScheme.onSurfaceVariant,
-									)
-									DesignIconButton(
-										if (grid) MindIcons.List else MindIcons.GridView,
-										"Cambiar vista",
-									) {
-										grid = !grid
+
+							notesTab -> {
+								val filtered =
+									(if (selectedTab == NotesTab.SEARCH) state.allNotes else notes)
+										.filter { note ->
+											val doc = NoteDocument.decode(note.content)
+											val matchesFilter =
+												when (filter) {
+													"Archivadas" -> doc.archived
+													"Fijadas" -> doc.pinned && !doc.archived
+													"Con imágenes" ->
+														doc.images.isNotEmpty() && !doc.archived
+
+													else -> !doc.archived
+												}
+											matchesFilter &&
+													(selectedTab != NotesTab.NOTES ||
+															state.selectedFolderId == null ||
+															(if (state.selectedFolderId == 0)
+																note.folderId == null
+															else
+																note.folderId == state.selectedFolderId)) &&
+													(state.query.isBlank() ||
+															note.title.contains(
+																state.query,
+																true,
+															) ||
+															NoteDocument.plainText(note.content)
+																.contains(state.query, true))
+										}
+								val header: @Composable () -> Unit = {
+									Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+										SearchEntry(state.query, onQueryChange)
+										if (selectedTab == NotesTab.NOTES)
+											FolderStrip(
+												state.folders,
+												notes,
+												state.selectedFolderId,
+												onFolderSelected,
+											) {
+												managingFolders = true
+												onClearFolderError()
+											}
+										Row(
+											Modifier.fillMaxWidth()
+												.horizontalScroll(rememberScrollState())
+												.selectableGroup(),
+											horizontalArrangement = Arrangement.spacedBy(4.dp),
+										) {
+											listOf("Todas", "Fijadas", "Con imágenes", "Archivadas")
+												.forEach { label ->
+													Surface(
+														modifier =
+															Modifier.selectable(
+																filter == label,
+																role = Role.Tab,
+																onClick = { filter = label },
+															),
+														color =
+															if (filter == label)
+																MaterialTheme.colorScheme
+																	.primaryContainer
+															else
+																MaterialTheme.colorScheme
+																	.background,
+														shape = RoundedCornerShape(12.dp),
+													) {
+														Row(
+															Modifier.heightIn(min = 48.dp)
+																.padding(horizontal = 10.dp),
+															verticalAlignment =
+																Alignment.CenterVertically,
+															horizontalArrangement =
+																Arrangement.spacedBy(6.dp),
+														) {
+															if (filter == label)
+																Icon(
+																	MindIcons.Check,
+																	null,
+																	Modifier.size(16.dp),
+																)
+															Text(
+																label,
+																style =
+																	MaterialTheme.typography
+																		.bodySmall,
+															)
+														}
+													}
+												}
+										}
+										Row(
+											Modifier.fillMaxWidth(),
+											verticalAlignment = Alignment.CenterVertically,
+										) {
+											Text(
+												if (state.query.isBlank())
+													(state.folders
+														.firstOrNull {
+															it.id == state.selectedFolderId
+														}
+														?.name
+														?: if (state.selectedFolderId == 0)
+															"Sin carpeta"
+														else "Tus notas")
+												else "Coincidencias en título y contenido",
+												Modifier.weight(1f),
+												style = MaterialTheme.typography.bodyMedium,
+												color = MaterialTheme.colorScheme.onSurfaceVariant,
+											)
+											DesignIconButton(
+												if (grid) MindIcons.List else MindIcons.GridView,
+												"Cambiar vista",
+											) {
+												grid = !grid
+											}
+										}
 									}
 								}
-							}
-						}
-						LazyVerticalGrid(
-							columns = GridCells.Fixed(if (grid) 2 else 1),
-							contentPadding =
-								PaddingValues(
-									start = 24.dp,
-									end = 24.dp,
-									top = 8.dp,
-									bottom = 24.dp,
-								),
-							verticalArrangement = Arrangement.spacedBy(16.dp),
-							horizontalArrangement = Arrangement.spacedBy(16.dp),
-						) {
-							item(span = { GridItemSpan(maxLineSpan) }) { header() }
-							items(filtered, key = { requireNotNull(it.id) }) { note ->
-								DesignNoteCard(
-									note,
-									onClick = { onOpenNote(note) },
-									onLongClick = { options = note },
-									compact = grid,
-								)
-							}
-							if (filtered.isEmpty())
-								item(span = { GridItemSpan(maxLineSpan) }) {
-									EmptyDesignState(
-										"Sin notas aquí",
-										"Prueba otra búsqueda o guarda una nueva idea.",
-										"Crear una nota",
-									) {
-										onCreate(false)
+								LazyVerticalGrid(
+									columns = GridCells.Fixed(if (grid) 2 else 1),
+									contentPadding =
+										PaddingValues(
+											start = 24.dp,
+											end = 24.dp,
+											top = 8.dp,
+											bottom = 24.dp,
+										),
+									verticalArrangement = Arrangement.spacedBy(16.dp),
+									horizontalArrangement = Arrangement.spacedBy(16.dp),
+								) {
+									item(span = { GridItemSpan(maxLineSpan) }) { header() }
+									items(filtered, key = { requireNotNull(it.id) }) { note ->
+										DesignNoteCard(
+											note,
+											modifier = Modifier.animateItem(),
+											onClick = { onOpenNote(note) },
+											onLongClick = { options = note },
+											compact = grid,
+										)
 									}
+									if (filtered.isEmpty())
+										item(span = { GridItemSpan(maxLineSpan) }) {
+											EmptyDesignState(
+												"Sin notas aquí",
+												"Prueba otra búsqueda o guarda una nueva idea.",
+												"Crear una nota",
+											) {
+												onCreate(false)
+											}
+										}
+								}
+							}
+
+							else ->
+								ReminderCollection(active, onOpenNote, onCreate, onUpdateNote) {
+									deleting = it
 								}
 						}
 					}
-
-					else ->
-						ReminderCollection(active, onOpenNote, onCreate, onUpdateNote) {
-							deleting = it
-						}
-				}
+			}
 		}
 	}
 }
@@ -520,7 +553,7 @@ private fun SearchEntry(value: String, onChange: (String) -> Unit, onClick: (() 
 @Composable
 private fun EmptyDesignState(title: String, body: String, action: String, onAction: () -> Unit) {
 	Column(
-		Modifier.fillMaxWidth().padding(vertical = 32.dp),
+		Modifier.fillMaxWidth().animateContentSize().padding(vertical = 32.dp),
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
 		Text(title, style = MaterialTheme.typography.titleLarge)
@@ -596,7 +629,7 @@ private fun ReminderCollection(
 			items(group, key = { requireNotNull(it.id) }) { note ->
 				val doc = NoteDocument.decode(note.content)
 				Row(
-					Modifier.fillMaxWidth().heightIn(min = 72.dp),
+					Modifier.fillMaxWidth().heightIn(min = 72.dp).animateItem(),
 					verticalAlignment = Alignment.CenterVertically,
 					horizontalArrangement = Arrangement.spacedBy(8.dp),
 				) {

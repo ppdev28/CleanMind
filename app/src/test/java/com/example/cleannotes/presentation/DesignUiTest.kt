@@ -432,4 +432,30 @@ class DesignUiTest {
 		compose.onNodeWithText("Tus carpetas").assertExists()
 		screenshot("folder-manager-dark", dialog = true)
 	}
+
+	@Test
+	fun aHiddenNotebookDoesNotInterceptBackFromAnotherDestination() {
+		var fallbackHandled = false
+		var tabChanged = false
+		compose.setContent {
+			androidx.activity.compose.BackHandler { fallbackHandled = true }
+			CleanMindTheme(darkTheme = true) {
+				NotebookScreen(
+					NotesUiState(selectedTab = NotesTab.NOTES, isLoading = false),
+					{ tabChanged = true },
+					{},
+					{},
+					{},
+					{},
+					{},
+					{},
+					{},
+					active = false,
+				)
+			}
+		}
+		compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+		assertTrue(fallbackHandled)
+		assertFalse(tabChanged)
+	}
 }

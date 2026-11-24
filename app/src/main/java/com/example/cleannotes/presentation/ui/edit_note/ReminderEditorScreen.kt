@@ -10,6 +10,8 @@ import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +32,7 @@ import com.example.cleannotes.model.ReminderConfig
 import com.example.cleannotes.presentation.ui.components.ScreenTopBar
 import com.example.cleannotes.presentation.ui.design.DesignRow
 import com.example.cleannotes.presentation.ui.design.MindIcons
+import com.example.cleannotes.presentation.ui.motion.AppMotion
 import java.text.DateFormat
 import java.util.Calendar
 
@@ -40,6 +43,7 @@ fun ReminderEditorScreen(
 	onEvent: (EditNoteEvent) -> Unit,
 	onSaveAndClose: () -> Unit,
 	onBack: () -> Unit,
+	active: Boolean = true,
 ) {
 	val context = LocalContext.current
 	val locale = LocalConfiguration.current.locales[0]
@@ -107,7 +111,7 @@ fun ReminderEditorScreen(
 			if (allowed) save() else denied = true
 		}
 	val close: () -> Unit = { if (state.hasChanges) discard = true else onBack() }
-	BackHandler(onBack = close)
+	BackHandler(enabled = active, onBack = close)
 	if (discard)
 		AlertDialog(
 			onDismissRequest = { discard = false },
@@ -183,6 +187,7 @@ fun ReminderEditorScreen(
 	) { padding ->
 		Column(
 			Modifier.fillMaxSize()
+				.animateContentSize()
 				.padding(padding)
 				.verticalScroll(rememberScrollState())
 				.padding(24.dp),
@@ -215,78 +220,81 @@ fun ReminderEditorScreen(
 						notify = value
 						onEvent(
 							EditNoteEvent.EnteredContent(
-								doc.copy(text = message, reminder = if (value) config else null).encode()
+								doc.copy(text = message, reminder = if (value) config else null)
+									.encode()
 							)
 						)
 					},
 					enabled = enabled,
 				)
 			}
-			if (notify) {
-				DesignRow(
-					"Fecha",
-					MindIcons.Event,
-					DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(config.at),
-				) {
-					val c = Calendar.getInstance().apply { timeInMillis = config.at }
-					DatePickerDialog(
-						dialogContext,
-						{ _, y, m, d ->
-							c.set(y, m, d)
-							change(config.copy(at = c.timeInMillis))
-						},
-						c.get(Calendar.YEAR),
-						c.get(Calendar.MONTH),
-						c.get(Calendar.DAY_OF_MONTH),
-					)
-						.show()
-				}
-				DesignRow(
-					"Hora",
-					MindIcons.Clock,
-					DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(config.at),
-				) {
-					val c = Calendar.getInstance().apply { timeInMillis = config.at }
-					TimePickerDialog(
-						dialogContext,
-						{ _, h, m ->
-							c.set(Calendar.HOUR_OF_DAY, h)
-							c.set(
-								Calendar.MINUTE,
-								m,
-							)
-							c.set(Calendar.SECOND, 0)
-							c.set(
-								Calendar.MILLISECOND,
-								0,
-							)
-							change(config.copy(at = c.timeInMillis))
-						},
-						c.get(Calendar.HOUR_OF_DAY),
-						c.get(Calendar.MINUTE),
-						android.text.format.DateFormat.is24HourFormat(context),
-					)
-						.show()
-				}
-				if (!validTime)
-					Text(
-						"Elige una hora futura.",
-						color = MaterialTheme.colorScheme.error,
-						style = MaterialTheme.typography.bodySmall,
-					)
-				if (!ReminderScheduler.exactAllowed(context))
-					Text(
-						"El aviso puede llegar con retraso. Puedes permitir alarmas exactas en las opciones.",
-						style = MaterialTheme.typography.bodySmall,
-						color = MaterialTheme.colorScheme.onSurfaceVariant,
-					)
-				TextButton(onClick = { advanced = true }) {
-					Icon(
-						MindIcons.Tune,
-						null,
-					)
-					Spacer(Modifier.width(8.dp))
-					Text("Repetición y opciones de aviso")
+			AnimatedVisibility(notify, enter = AppMotion.reveal(), exit = AppMotion.conceal()) {
+				Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+					DesignRow(
+						"Fecha",
+						MindIcons.Event,
+						DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(config.at),
+					) {
+						val c = Calendar.getInstance().apply { timeInMillis = config.at }
+						DatePickerDialog(
+							dialogContext,
+							{ _, y, m, d ->
+								c.set(y, m, d)
+								change(config.copy(at = c.timeInMillis))
+							},
+							c.get(Calendar.YEAR),
+							c.get(Calendar.MONTH),
+							c.get(Calendar.DAY_OF_MONTH),
+						)
+							.show()
+					}
+					DesignRow(
+						"Hora",
+						MindIcons.Clock,
+						DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(config.at),
+					) {
+						val c = Calendar.getInstance().apply { timeInMillis = config.at }
+						TimePickerDialog(
+							dialogContext,
+							{ _, h, m ->
+								c.set(Calendar.HOUR_OF_DAY, h)
+								c.set(
+									Calendar.MINUTE,
+									m,
+								)
+								c.set(Calendar.SECOND, 0)
+								c.set(
+									Calendar.MILLISECOND,
+									0,
+								)
+								change(config.copy(at = c.timeInMillis))
+							},
+							c.get(Calendar.HOUR_OF_DAY),
+							c.get(Calendar.MINUTE),
+							android.text.format.DateFormat.is24HourFormat(context),
+						)
+							.show()
+					}
+					if (!validTime)
+						Text(
+							"Elige una hora futura.",
+							color = MaterialTheme.colorScheme.error,
+							style = MaterialTheme.typography.bodySmall,
+						)
+					if (!ReminderScheduler.exactAllowed(context))
+						Text(
+							"El aviso puede llegar con retraso. Puedes permitir alarmas exactas en las opciones.",
+							style = MaterialTheme.typography.bodySmall,
+							color = MaterialTheme.colorScheme.onSurfaceVariant,
+						)
+					TextButton(onClick = { advanced = true }) {
+						Icon(
+							MindIcons.Tune,
+							null,
+						)
+						Spacer(Modifier.width(8.dp))
+						Text("Repetición y opciones de aviso")
+					}
 				}
 			}
 			OutlinedTextField(

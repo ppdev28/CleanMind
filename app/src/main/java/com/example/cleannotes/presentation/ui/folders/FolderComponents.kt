@@ -4,6 +4,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -46,10 +48,18 @@ fun FolderStrip(
 			FilterChip(selected == null, { onSelect(null) }, label = { Text("Todas las notas") })
 			FilterChip(selected == 0, { onSelect(0) }, label = { Text("Sin carpeta") })
 			folders.forEach { folder ->
+				val bringIntoView = remember(folder.id) { BringIntoViewRequester() }
+				LaunchedEffect(selected, folder) {
+					if (selected == folder.id) {
+						withFrameNanos {}
+						bringIntoView.bringIntoView()
+					}
+				}
 				val count = notes.count { it.folderId == folder.id }
 				FilterChip(
-					selected == folder.id,
-					{ onSelect(folder.id) },
+					modifier = Modifier.bringIntoViewRequester(bringIntoView),
+					selected = selected == folder.id,
+					onClick = { onSelect(folder.id) },
 					label = { Text("${folder.name} · $count") },
 					leadingIcon = { Icon(MindIcons.FolderOpen, null, Modifier.size(18.dp)) },
 				)
@@ -69,20 +79,26 @@ fun FolderManager(
 	onDismiss: () -> Unit,
 ) {
 	var creating by rememberSaveable { mutableStateOf(false) }
-	var editing by remember { mutableStateOf<NoteFolder?>(null) }
-	var deleting by remember { mutableStateOf<NoteFolder?>(null) }
+	var editingId by rememberSaveable { mutableStateOf<Int?>(null) }
+	val editing = folders.firstOrNull { it.id == editingId }
+	var deletingId by rememberSaveable { mutableStateOf<Int?>(null) }
+	val deleting = folders.firstOrNull { it.id == deletingId }
 	var name by rememberSaveable { mutableStateOf("") }
+	var lastRevision by rememberSaveable { mutableIntStateOf(operation.revision) }
 	LaunchedEffect(operation.revision) {
-		creating = false
-		editing = null
-		deleting = null
+		if (operation.revision != lastRevision) {
+			creating = false
+			editingId = null
+			deletingId = null
+			lastRevision = operation.revision
+		}
 	}
 	if (creating || editing != null) {
 		AlertDialog(
 			onDismissRequest = {
 				if (!operation.busy) {
 					creating = false
-					editing = null
+					editingId = null
 					onClearError()
 				}
 			},
@@ -122,7 +138,7 @@ fun FolderManager(
 				TextButton(
 					onClick = {
 						creating = false
-						editing = null
+						editingId = null
 						onClearError()
 					},
 					enabled = !operation.busy,
@@ -136,7 +152,7 @@ fun FolderManager(
 		AlertDialog(
 			onDismissRequest = {
 				if (!operation.busy) {
-					deleting = null
+					deletingId = null
 					onClearError()
 				}
 			},
@@ -155,7 +171,7 @@ fun FolderManager(
 			dismissButton = {
 				TextButton(
 					onClick = {
-						deleting = null
+						deletingId = null
 						onClearError()
 					},
 					enabled = !operation.busy,
@@ -200,6 +216,7 @@ fun FolderManager(
 			LazyColumn(Modifier.heightIn(max = 400.dp)) {
 				items(folders, key = { it.id }) { folder ->
 					ListItem(
+						modifier = Modifier.animateItem(),
 						headlineContent = {
 							Text(folder.name, maxLines = 2, overflow = TextOverflow.Ellipsis)
 						},
@@ -208,7 +225,7 @@ fun FolderManager(
 							Row {
 								IconButton(
 									onClick = {
-										editing = folder
+										editingId = folder.id
 										name = folder.name
 										onClearError()
 									},
@@ -218,7 +235,7 @@ fun FolderManager(
 								}
 								IconButton(
 									onClick = {
-										deleting = folder
+										deletingId = folder.id
 										onClearError()
 									},
 									enabled = !operation.busy,

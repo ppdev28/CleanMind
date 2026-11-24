@@ -9,6 +9,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -21,6 +23,7 @@ import com.example.cleannotes.presentation.notebook.NotebookScreen
 import com.example.cleannotes.presentation.notebook.NotesViewModel
 import com.example.cleannotes.presentation.ui.edit_note.EditNoteScreen
 import com.example.cleannotes.presentation.ui.edit_note.viewmodel.EditNoteViewModel
+import com.example.cleannotes.presentation.ui.motion.AppMotion
 import com.example.cleannotes.presentation.ui.settings.SettingsScreen
 import com.example.cleannotes.presentation.ui.settings.SettingsViewModel
 import com.example.cleannotes.presentation.ui.theme.CleanMindTheme
@@ -33,6 +36,7 @@ fun NotesApp(
 	onReady: () -> Unit = {},
 ) {
 	val settings by settingsViewModel.uiState.collectAsStateWithLifecycle()
+	val direction = if (LocalLayoutDirection.current == LayoutDirection.Ltr) 1 else -1
 	LaunchedEffect(settings.isLoading) { if (!settings.isLoading) onReady() }
 	val dark =
 		when (settings.themeMode) {
@@ -64,6 +68,13 @@ fun NotesApp(
 				val goBack: () -> Unit = { if (backStack.size > 1) backStack.removeLastOrNull() }
 				NavDisplay(
 					backStack = backStack,
+					transitionSpec = { AppMotion.navigation(direction = direction) },
+					popTransitionSpec = {
+						AppMotion.navigation(forward = false, direction = direction)
+					},
+					predictivePopTransitionSpec = {
+						AppMotion.navigation(forward = false, direction = direction)
+					},
 					onBack = goBack,
 					entryDecorators =
 						listOf(
@@ -106,6 +117,7 @@ fun NotesApp(
 									onDeleteFolder = viewModel::deleteFolder,
 									onMoveNote = viewModel::moveNote,
 									onClearFolderError = viewModel::clearFolderError,
+									active = backStack.lastOrNull() == Destination.Notebook,
 									onSettings = { open(Destination.Settings) },
 									onUpdateNote = viewModel::updateNote,
 									onQuickCreate = {
@@ -142,6 +154,7 @@ fun NotesApp(
 											viewModel::onEvent,
 											viewModel::saveAndClose,
 											goBack,
+											active = backStack.lastOrNull() == destination,
 										)
 								else
 									EditNoteScreen(
@@ -150,6 +163,7 @@ fun NotesApp(
 										viewModel::saveAndClose,
 										goBack,
 										destination.quickCapture,
+										active = backStack.lastOrNull() == destination,
 									)
 							}
 						},

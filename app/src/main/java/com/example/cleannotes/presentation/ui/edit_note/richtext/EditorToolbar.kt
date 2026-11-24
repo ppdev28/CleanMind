@@ -1,5 +1,6 @@
 package com.example.cleannotes.presentation.ui.edit_note.richtext
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.design.MindIcons
+import com.example.cleannotes.presentation.ui.motion.AppMotion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,133 +42,139 @@ fun EditorBottomBar(
 	val editor = controller.editor
 	val active = controller.activeFormats
 	Column(Modifier.navigationBarsPadding()) {
-		if (formatting) {
-			Row(
-				Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
-				verticalAlignment = Alignment.CenterVertically,
-			) {
-				FormatButton(
-					"Título grande",
-					enabled,
-					"size:160" in active,
-					Modifier.weight(1f),
-					{ editor?.format("size", 160) },
+		AnimatedContent(
+			formatting,
+			transitionSpec = { AppMotion.content() },
+			label = "editorTools",
+		) { showFormatting ->
+			if (showFormatting) {
+				Row(
+					Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
+					verticalAlignment = Alignment.CenterVertically,
 				) {
-					Text("H₁", fontSize = 19.sp)
+					FormatButton(
+						"Título grande",
+						enabled,
+						"size:160" in active,
+						Modifier.weight(1f),
+						{ editor?.format("size", 160) },
+					) {
+						Text("H₁", fontSize = 19.sp)
+					}
+					FormatButton(
+						"Título pequeño",
+						enabled,
+						"size:125" in active,
+						Modifier.weight(1f),
+						{ editor?.format("size", 125) },
+					) {
+						Text("H₂", fontSize = 19.sp)
+					}
+					FormatButton(
+						"Texto normal",
+						enabled,
+						active.none { it.startsWith("size:") } || "size:100" in active,
+						Modifier.weight(1f),
+						{ editor?.format("size", 100) },
+					) {
+						Text("Aa", fontSize = 18.sp)
+					}
+					FormatButton(
+						"Negrita",
+						enabled,
+						"bold" in active,
+						Modifier.weight(1f),
+						{ editor?.format("bold") },
+					) {
+						Icon(MindIcons.FormatBold, null)
+					}
+					FormatButton(
+						"Cursiva",
+						enabled,
+						"italic" in active,
+						Modifier.weight(1f),
+						{ editor?.format("italic") },
+					) {
+						Icon(MindIcons.FormatItalic, null)
+					}
+					FormatButton(
+						"Subrayado",
+						enabled,
+						"underline" in active,
+						Modifier.weight(1f),
+						{ editor?.format("underline") },
+					) {
+						Icon(MindIcons.FormatUnderlined, null)
+					}
+					FormatButton(
+						"Borrar formato",
+						enabled,
+						false,
+						Modifier.weight(1f),
+						{ editor?.format("clear") },
+					) {
+						Icon(MindIcons.FormatClear, null)
+					}
+					IconButton(onClick = { formatting = false }, modifier = Modifier.weight(1f)) {
+						Icon(
+							MindIcons.Close,
+							"Cerrar formato",
+						)
+					}
 				}
-				FormatButton(
-					"Título pequeño",
-					enabled,
-					"size:125" in active,
-					Modifier.weight(1f),
-					{ editor?.format("size", 125) },
+			} else {
+				Row(
+					Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
+					verticalAlignment = Alignment.CenterVertically,
 				) {
-					Text("H₂", fontSize = 19.sp)
-				}
-				FormatButton(
-					"Texto normal",
-					enabled,
-					active.none { it.startsWith("size:") } || "size:100" in active,
-					Modifier.weight(1f),
-					{ editor?.format("size", 100) },
-				) {
-					Text("Aa", fontSize = 18.sp)
-				}
-				FormatButton(
-					"Negrita",
-					enabled,
-					"bold" in active,
-					Modifier.weight(1f),
-					{ editor?.format("bold") },
-				) {
-					Icon(MindIcons.FormatBold, null)
-				}
-				FormatButton(
-					"Cursiva",
-					enabled,
-					"italic" in active,
-					Modifier.weight(1f),
-					{ editor?.format("italic") },
-				) {
-					Icon(MindIcons.FormatItalic, null)
-				}
-				FormatButton(
-					"Subrayado",
-					enabled,
-					"underline" in active,
-					Modifier.weight(1f),
-					{ editor?.format("underline") },
-				) {
-					Icon(MindIcons.FormatUnderlined, null)
-				}
-				FormatButton(
-					"Borrar formato",
-					enabled,
-					false,
-					Modifier.weight(1f),
-					{ editor?.format("clear") },
-				) {
-					Icon(MindIcons.FormatClear, null)
-				}
-				IconButton(onClick = { formatting = false }, modifier = Modifier.weight(1f)) {
-					Icon(
-						MindIcons.Close,
-						"Cerrar formato",
-					)
-				}
-			}
-		} else {
-			Row(
-				Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
-				verticalAlignment = Alignment.CenterVertically,
-			) {
-				IconButton(
-					onClick = { sheet = "insert" },
-					enabled = enabled && !controller.importing,
-				) {
-					BottomActionIcon(MindIcons.AddBox, "Añadir a la nota")
-				}
-				IconButton(
-					onClick = { formatting = true },
-					enabled = enabled,
-				) {
-					BottomActionIcon(MindIcons.TextFormat, "Formato de texto")
-				}
-				Spacer(Modifier.weight(1f))
-				Box {
 					IconButton(
-						onClick = { more = true },
+						onClick = { sheet = "insert" },
+						enabled = enabled && !controller.importing,
+					) {
+						BottomActionIcon(MindIcons.AddBox, "Añadir a la nota")
+					}
+					IconButton(
+						onClick = { formatting = true },
 						enabled = enabled,
 					) {
-						BottomActionIcon(MindIcons.MoreVert, "Más opciones")
+						BottomActionIcon(MindIcons.TextFormat, "Formato de texto")
 					}
-					DropdownMenu(expanded = more, onDismissRequest = { more = false }) {
-						if (status.isNotEmpty())
-							Text(
-								status,
-								Modifier.widthIn(max = 280.dp)
-									.padding(horizontal = 16.dp, vertical = 12.dp),
-								fontSize = 12.sp,
-								color =
-									if (statusError) MaterialTheme.colorScheme.error
-									else MaterialTheme.colorScheme.onSurfaceVariant,
+					Spacer(Modifier.weight(1f))
+					Box {
+						IconButton(
+							onClick = { more = true },
+							enabled = enabled,
+						) {
+							BottomActionIcon(MindIcons.MoreVert, "Más opciones")
+						}
+						DropdownMenu(expanded = more, onDismissRequest = { more = false }) {
+							if (status.isNotEmpty())
+								Text(
+									status,
+									Modifier.widthIn(max = 280.dp)
+										.padding(horizontal = 16.dp, vertical = 12.dp),
+									fontSize = 12.sp,
+									color =
+										if (statusError) MaterialTheme.colorScheme.error
+										else MaterialTheme.colorScheme.onSurfaceVariant,
+								)
+							DropdownMenuItem(
+								text = { Text("Enviar") },
+								leadingIcon = { Icon(MindIcons.Share, null) },
+								onClick = {
+									more = false
+									onShare()
+								},
 							)
-						DropdownMenuItem(
-							text = { Text("Enviar") },
-							leadingIcon = { Icon(MindIcons.Share, null) },
-							onClick = {
-								more = false
-								onShare()
-							},
-						)
-						DropdownMenuItem(
-							text = { Text("Formato y espaciado") },
-							leadingIcon = { Icon(MindIcons.FormatLineSpacing, null) },
-							onClick = {
-								more = false
-								sheet = "advanced"
-							},
-						)
+							DropdownMenuItem(
+								text = { Text("Formato y espaciado") },
+								leadingIcon = { Icon(MindIcons.FormatLineSpacing, null) },
+								onClick = {
+									more = false
+									sheet = "advanced"
+								},
+							)
+						}
 					}
 				}
 			}

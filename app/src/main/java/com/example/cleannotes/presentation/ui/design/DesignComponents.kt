@@ -1,14 +1,22 @@
 package com.example.cleannotes.presentation.ui.design
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -126,16 +134,13 @@ fun DesignNoteCard(
 	}
 		.joinToString(" · ")
 	Surface(
-		modifier = modifier,
+		modifier = modifier.noteActions(onClick, onLongClick),
 		shape = RoundedCornerShape(22.dp),
 		color = MaterialTheme.colorScheme.surface,
 		border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
 	) {
 		Column(
-			Modifier.fillMaxWidth()
-				.heightIn(min = 112.dp)
-				.then(Modifier.noteActions(onClick, onLongClick))
-				.padding(16.dp),
+			Modifier.fillMaxWidth().heightIn(min = 112.dp).padding(16.dp),
 			verticalArrangement = Arrangement.spacedBy(4.dp),
 		) {
 			Text(
@@ -161,14 +166,23 @@ fun DesignNoteCard(
 	}
 }
 
-private fun Modifier.noteActions(onClick: () -> Unit, onLongClick: () -> Unit): Modifier =
-	this.then(
-		Modifier.combinedClickable(
+@Composable
+private fun Modifier.noteActions(onClick: () -> Unit, onLongClick: () -> Unit): Modifier {
+	val interactions = remember { MutableInteractionSource() }
+	val pressed by interactions.collectIsPressedAsState()
+	val scale by animateFloatAsState(if (pressed) 0.985f else 1f, tween(120), label = "notePress")
+	return this.graphicsLayer {
+		scaleX = scale
+		scaleY = scale
+	}
+		.combinedClickable(
+			interactionSource = interactions,
+			indication = LocalIndication.current,
 			onClick = onClick,
 			onLongClick = onLongClick,
 			onLongClickLabel = "Opciones de la nota",
 		)
-	)
+}
 
 @Composable
 fun DesignSnackbarHost(state: SnackbarHostState) {

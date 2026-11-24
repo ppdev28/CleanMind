@@ -1,6 +1,7 @@
 package com.example.cleannotes.presentation.ui.edit_note
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,7 @@ import com.example.cleannotes.model.CheckItem
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.design.*
 import com.example.cleannotes.presentation.ui.edit_note.richtext.*
+import com.example.cleannotes.presentation.ui.motion.AppMotion
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +36,7 @@ fun EditNoteScreen(
 	onSaveAndClose: () -> Unit,
 	onBack: () -> Unit,
 	quickCapture: Boolean = false,
+	active: Boolean = true,
 ) {
 	val document = remember(state.content) { NoteDocument.decode(state.content) }
 	val latestDocument by rememberUpdatedState(document)
@@ -67,7 +70,7 @@ fun EditNoteScreen(
 		else if (state.saveStatus == SaveStatus.ERROR && state.hasChanges) discard = true
 		else onSaveAndClose()
 	}
-	BackHandler { if (focus) focus = false else close() }
+	BackHandler(enabled = active) { if (focus) focus = false else close() }
 	val status =
 		when {
 			state.loadFailed -> "No se pudo abrir"
@@ -235,7 +238,7 @@ fun EditNoteScreen(
 			}
 		},
 		bottomBar = {
-			if (!focus)
+			AnimatedVisibility(!focus, enter = AppMotion.reveal(), exit = AppMotion.conceal()) {
 				Surface(color = MaterialTheme.colorScheme.background) {
 					Column(Modifier.navigationBarsPadding()) {
 						HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -314,6 +317,7 @@ fun EditNoteScreen(
 						}
 					}
 				}
+			}
 		},
 	) { padding ->
 		if (state.isLoading)
