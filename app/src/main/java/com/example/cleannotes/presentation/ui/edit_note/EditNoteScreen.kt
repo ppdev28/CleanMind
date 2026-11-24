@@ -15,10 +15,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleannotes.model.CheckItem
@@ -552,6 +554,7 @@ private fun CaptureTool(
 	modifier: Modifier,
 	onClick: () -> Unit,
 ) {
+	val stacked = LocalDensity.current.fontScale > 1.1f
 	Surface(
 		onClick = onClick,
 		enabled = enabled,
@@ -559,17 +562,35 @@ private fun CaptureTool(
 		shape = RoundedCornerShape(12.dp),
 		color = MaterialTheme.colorScheme.surfaceContainer,
 	) {
-		Row(
-			Modifier.heightIn(min = 48.dp).padding(horizontal = 8.dp),
-			verticalAlignment = Alignment.CenterVertically,
-			horizontalArrangement = Arrangement.Center,
-		) {
-			DesignIcon(icon)
-			Spacer(Modifier.width(8.dp))
-			Text(
-				label,
-				style = MaterialTheme.typography.bodyMedium,
-			)
+		if (stacked) {
+			Column(
+				Modifier.heightIn(min = 76.dp).padding(horizontal = 4.dp, vertical = 4.dp),
+				horizontalAlignment = Alignment.CenterHorizontally,
+				verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
+			) {
+				DesignIcon(icon)
+				Text(
+					label,
+					style = MaterialTheme.typography.bodyMedium,
+					maxLines = 1,
+					overflow = TextOverflow.Ellipsis,
+				)
+			}
+		} else {
+			Row(
+				Modifier.heightIn(min = 48.dp).padding(horizontal = 8.dp),
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.Center,
+			) {
+				DesignIcon(icon)
+				Spacer(Modifier.width(8.dp))
+				Text(
+					label,
+					style = MaterialTheme.typography.bodyMedium,
+					maxLines = 1,
+					overflow = TextOverflow.Ellipsis,
+				)
+			}
 		}
 	}
 }

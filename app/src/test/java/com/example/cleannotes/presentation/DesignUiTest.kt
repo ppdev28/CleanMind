@@ -2,12 +2,19 @@ package com.example.cleannotes.presentation
 
 import android.app.Application
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.ReminderConfig
@@ -184,6 +191,36 @@ class DesignUiTest {
 		compose.onNodeWithContentDescription("Salir de concentración").performClick()
 		compose.onNodeWithText("Concentrarme").assertExists()
 		assertFalse(back)
+	}
+
+	@Test
+	fun editorToolsRemainReadableWithLargeTextOnANarrowScreen() {
+		compose.setContent {
+			val density = LocalDensity.current
+			CompositionLocalProvider(LocalDensity provides Density(density.density, 1.35f)) {
+				CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
+					Box(Modifier.requiredWidth(320.dp)) {
+						EditNoteScreen(EditNoteUiState(title = "Nota"), {}, {}, {})
+					}
+				}
+			}
+		}
+		listOf("Lista", "Imagen", "Recordar").forEach { label ->
+			val layouts = mutableListOf<TextLayoutResult>()
+			compose.onNodeWithText(label).assertIsDisplayed().performSemanticsAction(
+				SemanticsActions.GetTextLayoutResult
+			) {
+				it(layouts)
+			}
+			assertEquals(
+				"$label must fit without splitting the word",
+				1,
+				layouts.single().lineCount,
+			)
+			val layout = layouts.single()
+			assertFalse("$label must not be truncated", layout.isLineEllipsized(0))
+			assertEquals(label.length, layout.getLineEnd(0, visibleEnd = true))
+		}
 	}
 
 	@Test
