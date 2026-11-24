@@ -1,24 +1,28 @@
 package com.example.cleannotes.presentation.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
-import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.notebook.NotesTab
+import com.example.cleannotes.presentation.ui.design.MindIcons
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(
 	selectedTab: NotesTab,
 	onTabSelected: (NotesTab) -> Unit,
 	onCreate: (Boolean) -> Unit,
 ) {
-	var showMenu by remember { mutableStateOf(false) }
+	var showMenu by rememberSaveable { mutableStateOf(false) }
 	val destinations =
 		listOf(
 			Triple(NotesTab.HOME, R.string.home, MindIcons.Home),
@@ -26,7 +30,7 @@ fun BottomNavigationBar(
 			Triple(NotesTab.REMINDERS, R.string.nav_reminders, MindIcons.Notifications),
 			Triple(NotesTab.SEARCH, R.string.search, MindIcons.Search),
 		)
-	Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 0.dp) {
+	Surface(color = MaterialTheme.colorScheme.surface) {
 		Column {
 			HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
 			Row(
@@ -36,51 +40,22 @@ fun BottomNavigationBar(
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				destinations.forEachIndexed { index, (route, label, icon) ->
-					if (index == 2) {
-						Box(Modifier.padding(horizontal = 4.dp)) {
-							FilledIconButton(
-								onClick = { showMenu = true },
-								modifier = Modifier.size(52.dp),
-								shape = RoundedCornerShape(18.dp),
-							) {
-								Icon(
-									MindIcons.Add,
-									stringResource(R.string.create),
-									modifier = Modifier.size(26.dp),
-								)
-							}
-							DropdownMenu(
-								expanded = showMenu,
-								onDismissRequest = { showMenu = false },
-							) {
-								DropdownMenuItem(
-									text = { Text(stringResource(R.string.new_note)) },
-									leadingIcon = {
-										Icon(MindIcons.StickyNote2, null)
-									},
-									onClick = {
-										showMenu = false
-										onCreate(false)
-									},
-								)
-								DropdownMenuItem(
-									text = { Text(stringResource(R.string.new_reminder)) },
-									leadingIcon = { Icon(MindIcons.Notifications, null) },
-									onClick = {
-										showMenu = false
-										onCreate(true)
-									},
-								)
-							}
+					if (index == 2)
+						FilledIconButton(
+							onClick = { showMenu = true },
+							modifier = Modifier.padding(horizontal = 4.dp).size(52.dp),
+							shape = RoundedCornerShape(18.dp),
+						) {
+							Icon(
+								MindIcons.Add,
+								stringResource(R.string.create),
+								modifier = Modifier.size(26.dp),
+							)
 						}
-					}
-					val selected = selectedTab == route
 					NavigationBarItem(
-						selected = selected,
-						onClick = {
-							onTabSelected(route)
-						},
-						icon = { Icon(icon, stringResource(label)) },
+						selected = selectedTab == route,
+						onClick = { onTabSelected(route) },
+						icon = { Icon(icon, null) },
 						label = {
 							Text(
 								stringResource(label),
@@ -99,6 +74,82 @@ fun BottomNavigationBar(
 					)
 				}
 			}
+		}
+	}
+	if (showMenu)
+		ModalBottomSheet(
+			onDismissRequest = { showMenu = false },
+			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+			containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+		) {
+			Column(
+				Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
+				verticalArrangement = Arrangement.spacedBy(16.dp),
+			) {
+				Row(verticalAlignment = Alignment.CenterVertically) {
+					Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+						Text("Crear", style = MaterialTheme.typography.titleLarge)
+						Text(
+							"Un espacio para tus ideas y pendientes",
+							style = MaterialTheme.typography.bodyMedium,
+							color = MaterialTheme.colorScheme.onSurfaceVariant,
+						)
+					}
+					IconButton(onClick = { showMenu = false }) { Icon(MindIcons.Close, "Cerrar") }
+				}
+				CreationOption(
+					"Nueva nota",
+					"Escribe, añade imágenes y organiza tus ideas",
+					MindIcons.EditNote,
+				) {
+					showMenu = false
+					onCreate(false)
+				}
+				CreationOption(
+					"Nuevo recordatorio",
+					"Una tarea, una fecha y un aviso",
+					MindIcons.Alarm,
+				) {
+					showMenu = false
+					onCreate(true)
+				}
+			}
+		}
+}
+
+@Composable
+private fun CreationOption(
+	title: String,
+	description: String,
+	icon: ImageVector,
+	onClick: () -> Unit,
+) {
+	Surface(
+		onClick = onClick,
+		shape = RoundedCornerShape(20.dp),
+		color = MaterialTheme.colorScheme.surface,
+		border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+	) {
+		Row(
+			Modifier.fillMaxWidth().padding(20.dp),
+			verticalAlignment = Alignment.CenterVertically,
+			horizontalArrangement = Arrangement.spacedBy(16.dp),
+		) {
+			Surface(
+				shape = RoundedCornerShape(14.dp),
+				color = MaterialTheme.colorScheme.surfaceContainerHigh,
+			) {
+				Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) { Icon(icon, null) }
+			}
+			Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+				Text(title, style = MaterialTheme.typography.titleSmall)
+				Text(
+					description,
+					style = MaterialTheme.typography.bodySmall,
+					color = MaterialTheme.colorScheme.onSurfaceVariant,
+				)
+			}
+			Icon(MindIcons.Arrow, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
 		}
 	}
 }

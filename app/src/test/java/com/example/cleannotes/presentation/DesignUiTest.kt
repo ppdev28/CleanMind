@@ -325,6 +325,7 @@ class DesignUiTest {
 		var reminder: Boolean? = null
 		screen(onCreate = { reminder = it })
 		compose.onNodeWithContentDescription("Crear").performClick()
+		screenshot("create-sheet-dark", dialog = true)
 		compose.onNodeWithText("Nuevo recordatorio").performClick()
 		assertEquals(true, reminder)
 		compose.onNodeWithContentDescription("Crear").performClick()
