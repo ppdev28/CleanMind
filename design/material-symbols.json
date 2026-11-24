@@ -3,8 +3,8 @@
   "source": "https://github.com/google/material-design-icons/tree/master/variablefont",
   "font_sha256": "f7837ba8573d9a7a74931618ced8307bc81f96d49af296bf6c8052c772ed5282",
   "axes": {
-    "wght": 200,
-    "GRAD": -25,
+    "wght": 500,
+    "GRAD": 0,
     "opsz": 24,
     "FILL": 0
   },

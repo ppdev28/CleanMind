@@ -44,7 +44,7 @@ La referencia recibida define el tema oscuro. El tema claro adapta la misma jera
 
 ## Recursos locales
 
-Los 14 SVG obtenidos se conservan sin modificar en `design/figma-source/icons/` como referencia histórica. Se han retirado sus PNG de los recursos de ejecución. `MindIcons.kt` contiene los símbolos Material 3 activos como `ImageVector` locales, con peso 200, grade -25, tamaño óptico 24 y sin relleno. La procedencia y el generador están en [Recursos de diseño](../design/README.md). No se cargan URLs temporales de Figma durante la ejecución.
+Los 14 SVG obtenidos se conservan sin modificar en `design/figma-source/icons/` como referencia histórica. Se han retirado sus PNG de los recursos de ejecución. `MindIcons.kt` contiene los símbolos Material 3 activos como `ImageVector` locales, con peso 500, grade 0, tamaño óptico 24 y sin relleno. La procedencia y el generador están en [Recursos de diseño](../design/README.md). No se cargan URLs temporales de Figma durante la ejecución.
 
 La familia Inter se distribuye localmente en cuatro pesos, generados a partir del original de Google Fonts. Su licencia OFL está en `assets/licenses/Inter-OFL.txt`. Los tamaños, alturas de línea y contenedores se adaptan a Compose, con márgenes de 24 dp, espaciado de 8/16 dp y controles de al menos 48 dp. Los colores y la tipografía están centralizados en el tema.
 

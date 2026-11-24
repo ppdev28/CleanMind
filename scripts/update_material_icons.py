@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the app's Material Symbols Outlined (200 / -25 / 24 / unfilled).
+"""Generate the app's Material Symbols Outlined (500 / 0 / 24 / unfilled).
 
 Usage: python update_material_icons.py font.ttf font.codepoints
 Requires fonttools. Original font: google/material-design-icons (Apache-2.0).
@@ -77,7 +77,7 @@ for name in (
 ):
     CLASSIC[name] = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 font = instantiateVariableFont(
-    TTFont(sys.argv[1]), {"FILL": 0, "GRAD": -25, "opsz": 24, "wght": 200}
+    TTFont(sys.argv[1]), {"FILL": 0, "GRAD": 0, "opsz": 24, "wght": 500}
 )
 codepoints = {
     name: int(value, 16)
@@ -101,7 +101,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
 
-/** Material Symbols Outlined: weight 200, grade -25, optical size 24, fill 0. */
+/** Material Symbols Outlined: weight 500, grade 0, optical size 24, fill 0. */
 object MindIcons {
 """
 for name, path in paths.items():

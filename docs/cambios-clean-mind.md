@@ -8,7 +8,7 @@ Revisión del 24 de noviembre de 2026, rama `feat/figma-complete-ui`.
 | Agenda | Separadores con fecha completa y notas del mismo día debajo; sin círculos ni etiquetas laterales de día. |
 | Formato | Código Kotlin, Gradle, XML y configuración formateados según CustomTopBar; estilo compartido y script reproducible. |
 | Archivos sin versionar | Originales del logo y SVG históricos en `design/`, licencias, scripts y criterios portables de JVM incorporados. Cachés y estado local del IDE ignorados. |
-| Iconos | Material Symbols Outlined, peso 200, grade -25, óptica 24 y sin relleno; vectores locales en toda la UI. |
+| Iconos | Material Symbols Outlined, peso 500, grade 0, óptica 24 y sin relleno; vectores locales en toda la UI. |
 | Crear | Hoja Material 3 con dos filas grandes, descripción, iconos y cierre. |
 | Recordatorios | Formulario propio con tarea, fecha/hora y detalle; guardado explícito y confirmación al descartar. Lista de pendientes con casilla y posposición, separada de la agenda. |
 
