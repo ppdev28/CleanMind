@@ -63,3 +63,5 @@ Antes de distribuir una actualización, verifica que la versión de app sea la a
 El workflow manual actual genera artefactos; no publica en una tienda. No hay un archivo `LICENSE` en el repositorio en el estado revisado; la documentación no asigna una licencia nueva.
 
 [Índice de documentación](README.md).
+
+La colección de ciencia está en `design/content/science-notes.json`. Solo debug la incorpora una vez; release usa un inicializador vacío. Mantén la importación aditiva y sus pruebas de idempotencia antes de cambiar los ejemplos. Consulta [Ciencia breve](ciencia-breve.md).

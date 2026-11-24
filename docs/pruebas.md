@@ -39,15 +39,16 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | `SettingsViewModelTest` | 1 | Conservación del tema persistido cuando falla una escritura y recuperación al reintentar. |
 | `NoteStorageTest` | 4 | Migración 2→4 con SQLite y operaciones de repositorio con IDs estables y orden de consulta. |
 | `FolderStorageTest` | 3 | Migración 3→4 conservando todos los campos; creación/renombrado/borrado, movimientos y guardados obsoletos, duplicados con acentos, carpetas desaparecidas y separación de recordatorios. |
+| `SampleNoteCollectionTest` | 3 | Seis estrofas breves, importación repetida y reintento parcial sin duplicar, conservación de notas/metadatos y reutilización de carpetas existentes. |
 | `UserPreferencesRepositoryTest` | 1 | Migración del tema anterior a DataStore y conservación de una nueva selección al reabrir. |
 | `DestinationTest` | 1 | Serialización y deserialización de destinos con argumentos tipados. |
 | `DateUtilsTest` | 2 | Agrupación de fechas de años distintos y detección de hoy/ayer. |
 | `RichEditorTest` | 11 | Compatibilidad con texto antiguo, serialización, reapertura con negrita, deshacer/rehacer, limpieza parcial, listas, casillas, espaciado, color con selección conservada y estado de la barra y continuación/salida de listas con Intro, subtítulos y conservación de metadatos al deshacer. |
 | `ExampleUnitTest` | 1 | Prueba aritmética de ejemplo del proyecto; no valida funcionalidad de Clean Mind. |
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
-| `DesignUiTest` | 12 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos. |
+| `DesignUiTest` | 13 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas. |
 
-Total actual: **62 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
+Total actual: **66 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
 Las pruebas de ViewModel usan `kotlinx-coroutines-test` para controlar la ejecución y el tiempo virtual. `FakeNoteRepository` permite simular lentitud, errores y cambios observables.
 
@@ -66,9 +67,9 @@ Las carpetas `build/` contienen salidas generadas. No forman parte de la documen
 
 ## Estado conocido
 
-La última ejecución local de verificación de código terminó con compilación debug correcta, lint sin errores y 62 pruebas locales superadas, sin fallos ni casos omitidos. Lint conserva avisos sobre versiones de dependencias y recursos.
+La última ejecución local de verificación de código terminó con compilación debug correcta, lint sin errores y 66 pruebas locales superadas, sin fallos ni casos omitidos. Lint conserva avisos sobre versiones de dependencias y recursos.
 
-La comprobación de formato de Android Studio terminó con 95 archivos revisados y conformes al estilo compartido.
+La comprobación de formato de Android Studio terminó con 100 archivos revisados y conformes al estilo compartido.
 
 ## Validación en Xiaomi · 24 de noviembre de 2026
 
@@ -119,3 +120,11 @@ La composición del PDF se comprueba con Canvas nativo sobre bitmaps, revisando 
 El rediseño, sus capturas y las referencias que no se pudieron contrastar se documentan en [UI de Figma](figma-ui.md).
 
 Las pruebas de almacenamiento comprueban que la fecha de creación no cambia al editar y que las notas antiguas utilizan la fecha persistida. Las pruebas de UI verifican la agrupación por creación aunque una nota se haya editado hoy, las dos acciones del botón central y los ajustes visibles sin desplegables.
+
+## Revisión de cristal y cuadrícula
+
+Compilación debug y release, lint debug y las 66 pruebas locales han finalizado correctamente. Se verificó además el contenido de ambos APK: `science-notes.json` se incluye únicamente en debug. Las pruebas de UI renderizan el acabado translúcido sin GPU; no certifican el desenfoque acelerado de Haze.
+
+Se obtuvo una copia privada del realme (Android API 33) antes de efectuar cambios. Al perder la conexión ADB se omitieron la instalación y las pruebas de teléfono, como indicó el usuario. Las notas solicitadas se incorporarán una sola vez al ejecutar la nueva variante debug; no se afirma que ya estén en su instalación actual.
+
+[Material de cristal](glass-ui.md) · [Colección de ciencia](ciencia-breve.md).

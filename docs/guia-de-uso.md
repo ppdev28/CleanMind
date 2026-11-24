@@ -76,7 +76,7 @@ Pulsa la notificación para abrir su nota o **Posponer** (duración configurable
 
 ## Organizar en carpetas
 
-En **Notas → Carpetas → Gestionar** puedes crear o renombrar carpetas. Selecciona una para consultar sus notas; el botón **+ → Nueva nota** utiliza esa carpeta. La pulsación larga de una nota ofrece **Mover a carpeta**. **Sin carpeta** reúne las notas sin asignación. Eliminar una carpeta conserva sus notas. Estas carpetas son independientes del directorio de copias TXT de Ajustes. Consulta [Carpetas](carpetas.md).
+En **Notas** las carpetas aparecen en cuadrícula. El icono de carpeta con **+** abre **Gestionar carpetas**, donde puedes crearlas o renombrarlas. Selecciona una para consultar sus notas; el botón **+ → Nueva nota** utiliza esa carpeta. La pulsación larga de una nota ofrece **Mover a carpeta**. **Sin carpeta** reúne las notas sin asignación. Eliminar una carpeta conserva sus notas. Notas no muestra una barra de búsqueda; utiliza la pestaña **Buscar**. Estas carpetas son independientes del directorio de copias TXT de Ajustes. Consulta [Carpetas](carpetas.md).
 
 ## Buscar
 

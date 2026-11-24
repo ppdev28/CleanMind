@@ -10,11 +10,11 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 - Guardar automáticamente mientras escribes y mostrar el estado de guardado.
 - Consultar la actividad por fecha o cambiar a una cuadrícula adaptable.
 - Buscar por título y contenido.
-- Organizar notas en [carpetas](docs/carpetas.md), con creación, renombrado y movimiento.
+- Organizar notas en [carpetas](docs/carpetas.md) en cuadrícula, con creación, renombrado y movimiento.
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.
 - Elegir un tema claro, oscuro o vinculado al dispositivo.
-- Arranque monocromo y transiciones breves entre pantallas, pestañas y herramientas.
+- Arranque monocromo, [superficies de cristal](docs/glass-ui.md) y transiciones breves entre pantallas, pestañas y herramientas.
 - Conservar el tema y restaurar determinados estados de navegación y edición.
 
 Los recordatorios permiten notificaciones configurables, repetición y posposición. Se pueden guardar y compartir TXT/PDF y mantener copias TXT en una carpeta elegida. La app no incluye cuentas, sincronización propia, restauración de copias completas ni papelera. Consulta los detalles en la [guía de uso](docs/guia-de-uso.md).
@@ -76,3 +76,5 @@ Se ha revisado la app en un Xiaomi Redmi Note 8 Pro con Android API 36: creació
 `feat/figma-complete-ui` implementa el nuevo flujo de Inicio, Notas, Recordatorios, editor y concentración. Consulta [implementación, capturas y límites de fidelidad](docs/figma-ui.md).
 
 Los últimos ajustes de marca, agenda, iconos, formato y recordatorios están descritos en [Cambios de Clean Mind](docs/cambios-clean-mind.md).
+
+La variante debug incluye [seis notas científicas breves](docs/ciencia-breve.md), que se incorporan una sola vez sin sobrescribir contenido. Release no instala muestras. Esta última revisión se verificó localmente; no se continuaron las pruebas del realme al perderse ADB.
