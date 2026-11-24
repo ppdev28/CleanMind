@@ -58,7 +58,7 @@ Una notificación puede pertenecer a una nota normal o a un recordatorio explíc
 
 `DesignUiTest` utiliza Compose y Robolectric con gráficos nativos, sin teléfono ni emulador. Comprueba ocultación del cuerpo, pulsación larga, búsqueda/cuadrícula, entrada/salida de concentración, completar sin eliminar, ajustes y selección de fecha/hora. Las capturas se generan en `/tmp/cleanmind-ui-*.png`; una selección está en [ui-preview](ui-preview/).
 
-La suite completa consta de 54 pruebas locales. La notificación real con la app en segundo plano, los diálogos de fecha/hora, la hoja de compartir y la escritura nativa de PDF se han comprobado en Xiaomi. Cámara, pegado de imágenes y escritura SAF siguen pendientes; consulta [Pruebas](pruebas.md).
+La suite completa consta de 62 pruebas locales. La notificación real con la app en segundo plano, los diálogos de fecha/hora, la hoja de compartir y la escritura nativa de PDF se han comprobado en Xiaomi. Cámara, pegado de imágenes y escritura SAF siguen pendientes; consulta [Pruebas](pruebas.md).
 
 
 ## Ajustes solicitados el 24 de noviembre
@@ -68,3 +68,5 @@ Home deja de utilizar las secciones «A mano» y «Recientes» de Figma y recupe
 La agenda agrupa por `NoteDocument.createdAt`, no por la última edición. El repositorio fija ese valor al crear una nota y lo conserva al guardarla de nuevo, incluso si el borrador omite el campo. Las notas anteriores no tienen historial de creación: se utiliza su timestamp ya almacenado como referencia y se fija en la primera actualización. No se inventa una fecha histórica ni se modifica el esquema Room.
 
 La revisión posterior simplifica los recordatorios independientes en tareas con guardado explícito, los separa de la agenda y sustituye el menú de creación por una hoja Material 3. Estas diferencias respecto de Figma también son intencionadas.
+
+Las carpetas, el arranque monocromo y las transiciones se incorporan por las nuevas peticiones del usuario y amplían la referencia original. Consulta [Carpetas](carpetas.md) y [Movimiento y arranque](movimiento.md).

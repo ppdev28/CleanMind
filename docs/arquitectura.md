@@ -2,7 +2,7 @@
 
 ## Decisión
 
-Clean Mind utiliza **MVVM con flujo unidireccional de datos (UDF), dos capas y un único módulo Gradle**. La decisión se tomó para el alcance actual: notas locales, recordatorios sencillos, búsqueda y una preferencia de apariencia.
+Clean Mind utiliza **MVVM con flujo unidireccional de datos (UDF), dos capas y un único módulo Gradle**. La decisión se tomó para el alcance actual: notas locales, carpetas, recordatorios, búsqueda y una preferencia de apariencia.
 
 La capa de presentación recibe datos mediante repositorios y expone estado a Compose. La capa de datos encapsula Room y DataStore. Los modelos compartidos no dependen de Android.
 
@@ -68,10 +68,10 @@ com/example/cleannotes/
 
 | Componente | Responsabilidad |
 | --- | --- |
-| `MainActivity` | Activar edge-to-edge e instalar `NotesApp`. |
+| `MainActivity` | Instalar la splash nativa, activar edge-to-edge e instalar `NotesApp`. |
 | `NotesApplication` | Punto de entrada de Hilt. |
 | `NotesApp` | Aplicar el tema, gestionar el back stack, obtener ViewModels y conectar estado y callbacks. |
-| `NotesViewModel` | Observar notas, derivar colecciones y búsqueda, conservar consulta/pestaña y gestionar borrado y errores. |
+| `NotesViewModel` | Observar notas/carpetas, derivar colecciones y búsqueda, conservar consulta/pestaña/carpeta y gestionar mutaciones y errores. |
 | `EditNoteViewModel` | Cargar una nota, mantener el borrador, coordinar autoguardado y solicitar la salida mediante estado. |
 | `SettingsViewModel` | Observar la apariencia y gestionar fallos de lectura o escritura. |
 | Pantallas Compose | Representar estado, controlar interacciones visuales locales y emitir callbacks. |
@@ -178,3 +178,5 @@ La agenda de Inicio se presenta con `AgendaDayGroup`, agrupando por `Note.creati
 ## Recordatorios como tareas
 
 `NotesApp` muestra `ReminderEditorScreen` cuando el documento es un recordatorio independiente. Comparte el ViewModel y el repositorio con las notas para conservar compatibilidad de datos; la presentación y el guardado son distintos. `EditNoteViewModel` mantiene el borrador pero no inicia autoguardado para `isReminder`: solo `saveAndClose` persiste la tarea. Las notas normales conservan el debounce de 600 ms. Los recordatorios vinculados a notas mantienen su hoja de configuración y no cambian el tipo de la nota.
+
+Las carpetas usan la misma capa de datos, con `FolderEntity` y una clave externa de nota. Su operación expone carga, error y revisión de persistencia; las hojas solo confirman al completarse la escritura. `AppMotion` centraliza las transiciones y el contenedor guardable de pestañas conserva el scroll durante el cambio de vista. Consulta [Carpetas](carpetas.md) y [Movimiento](movimiento.md).

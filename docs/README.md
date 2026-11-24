@@ -16,6 +16,8 @@ Empieza por la [guía de uso](guia-de-uso.md). Explica cómo crear y encontrar n
 
 Consulta también [Cambios de Clean Mind](cambios-clean-mind.md) para el estilo compartido, recursos y verificación en Xiaomi.
 
+Consulta [Carpetas](carpetas.md) para organización y migraciones, y [Movimiento y arranque](movimiento.md) para las transiciones y la splash monocroma.
+
 ## Fuentes de verdad
 
 | Información | Fuente |
@@ -24,7 +26,7 @@ Consulta también [Cambios de Clean Mind](cambios-clean-mind.md) para el estilo 
 | SDK, identificador, versión y configuración del módulo | [Configuración de app](../app/build.gradle.kts). |
 | JVM del daemon | [Criterios de JVM](../gradle/gradle-daemon-jvm.properties). |
 | Comportamiento de pantalla | [Código de presentación](../app/src/main/java/com/example/cleannotes/presentation/). |
-| Esquema actual | [Esquema Room 3](../app/schemas/com.example.cleannotes.data.source.NoteDatabase/3.json). |
+| Esquema actual | [Esquema Room 4](../app/schemas/com.example.cleannotes.data.source.NoteDatabase/4.json). |
 | Reglas de transición entre esquemas | [NoteDatabase](../app/src/main/java/com/example/cleannotes/data/source/NoteDatabase.kt). |
 | Comportamientos comprobados | [Pruebas locales](../app/src/test/java/com/example/cleannotes/). |
 

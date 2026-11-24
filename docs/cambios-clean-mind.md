@@ -18,10 +18,12 @@ Se conserva `com.example.cleannotes` como identificador y namespace, además de 
 
 ## Verificación
 
-Compilación debug, lint y 54 pruebas locales sin fallos ni omisiones. El formateador de Android Studio valida 88 archivos. Las capturas de [ui-preview](ui-preview/) usan datos sintéticos de Robolectric.
+Compilación debug, lint y 62 pruebas locales sin fallos ni omisiones. El formateador de Android Studio valida 95 archivos. Las capturas de [ui-preview](ui-preview/) usan datos sintéticos de Robolectric.
 
 En Xiaomi se probaron los flujos principales, una notificación con la app en segundo plano y la generación/compartición de texto y PDF. Se eliminaron los datos de prueba y se verificó que los registros originales permanecen idénticos. Consulta [Pruebas](pruebas.md) para los resultados y los casos aún pendientes.
 
 ## Mantener el estilo
 
 Las instrucciones de formato están en [Desarrollo](desarrollo.md#formato-compartido). Los iconos proceden de la fuente oficial de Google; [design](../design/README.md) conserva procedencia, ejes, huella y generador. Las licencias de Inter y Material Symbols están en `app/src/main/assets/licenses/`.
+
+Las ampliaciones posteriores de carpetas, arranque y transiciones se documentan en [Carpetas](carpetas.md) y [Movimiento](movimiento.md).

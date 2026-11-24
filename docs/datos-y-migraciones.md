@@ -15,15 +15,16 @@ Room conserva las notas guardadas. Preferences DataStore conserva la selección 
 | `content` | `String` | Texto de la nota. Puede estar vacío. |
 | `timestamp` | `Long` | Instante de la última escritura realizada por el editor, en milisegundos. |
 | `isReminder` | `Boolean` | Tipo explícito de la nota; por defecto `false`. |
+| `folderId` | `Int?` | Carpeta interna; `null` significa Sin carpeta. |
 
 No hay columnas independientes de creación, vencimiento, etiqueta o estado completado. El formato y las referencias a imágenes se guardan dentro del contenido versionado. El formulario de recordatorios conserva el detalle opcional y la configuración de notificación dentro del documento.
 
 ## Persistencia Room
 
 - Base de datos: `notes_db`.
-- Tabla: `note`.
-- Versión actual: **3**.
-- Esquema exportado: [3.json](../app/schemas/com.example.cleannotes.data.source.NoteDatabase/3.json).
+- Tablas: `note` y `folder`.
+- Versión actual: **4**.
+- Esquema exportado: [4.json](../app/schemas/com.example.cleannotes.data.source.NoteDatabase/4.json).
 - Orden: `timestamp DESC, id DESC`.
 - Columna de tipo: `isReminder INTEGER NOT NULL DEFAULT 0`.
 
@@ -64,14 +65,19 @@ Tras la migración, escribir `Remember` en una nota normal no cambia su tipo.
 
 | Base de datos de partida | Tratamiento |
 | --- | --- |
-| Sin base de datos | Room crea el esquema 3. |
-| Esquema 2 | Se aplica `MIGRATION_2_3`. |
-| Esquema 3 | Se abre sin transformación de versión. |
+| Sin base de datos | Room crea el esquema 4. |
+| Esquema 2 | Se aplican `MIGRATION_2_3` y `MIGRATION_3_4`. |
+| Esquema 3 | Se aplica `MIGRATION_3_4`; las notas conservan sus campos y empiezan sin carpeta. |
+| Esquema 4 | Se abre sin transformación de versión. |
 | Otra versión sin ruta registrada | No hay una migración implementada que garantice su apertura. |
 
 La migración está registrada en `StorageModule`. No hay fallback de migración destructiva. En caso de una versión no soportada, hay que implementar y comprobar la transición antes de distribuir una actualización; no se debe borrar la base de datos como solución automática.
 
-El repositorio exporta actualmente el esquema 3. La prueba de migración recrea la tabla anterior a partir de su estructura conocida; no se incluye un JSON histórico de la versión 2.
+El repositorio conserva los esquemas exportados 3 y 4. La prueba de migración recrea la tabla anterior a partir de su estructura conocida; no se incluye un JSON histórico de la versión 2.
+
+## Migración de la versión 3 a la 4
+
+Añade carpetas con nombres únicos y una clave externa nullable en las notas. La migración reconstruye `note` conservando exactamente los campos anteriores y crea el índice de pertenencia. `ON DELETE SET NULL` conserva las notas al eliminar su carpeta. El guardado lee la pertenencia actual dentro de una transacción para evitar que un borrador obsoleto deshaga movimientos. Consulta [Carpetas](carpetas.md).
 
 ## Preferencias
 

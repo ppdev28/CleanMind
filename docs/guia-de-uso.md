@@ -74,6 +74,10 @@ Concede el permiso de notificaciones en Android 13 o posterior. Para puntualidad
 
 Pulsa la notificación para abrir su nota o **Posponer** (duración configurable de 1 a 180 minutos) para volver a recibirla. La repetición mantiene su calendario original. Puedes **Completar** un aviso sin eliminar la nota; si es periódico se programa la siguiente ocurrencia.
 
+## Organizar en carpetas
+
+En **Notas → Carpetas → Gestionar** puedes crear o renombrar carpetas. Selecciona una para consultar sus notas; el botón **+ → Nueva nota** utiliza esa carpeta. La pulsación larga de una nota ofrece **Mover a carpeta**. **Sin carpeta** reúne las notas sin asignación. Eliminar una carpeta conserva sus notas. Estas carpetas son independientes del directorio de copias TXT de Ajustes. Consulta [Carpetas](carpetas.md).
+
 ## Buscar
 
 Abre **Buscar** y escribe una parte del título o del contenido. La búsqueda:
