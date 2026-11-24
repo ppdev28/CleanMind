@@ -366,4 +366,70 @@ class DesignUiTest {
 		compose.onNodeWithText("Descartar").performClick()
 		assertTrue(back)
 	}
+
+	@Test
+	fun foldersFilterNotesAndMoveOnlyAfterPersistence() {
+		val inside = Note(301, "Reunión del equipo", "Cuerpo privado", 100, folderId = 4)
+		val outside = Note(302, "Comprar café", "Otro cuerpo", 90)
+		compose.setContent {
+			var state by remember {
+				mutableStateOf(
+					NotesUiState(
+						allNotes = listOf(inside, outside),
+						folders = listOf(com.example.cleannotes.model.NoteFolder(4, "Trabajo")),
+						selectedTab = NotesTab.NOTES,
+						isLoading = false,
+					)
+				)
+			}
+			CleanMindTheme(darkTheme = true) {
+				NotebookScreen(
+					state,
+					{},
+					{},
+					{},
+					{},
+					{},
+					{},
+					{},
+					{},
+					onFolderSelected = { state = state.copy(selectedFolderId = it) },
+					onMoveNote = { note, folder ->
+						state =
+							state.copy(
+								allNotes =
+									state.allNotes.map {
+										if (it.id == note.id) it.copy(folderId = folder) else it
+									},
+								folderOperation =
+									state.folderOperation.copy(
+										revision = state.folderOperation.revision + 1
+									),
+							)
+					},
+				)
+			}
+		}
+		compose.onNodeWithText("Trabajo · 1").performClick()
+		compose.onNodeWithText("Reunión del equipo").assertExists()
+		compose.onNodeWithText("Comprar café").assertDoesNotExist()
+		screenshot("folders-dark")
+		compose.onNodeWithText("Reunión del equipo").performTouchInput { longClick() }
+		compose.onNodeWithText("Mover a carpeta").performClick()
+		compose
+			.onNode(
+				hasText("Sin carpeta") and
+						SemanticsMatcher.expectValue(
+							androidx.compose.ui.semantics.SemanticsProperties.Role,
+							androidx.compose.ui.semantics.Role.Button,
+						)
+			)
+			.performClick()
+		compose.onNodeWithText("Reunión del equipo").assertDoesNotExist()
+		compose.onNodeWithText("Sin carpeta").performClick()
+		compose.onNodeWithText("Comprar café").assertExists()
+		compose.onNodeWithContentDescription("Gestionar carpetas").performClick()
+		compose.onNodeWithText("Tus carpetas").assertExists()
+		screenshot("folder-manager-dark", dialog = true)
+	}
 }

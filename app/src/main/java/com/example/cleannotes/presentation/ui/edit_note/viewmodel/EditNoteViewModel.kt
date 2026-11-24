@@ -84,6 +84,12 @@ constructor(
 		}
 	}
 
+	fun setInitialFolder(folderId: Int?) {
+		if (currentNoteId == null && !savedStateHandle.contains("initialFolder")) {
+			savedStateHandle["initialFolder"] = folderId ?: 0
+		}
+	}
+
 	fun onEvent(event: EditNoteEvent) {
 		val state = uiState.value
 		if (state.isLoading || state.loadFailed || state.isClosing || state.exitRequested) return
@@ -155,6 +161,7 @@ constructor(
 						state.content,
 						System.currentTimeMillis(),
 						state.isReminder,
+						folderId = savedStateHandle.get<Int>("initialFolder")?.takeIf { it > 0 },
 					)
 				)
 			savedStateHandle["savedNoteId"] = currentNoteId

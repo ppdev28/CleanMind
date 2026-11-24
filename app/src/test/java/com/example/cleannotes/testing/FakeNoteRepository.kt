@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.*
 
 class FakeNoteRepository : NoteRepository {
 	val notes = linkedMapOf<Int, Note>()
+	val folders = MutableStateFlow<List<com.example.cleannotes.model.NoteFolder>>(emptyList())
 	private val updates = MutableStateFlow<List<Note>>(emptyList())
 	var writeDelay = 0L
 	var failWrites = false
@@ -51,6 +52,42 @@ class FakeNoteRepository : NoteRepository {
 	override suspend fun deleteNote(note: Note) {
 		if (failDeletes) error("Delete failed")
 		notes.remove(note.id)
+		publish()
+	}
+
+	override fun observeFolders() = folders
+
+	override suspend fun createFolder(name: String): Int {
+		if (failWrites) error("Folder write failed")
+		val normalized = com.example.cleannotes.model.normalizedFolderName(name)
+		require(
+			folders.value.none {
+				com.example.cleannotes.model.folderNameKey(it.name) ==
+						com.example.cleannotes.model.folderNameKey(normalized)
+			}
+		)
+		val id = (folders.value.maxOfOrNull { it.id } ?: 0) + 1
+		folders.value += com.example.cleannotes.model.NoteFolder(id, normalized)
+		return id
+	}
+
+	override suspend fun renameFolder(id: Int, name: String) {
+		if (failWrites) error("Folder write failed")
+		folders.value = folders.value.map { if (it.id == id) it.copy(name = name) else it }
+	}
+
+	override suspend fun deleteFolder(id: Int) {
+		if (failDeletes) error("Delete failed")
+		folders.value = folders.value.filterNot { it.id == id }
+		notes.replaceAll { _, note ->
+			if (note.folderId == id) note.copy(folderId = null) else note
+		}
+		publish()
+	}
+
+	override suspend fun moveNote(id: Int, folderId: Int?) {
+		if (failWrites) error("Move failed")
+		notes[id] = notes.getValue(id).copy(folderId = folderId)
 		publish()
 	}
 }

@@ -81,7 +81,29 @@ fun NotesApp(
 									viewModel::retry,
 									viewModel::dismissError,
 									onOpenNote = { open(Destination.Editor(noteId = it.id)) },
-									onCreate = { open(Destination.Editor(isReminder = it)) },
+									onCreate = { reminder ->
+										open(
+											Destination.Editor(
+												isReminder = reminder,
+												folderId =
+													if (
+														!reminder &&
+														state.selectedTab ==
+														com.example.cleannotes.presentation
+															.notebook
+															.NotesTab
+															.NOTES
+													)
+														state.selectedFolderId?.takeIf { it > 0 }
+													else null,
+											)
+										)
+									},
+									onFolderSelected = viewModel::selectFolder,
+									onSaveFolder = viewModel::saveFolder,
+									onDeleteFolder = viewModel::deleteFolder,
+									onMoveNote = viewModel::moveNote,
+									onClearFolderError = viewModel::clearFolderError,
 									onSettings = { open(Destination.Settings) },
 									onUpdateNote = viewModel::updateNote,
 									onQuickCreate = {
@@ -105,6 +127,9 @@ fun NotesApp(
 										}
 									)
 								val state by viewModel.uiState.collectAsStateWithLifecycle()
+								LaunchedEffect(viewModel, destination.folderId) {
+									viewModel.setInitialFolder(destination.folderId)
+								}
 								LaunchedEffect(state.exitRequested) {
 									if (state.exitRequested) goBack()
 								}

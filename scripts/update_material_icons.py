@@ -32,6 +32,7 @@ CLASSIC = {
     "Delete": "delete",
     "FileDownload": "download",
     "FolderOpen": "folder_open",
+    "CreateNewFolder": "create_new_folder",
     "GridView": "grid_view",
     "Home": "home",
     "Image": "image",

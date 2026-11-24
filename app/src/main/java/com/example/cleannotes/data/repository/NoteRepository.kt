@@ -1,6 +1,7 @@
 package com.example.cleannotes.data.repository
 
 import com.example.cleannotes.model.Note
+import com.example.cleannotes.model.NoteFolder
 import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
@@ -12,4 +13,15 @@ interface NoteRepository {
 	suspend fun saveNote(note: Note): Int
 
 	suspend fun deleteNote(note: Note)
+
+	fun observeFolders(): Flow<List<NoteFolder>>
+
+	suspend fun createFolder(name: String): Int
+
+	suspend fun renameFolder(id: Int, name: String)
+
+	/** Removes the folder, keeping every note without a folder. */
+	suspend fun deleteFolder(id: Int)
+
+	suspend fun moveNote(id: Int, folderId: Int?)
 }

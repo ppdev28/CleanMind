@@ -17,5 +17,6 @@ sealed interface Destination : NavKey {
 		val noteId: Int? = null,
 		val isReminder: Boolean = false,
 		val quickCapture: Boolean = false,
+		val folderId: Int? = null,
 	) : Destination
 }

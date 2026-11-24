@@ -32,7 +32,7 @@ class NoteStorageTest {
 		}
 		val database =
 			Room.databaseBuilder(context, NoteDatabase::class.java, name)
-				.addMigrations(NoteDatabase.MIGRATION_2_3)
+				.addMigrations(NoteDatabase.MIGRATION_2_3, NoteDatabase.MIGRATION_3_4)
 				.build()
 		try {
 			val repository =

@@ -36,6 +36,7 @@ import com.example.cleannotes.presentation.ui.components.CustomTopBar
 import com.example.cleannotes.presentation.ui.components.DeleteNoteDialog
 import com.example.cleannotes.presentation.ui.design.*
 import com.example.cleannotes.presentation.ui.edit_note.ExportMenu
+import com.example.cleannotes.presentation.ui.folders.*
 import com.example.cleannotes.presentation.util.DateUtils
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -57,6 +58,11 @@ fun NotebookScreen(
 	onSettings: () -> Unit,
 	onUpdateNote: NoteChange = { _, _ -> },
 	onQuickCreate: () -> Unit = { onCreate(false) },
+	onFolderSelected: (Int?) -> Unit = {},
+	onSaveFolder: (Int?, String) -> Unit = { _, _ -> },
+	onDeleteFolder: (Int) -> Unit = {},
+	onMoveNote: (Note, Int?) -> Unit = { _, _ -> },
+	onClearFolderError: () -> Unit = {},
 ) {
 	BackHandler(enabled = state.selectedTab != NotesTab.HOME) { onTabSelected(NotesTab.HOME) }
 	var filter by rememberSaveable { mutableStateOf("Todas") }
@@ -64,6 +70,37 @@ fun NotebookScreen(
 	var options by remember { mutableStateOf<Note?>(null) }
 	var deleting by remember { mutableStateOf<Note?>(null) }
 	var sharing by remember { mutableStateOf<Note?>(null) }
+	var managingFolders by rememberSaveable { mutableStateOf(false) }
+	var moving by remember { mutableStateOf<Note?>(null) }
+	if (managingFolders)
+		FolderManager(
+			state.folders,
+			state.folderOperation,
+			onSaveFolder,
+			onDeleteFolder,
+			onClearFolderError,
+		) {
+			managingFolders = false
+			onClearFolderError()
+		}
+	moving?.let { original ->
+		val note = state.allNotes.firstOrNull { it.id == original.id } ?: original
+		MoveNoteSheet(
+			note,
+			state.folders,
+			state.folderOperation,
+			onMove = { onMoveNote(note, it) },
+			onManage = {
+				moving = null
+				managingFolders = true
+				onClearFolderError()
+			},
+			onDismiss = {
+				moving = null
+				onClearFolderError()
+			},
+		)
+	}
 	val snackbar = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	var pendingArchive by remember { mutableStateOf<Pair<Note, Boolean>?>(null) }
@@ -113,6 +150,18 @@ fun NotebookScreen(
 				verticalArrangement = Arrangement.spacedBy(8.dp),
 			) {
 				Text(note.title, style = MaterialTheme.typography.titleMedium)
+				if (!note.isReminder)
+					TextButton(
+						onClick = {
+							options = null
+							moving = note
+							onClearFolderError()
+						}
+					) {
+						Icon(MindIcons.FolderOpen, null)
+						Spacer(Modifier.width(12.dp))
+						Text("Mover a carpeta")
+					}
 				TextButton(
 					onClick = {
 						options = null
@@ -192,6 +241,10 @@ fun NotebookScreen(
 					onTabSelected(it)
 				},
 				onCreate,
+				folderName =
+					if (state.selectedTab == NotesTab.NOTES)
+						state.folders.firstOrNull { it.id == state.selectedFolderId }?.name
+					else null,
 			)
 		},
 	) { padding ->
@@ -281,6 +334,10 @@ fun NotebookScreen(
 											else -> !doc.archived
 										}
 									matchesFilter &&
+											(state.selectedTab != NotesTab.NOTES ||
+													state.selectedFolderId == null ||
+													(if (state.selectedFolderId == 0) note.folderId == null
+													else note.folderId == state.selectedFolderId)) &&
 											(state.query.isBlank() ||
 													note.title.contains(
 														state.query,
@@ -292,6 +349,16 @@ fun NotebookScreen(
 						val header: @Composable () -> Unit = {
 							Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 								SearchEntry(state.query, onQueryChange)
+								if (state.selectedTab == NotesTab.NOTES)
+									FolderStrip(
+										state.folders,
+										notes,
+										state.selectedFolderId,
+										onFolderSelected,
+									) {
+										managingFolders = true
+										onClearFolderError()
+									}
 								Row(
 									Modifier.fillMaxWidth()
 										.horizontalScroll(rememberScrollState())
@@ -314,12 +381,22 @@ fun NotebookScreen(
 												shape = RoundedCornerShape(12.dp),
 											) {
 												Row(
-													Modifier.heightIn(min = 48.dp).padding(horizontal = 10.dp),
+													Modifier.heightIn(min = 48.dp)
+														.padding(horizontal = 10.dp),
 													verticalAlignment = Alignment.CenterVertically,
-													horizontalArrangement = Arrangement.spacedBy(6.dp),
+													horizontalArrangement =
+														Arrangement.spacedBy(6.dp),
 												) {
-													if (filter == label) Icon(MindIcons.Check, null, Modifier.size(16.dp))
-													Text(label, style = MaterialTheme.typography.bodySmall)
+													if (filter == label)
+														Icon(
+															MindIcons.Check,
+															null,
+															Modifier.size(16.dp),
+														)
+													Text(
+														label,
+														style = MaterialTheme.typography.bodySmall,
+													)
 												}
 											}
 										}
@@ -329,7 +406,12 @@ fun NotebookScreen(
 									verticalAlignment = Alignment.CenterVertically,
 								) {
 									Text(
-										if (state.query.isBlank()) "Tus notas"
+										if (state.query.isBlank())
+											(state.folders
+												.firstOrNull { it.id == state.selectedFolderId }
+												?.name
+												?: if (state.selectedFolderId == 0) "Sin carpeta"
+												else "Tus notas")
 										else "Coincidencias en título y contenido",
 										Modifier.weight(1f),
 										style = MaterialTheme.typography.bodyMedium,

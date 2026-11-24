@@ -21,6 +21,7 @@ fun BottomNavigationBar(
 	selectedTab: NotesTab,
 	onTabSelected: (NotesTab) -> Unit,
 	onCreate: (Boolean) -> Unit,
+	folderName: String? = null,
 ) {
 	var showMenu by rememberSaveable { mutableStateOf(false) }
 	val destinations =
@@ -99,7 +100,8 @@ fun BottomNavigationBar(
 				}
 				CreationOption(
 					"Nueva nota",
-					"Escribe, añade imágenes y organiza tus ideas",
+					folderName?.let { "Guardar en $it" }
+						?: "Escribe, añade imágenes y organiza tus ideas",
 					MindIcons.EditNote,
 				) {
 					showMenu = false

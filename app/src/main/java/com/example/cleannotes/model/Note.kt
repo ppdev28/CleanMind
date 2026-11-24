@@ -7,6 +7,7 @@ data class Note(
 	val content: String,
 	val timestamp: Long,
 	val isReminder: Boolean = false,
+	val folderId: Int? = null,
 )
 
 /** Older notes use their last known timestamp until their first update pins that reference. */

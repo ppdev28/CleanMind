@@ -29,7 +29,8 @@ constructor(
 				.copy(
 					createdAt = previousDocument?.createdAt ?: previous?.timestamp ?: note.timestamp
 				)
-		val id = dao.insertNote(note.copy(content = document.encode()).toNoteEntity()).toInt()
+		val id =
+			dao.savePreservingFolder(note.copy(content = document.encode()).toNoteEntity()).toInt()
 		kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
 			com.example.cleannotes.data.reminders.ReminderScheduler.update(
 				context,
@@ -73,5 +74,35 @@ constructor(
 				com.example.cleannotes.data.reminders.ReminderScheduler.cancel(context, it)
 			}
 		}
+	}
+
+	override fun observeFolders() = dao.observeFolders().map { rows -> rows.map { it.toFolder() } }
+
+	override suspend fun createFolder(name: String): Int {
+		val normalized = com.example.cleannotes.model.normalizedFolderName(name)
+		return dao.insertFolder(
+			com.example.cleannotes.data.source.FolderEntity(
+				name = normalized,
+				nameKey = com.example.cleannotes.model.folderNameKey(normalized),
+			)
+		)
+			.toInt()
+	}
+
+	override suspend fun renameFolder(id: Int, name: String) {
+		val normalized = com.example.cleannotes.model.normalizedFolderName(name)
+		check(
+			dao.renameFolder(
+				id,
+				normalized,
+				com.example.cleannotes.model.folderNameKey(normalized),
+			) == 1
+		)
+	}
+
+	override suspend fun deleteFolder(id: Int) = dao.deleteFolder(id)
+
+	override suspend fun moveNote(id: Int, folderId: Int?) {
+		check(dao.moveNote(id, folderId) == 1) { "La nota ya no está disponible." }
 	}
 }

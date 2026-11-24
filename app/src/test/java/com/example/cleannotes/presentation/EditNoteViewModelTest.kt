@@ -201,4 +201,19 @@ class EditNoteViewModelTest {
 			assertFalse(editor.uiState.value.exitRequested)
 			assertEquals(0, repository.writes)
 		}
+
+	@Test
+	fun newNoteRetainsTheSelectedFolderAcrossAutosaves() =
+		runTest(dispatcher) {
+			val editor = editor()
+			editor.setInitialFolder(4)
+			editor.setInitialFolder(7)
+			editor.onEvent(EditNoteEvent.EnteredTitle("Idea del trabajo"))
+			advanceUntilIdle()
+			assertEquals(4, repository.notes.values.single().folderId)
+			editor.onEvent(EditNoteEvent.EnteredContent("Más información"))
+			advanceUntilIdle()
+			assertEquals(4, repository.notes.values.single().folderId)
+			assertEquals(1, repository.notes.size)
+		}
 }

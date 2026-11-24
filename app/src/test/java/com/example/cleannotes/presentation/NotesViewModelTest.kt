@@ -153,4 +153,54 @@ class NotesViewModelTest {
 			assertEquals(NotesError.UPDATE, viewModel.uiState.value.error)
 			assertEquals("Texto", repository.notes[1]!!.content)
 		}
+
+	@Test
+	fun folderSelectionIsRestoredAndCreationSelectsTheNewFolder() =
+		runTest(dispatcher) {
+			repository.folders.value = listOf(com.example.cleannotes.model.NoteFolder(4, "Trabajo"))
+			repository.notes[1] = Note(1, "Dentro", "", 10, folderId = 4)
+			repository.notes[2] = Note(2, "Fuera", "", 20)
+			repository.publish()
+			val vm = NotesViewModel(repository, SavedStateHandle(mapOf("folder" to 4)))
+			backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect() }
+			runCurrent()
+			assertEquals(listOf(1), vm.uiState.value.notes.map { it.id })
+			vm.selectFolder(0)
+			runCurrent()
+			assertEquals(listOf(2), vm.uiState.value.notes.map { it.id })
+			vm.saveFolder(null, "Personal")
+			runCurrent()
+			assertEquals(
+				"Personal",
+				vm.uiState.value.folders.first { it.id == vm.uiState.value.selectedFolderId }.name,
+			)
+			assertEquals(NotesTab.NOTES, vm.uiState.value.selectedTab)
+			assertEquals(1, vm.uiState.value.folderOperation.revision)
+			vm.deleteFolder(vm.uiState.value.selectedFolderId!!)
+			runCurrent()
+			assertNull(vm.uiState.value.selectedFolderId)
+		}
+
+	@Test
+	fun failedFolderMoveKeepsMembershipAndCanBeRetried() =
+		runTest(dispatcher) {
+			repository.folders.value = listOf(com.example.cleannotes.model.NoteFolder(4, "Trabajo"))
+			val note = Note(1, "Idea", "", 10)
+			repository.notes[1] = note
+			repository.publish()
+			val vm = NotesViewModel(repository, SavedStateHandle())
+			backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect() }
+			repository.failWrites = true
+			vm.moveNote(note, 4)
+			runCurrent()
+			assertNotNull(vm.uiState.value.folderOperation.error)
+			assertFalse(vm.uiState.value.folderOperation.busy)
+			assertNull(repository.notes[1]!!.folderId)
+			assertEquals(0, vm.uiState.value.folderOperation.revision)
+			repository.failWrites = false
+			vm.moveNote(note, 4)
+			runCurrent()
+			assertNull(vm.uiState.value.folderOperation.error)
+			assertEquals(4, repository.notes[1]!!.folderId)
+		}
 }

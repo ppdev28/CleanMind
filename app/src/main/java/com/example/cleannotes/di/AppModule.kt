@@ -35,7 +35,7 @@ object StorageModule {
 	@Singleton
 	fun database(@ApplicationContext context: Context): NoteDatabase =
 		Room.databaseBuilder(context, NoteDatabase::class.java, NoteDatabase.DATABASE_NAME)
-			.addMigrations(NoteDatabase.MIGRATION_2_3)
+			.addMigrations(NoteDatabase.MIGRATION_2_3, NoteDatabase.MIGRATION_3_4)
 			.build()
 
 	@Provides

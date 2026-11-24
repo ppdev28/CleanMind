@@ -10,6 +10,7 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 - Guardar automáticamente mientras escribes y mostrar el estado de guardado.
 - Consultar la actividad por fecha o cambiar a una cuadrícula adaptable.
 - Buscar por título y contenido.
+- Organizar notas en [carpetas](docs/carpetas.md), con creación, renombrado y movimiento.
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.
 - Elegir un tema claro, oscuro o vinculado al dispositivo.
