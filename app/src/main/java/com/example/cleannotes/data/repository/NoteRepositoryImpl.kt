@@ -12,8 +12,12 @@ class NoteRepositoryImpl @Inject constructor(private val dao: NoteDao, @dagger.h
     override suspend fun getNote(id: Int): Note? = dao.getNoteById(id)?.toNote()
     override suspend fun saveNote(note: Note): Int {
         require(note.title.isNotBlank()) { "A note must have a title" }
-        val id = dao.insertNote(note.toNoteEntity()).toInt()
-        val document = com.example.cleannotes.model.NoteDocument.decode(note.content)
+        val previous = note.id?.let { dao.getNoteById(it)?.toNote() }
+        val previousDocument = previous?.let { com.example.cleannotes.model.NoteDocument.decode(it.content) }
+        val document = com.example.cleannotes.model.NoteDocument.decode(note.content).copy(
+            createdAt = previousDocument?.createdAt ?: previous?.timestamp ?: note.timestamp
+        )
+        val id = dao.insertNote(note.copy(content = document.encode()).toNoteEntity()).toInt()
         kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
             com.example.cleannotes.data.reminders.ReminderScheduler.update(context, id, note.title, if (!document.reminderCompleted) document.reminder else null)
             if (com.example.cleannotes.data.export.NoteExport.folder(context) != null) {

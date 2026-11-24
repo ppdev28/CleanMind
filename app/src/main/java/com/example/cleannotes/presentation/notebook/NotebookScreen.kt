@@ -33,6 +33,10 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.model.creationTimestamp
+import com.example.cleannotes.presentation.ui.components.AgendaDayGroup
+import com.example.cleannotes.presentation.ui.components.BottomNavigationBar
+import com.example.cleannotes.presentation.ui.components.CustomTopBar
 import com.example.cleannotes.presentation.ui.components.DeleteNoteDialog
 import com.example.cleannotes.presentation.ui.design.*
 import com.example.cleannotes.presentation.ui.edit_note.ExportMenu
@@ -97,30 +101,16 @@ fun NotebookScreen(
     Scaffold(
         contentWindowInsets = WindowInsets.statusBars,
         snackbarHost = { DesignSnackbarHost(snackbar) },
-        bottomBar = {
-            Surface(color = MaterialTheme.colorScheme.background) {
-                Column {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 16.dp).selectableGroup()) {
-                        listOf(Triple(NotesTab.HOME, "Inicio", R.drawable.figma_home), Triple(NotesTab.NOTES, "Notas", R.drawable.figma_notes), Triple(NotesTab.REMINDERS, "Recordatorios", R.drawable.figma_bell)).forEach { (tab, label, icon) ->
-                            val selected = if (tab == NotesTab.NOTES) notesTab else state.selectedTab == tab
-                            Surface(modifier = Modifier.weight(1f).selectable(selected, role = Role.Tab, onClick = { onQueryChange(""); onTabSelected(tab) }),
-                                shape = RoundedCornerShape(12.dp), color = if (selected) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.background) {
-                                Column(Modifier.heightIn(min = 56.dp).padding(vertical = 4.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    DesignIcon(icon, tint = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
-                                    Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                                        textDecoration = if (selected) TextDecoration.Underline else null,
-                                        color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        topBar = {
+            CustomTopBar(onSettings, title = when (state.selectedTab) {
+                NotesTab.HOME -> null
+                NotesTab.NOTES -> "Notas"
+                NotesTab.REMINDERS -> "Recordatorios"
+                NotesTab.SEARCH -> "Buscar"
+            })
         },
-        floatingActionButton = {
-            if (state.selectedTab != NotesTab.REMINDERS) Button(onClick = { onCreate(false) }, shape = RoundedCornerShape(18.dp), contentPadding = PaddingValues(horizontal = 28.dp), modifier = Modifier.padding(end = 8.dp, bottom = 8.dp).width(116.dp).height(56.dp)) { Text("+ Nota", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold) }
-        }
+        bottomBar = { BottomNavigationBar(state.selectedTab, { onQueryChange(""); onTabSelected(it) }, onCreate) }
+
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (state.error != null) Row(Modifier.padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -129,55 +119,29 @@ fun NotebookScreen(
             }
             if (state.isLoading) Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             else when {
-                state.selectedTab == NotesTab.HOME -> LazyColumn(contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 88.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    item { DesignHeader("Inicio", onSettings) }
+                state.selectedTab == NotesTab.HOME -> LazyColumn(contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     item { SearchEntry("", { onQueryChange(it); onTabSelected(NotesTab.SEARCH) }, onClick = { onTabSelected(NotesTab.SEARCH) }) }
                     item {
                         Surface(onClick = onQuickCreate, color = MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(14.dp)) {
                             Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) { DesignIcon(R.drawable.figma_plus); Text("¿Qué quieres guardar?", style = MaterialTheme.typography.bodyMedium) }
                         }
                     }
-                    val pinned = active.filter { NoteDocument.decode(it.content).pinned }
-                    if (pinned.isNotEmpty()) item {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            SectionLabel("A mano")
-                            pinned.forEach { note -> DesignNoteCard(note, onClick = { onOpenNote(note) }, onLongClick = { options = note }) }
-                        }
+                    val days = active.sortedWith(compareByDescending<Note> { it.creationTimestamp() }.thenByDescending { it.id })
+                        .groupBy { DateUtils.dayKey(it.creationTimestamp()) }
+                    items(days.entries.toList(), key = { "agenda-${it.key}" }) { (_, notesOfDay) ->
+                        AgendaDayGroup(notesOfDay, onOpenNote) { options = it }
                     }
-                    val today = active.filter { val doc = NoteDocument.decode(it.content); !doc.reminderCompleted && doc.reminder?.at?.let(DateUtils::isToday) == true }
-                    if (today.isNotEmpty()) item {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            SectionLabel("Recordatorios de hoy")
-                            today.forEach { note ->
-                                Surface(onClick = { onOpenNote(note) }, color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(14.dp)) {
-                                    Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        DesignIcon(R.drawable.figma_bell)
-                                        Text(note.title, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-                                        Text(DateUtils.getTime(NoteDocument.decode(note.content).reminder!!.at), style = MaterialTheme.typography.bodyMedium)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    val recent = active.filterNot { it.isReminder || NoteDocument.decode(it.content).pinned }.take(10)
-                    if (recent.isNotEmpty()) item {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            SectionLabel("Recientes")
-                            recent.forEach { note -> DesignNoteCard(note, onClick = { onOpenNote(note) }, onLongClick = { options = note }) }
-                        }
-                    }
-                    if (active.isEmpty()) item { EmptyDesignState("Un lugar para tus ideas", "Todavía no hay notas.\nGuarda lo que quieras retomar.", "Crear una nota") { onQuickCreate() } }
+                    if (active.isEmpty()) item { EmptyDesignState("Un lugar para tus ideas", "Todavía no hay notas. Guarda lo que quieras retomar.", "Crear una nota") { onQuickCreate() } }
 
                 }
                 notesTab -> {
-                    val filtered = notes.filter { note ->
+                    val filtered = (if (state.selectedTab == NotesTab.SEARCH) state.allNotes else notes).filter { note ->
                         val doc = NoteDocument.decode(note.content)
                         val matchesFilter = when (filter) { "Archivadas" -> doc.archived; "Fijadas" -> doc.pinned && !doc.archived; "Con imágenes" -> doc.images.isNotEmpty() && !doc.archived; else -> !doc.archived }
                         matchesFilter && (state.query.isBlank() || note.title.contains(state.query, true) || NoteDocument.plainText(note.content).contains(state.query, true))
                     }
                     val header: @Composable () -> Unit = {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            DesignHeader("Notas", onSettings)
                             SearchEntry(state.query, onQueryChange)
                             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                 listOf("Todas", "Fijadas", "Con imágenes", "Archivadas").forEach { label ->
@@ -192,7 +156,7 @@ fun NotebookScreen(
                             }
                         }
                     }
-                    LazyVerticalGrid(columns = GridCells.Fixed(if (grid) 2 else 1), contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 88.dp), verticalArrangement = Arrangement.spacedBy(16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    LazyVerticalGrid(columns = GridCells.Fixed(if (grid) 2 else 1), contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         item(span = { GridItemSpan(maxLineSpan) }) { header() }
                         items(filtered, key = { requireNotNull(it.id) }) { note -> DesignNoteCard(note, onClick = { onOpenNote(note) }, onLongClick = { options = note }, compact = grid) }
                         if (filtered.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) { EmptyDesignState("Sin notas aquí", "Prueba otra búsqueda o guarda una nueva idea.", "Crear una nota") { onCreate(false) } }
@@ -233,7 +197,6 @@ private fun ReminderCollection(notes: List<Note>, onSettings: () -> Unit, onOpen
     val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
     val reminders = notes.filter { val d = NoteDocument.decode(it.content); (it.isReminder || d.reminder != null) && !d.reminderCompleted }.sortedBy { NoteDocument.decode(it.content).reminder?.at ?: Long.MAX_VALUE }
     LazyColumn(contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        item { DesignHeader("Recordatorios", onSettings, date = false) }
         item { Text("Lo que quieres retomar, a su tiempo.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         val groups = reminders.groupBy { NoteDocument.decode(it.content).reminder?.at?.let(DateUtils::dayKey) ?: "Sin fecha" }
         groups.forEach { (_, group) ->

@@ -49,7 +49,6 @@ fun NotesApp(settingsViewModel: SettingsViewModel = hiltViewModel(), notificatio
                 val open: (Destination) -> Unit = { destination ->
                     if (backStack.lastOrNull() != destination) backStack.add(destination)
                 }
-                var goHome by remember { mutableStateOf<() -> Unit>({}) }
                 val goBack: () -> Unit = { if (backStack.size > 1) backStack.removeLastOrNull() }
                 NavDisplay(
                     backStack = backStack,
@@ -59,7 +58,6 @@ fun NotesApp(settingsViewModel: SettingsViewModel = hiltViewModel(), notificatio
                         entry<Destination.Notebook> {
                             val viewModel = hiltViewModel<NotesViewModel>()
                             val state by viewModel.uiState.collectAsStateWithLifecycle()
-                            SideEffect { goHome = { viewModel.onTabSelected(com.example.cleannotes.presentation.notebook.NotesTab.HOME) } }
                             NotebookScreen(state, viewModel::onTabSelected, viewModel::onQueryChange, viewModel::deleteNote,
                                 viewModel::retry, viewModel::dismissError,
                                 onOpenNote = { open(Destination.Editor(noteId = it.id)) },
@@ -68,7 +66,7 @@ fun NotesApp(settingsViewModel: SettingsViewModel = hiltViewModel(), notificatio
                                 onUpdateNote = viewModel::updateNote, onQuickCreate = { open(Destination.Editor(quickCapture = true)) })
                         }
                         entry<Destination.Settings> {
-                            SettingsScreen(settings, settingsViewModel::setThemeMode, goBack, settingsViewModel::retry, onHome = { goHome(); goBack() })
+                            SettingsScreen(settings, settingsViewModel::setThemeMode, goBack, settingsViewModel::retry)
                         }
                         entry<Destination.Editor> { destination ->
                             val viewModel = hiltViewModel<EditNoteViewModel, EditNoteViewModel.Factory>(

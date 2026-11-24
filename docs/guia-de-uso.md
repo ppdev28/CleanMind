@@ -13,12 +13,12 @@ Clean Notes permite guardar ideas y apuntes personales en Android. No necesitas 
 | Editor | Título, subtítulo opcional, cuerpo de la nota, estado de guardado y acciones. |
 | Ajustes | Selección de apariencia e información sobre almacenamiento y recordatorios. |
 
-La barra inferior da acceso a Inicio, Notas y Recordatorios. La búsqueda está en Inicio y Notas. **+ Nota** abre el editor y **¿Qué quieres guardar?** abre la captura rápida. El control de ajustes abre **A tu ritmo**.
+La barra inferior da acceso a Inicio, Notas, Recordar y Buscar. El **+** central permite crear una nota o un recordatorio; **¿Qué quieres guardar?** abre la captura rápida. El icono de la app vuelve a la barra superior, con más separación. El engranaje abre Ajustes.
 
 ## Crear una nota
 
-1. Pulsa **+ Nota**.
-2. Se abre el editor.
+1. Pulsa **+** en la barra inferior.
+2. Elige **Nueva nota**.
 3. Escribe un título opcional; si lo dejas vacío, la app utiliza una primera línea legible al guardar.
 4. Añade un subtítulo opcional y el texto de la nota.
 5. Comprueba el estado de guardado en **⋮** o pulsa la flecha de volver, que guarda y cierra el editor.
@@ -43,11 +43,11 @@ No uses el borrador temporal como sustituto del guardado: antes de cerrar o forz
 
 ## Editar y consultar
 
-En Inicio las tarjetas muestran únicamente título, subtítulo si se ha escrito, conteo de imágenes y fecha/hora del último guardado. El cuerpo no aparece ni en lista ni en cuadrícula. Las notas antiguas no obtienen un subtítulo a partir del contenido: puedes escribirlo en el editor.
+En Inicio las tarjetas se agrupan por día de creación, con fecha y separador horizontal y el día/mes en el lateral. Muestran título, subtítulo si se ha escrito y conteo de imágenes; no muestran el cuerpo. La fecha de cada grupo no cambia al editar una nota. Las notas antiguas utilizan su fecha ya almacenada como referencia porque no hay un historial de creación. Las notas antiguas no obtienen un subtítulo a partir del contenido: puedes escribirlo en el editor.
 
 Mantén pulsada una tarjeta para abrir las opciones **Compartir nota** (texto o PDF) y **Eliminar**. Eliminar sigue solicitando confirmación. La pulsación normal abre la nota. Estas opciones también están disponibles desde **⋯** en las colecciones.
 
-Toca una tarjeta para abrir su contenido. Los cambios se guardan en la misma nota, manteniendo su identificador. La fecha utilizada para ordenar la colección se actualiza al guardar cambios: la actividad refleja la última escritura, no una fecha de creación independiente.
+Toca una tarjeta para abrir su contenido. Los cambios se guardan en la misma nota, manteniendo su identificador. Las colecciones conservan la fecha de última escritura para su orden habitual. La agenda de Inicio utiliza la fecha de creación independiente.
 
 En Notas puedes alternar entre:
 
@@ -58,7 +58,7 @@ La elección de vista pertenece al estado de cada pestaña. No hay un ajuste glo
 
 ## Crear un recordatorio
 
-1. Desde una nota, pulsa **Recordar**, o utiliza **+ Recordatorio** en la pestaña Recordatorios.
+1. Desde una nota, pulsa **Recordar**, o utiliza **+ → Nuevo recordatorio**.
 2. Escribe en el título lo que quieres recordar.
 3. Espera a que se guarde o pulsa la flecha de volver.
 4. Consúltalo desde **Recordar**.
@@ -145,6 +145,8 @@ El estado de guardado se consulta en **⋮**; los errores también aparecen en u
 
 ## Fijado, archivo y concentración
 
-La pulsación larga abre Compartir, Fijar a mano, Archivar y Eliminar. Las notas fijadas aparecen en **A mano**. El filtro **Archivadas** permite abrir y restaurar notas archivadas. El aviso de archivo ofrece **Deshacer** después de confirmarse el cambio.
+La pulsación larga abre Compartir, Fijar a mano, Archivar y Eliminar. Las notas fijadas permanecen en su día de la agenda y también se encuentran con el filtro **Fijadas**. El filtro **Archivadas** permite abrir y restaurar notas archivadas. El aviso de archivo ofrece **Deshacer** después de confirmarse el cambio.
 
 En el editor, **Concentrarme** oculta las herramientas. La acción de cerrar concentración vuelve al editor sin perder el borrador. **Lista** añade una casilla editable; se conserva la continuación de viñetas/números de las listas de texto.
+
+Apariencia y carpeta de las notas vuelven a estar visibles directamente en Ajustes, sin desplegar una sección adicional.

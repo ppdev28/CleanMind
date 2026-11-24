@@ -37,7 +37,7 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | `EditNoteViewModelTest` | 11 | Autoguardados sobre la misma fila, salida inmediata, escritura lenta, fallos y reintento, tipo de recordatorio, salida repetida, reversión del texto, título vacío, borrador restaurado, texto literal `Remember` y fallo de carga. |
 | `NotesViewModelTest` | 7 | Filtros y búsqueda, reintento de carga, error de eliminación, detención de observación sin suscriptores y restauración de consulta/pestaña. |
 | `SettingsViewModelTest` | 1 | Conservación del tema persistido cuando falla una escritura y recuperación al reintentar. |
-| `NoteStorageTest` | 2 | Migración 2→3 con SQLite y operaciones de repositorio con IDs estables y orden de consulta. |
+| `NoteStorageTest` | 4 | Migración 2→3 con SQLite y operaciones de repositorio con IDs estables y orden de consulta. |
 | `UserPreferencesRepositoryTest` | 1 | Migración del tema anterior a DataStore y conservación de una nueva selección al reabrir. |
 | `DestinationTest` | 1 | Serialización y deserialización de destinos con argumentos tipados. |
 | `DateUtilsTest` | 2 | Agrupación de fechas de años distintos y detección de hoy/ayer. |
@@ -46,9 +46,9 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
 
-| `DesignUiTest` | 7 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes y selección de fecha/hora. |
+| `DesignUiTest` | 9 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes y selección de fecha/hora. |
 
-Total actual: **49 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
+Total actual: **53 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
 Las pruebas de ViewModel usan `kotlinx-coroutines-test` para controlar la ejecución y el tiempo virtual. `FakeNoteRepository` permite simular lentitud, errores y cambios observables.
 
@@ -67,7 +67,7 @@ Las carpetas `build/` contienen salidas generadas. No forman parte de la documen
 
 ## Estado conocido
 
-La última ejecución local de verificación de código terminó con compilación debug correcta, lint sin errores y 49 pruebas locales superadas, sin fallos ni casos omitidos. Lint conserva avisos sobre versiones de dependencias y recursos.
+La última ejecución local de verificación de código terminó con compilación debug correcta, lint sin errores y 53 pruebas locales superadas, sin fallos ni casos omitidos. Lint conserva avisos sobre versiones de dependencias y recursos.
 
 Los cambios de esta tarea son de documentación. No se ha repetido la suite por modificar texto; se comprueban rutas, enlaces locales y consistencia con la implementación.
 
@@ -97,3 +97,5 @@ Cuando modifiques la entidad Room, comprueba además que una base migrada permit
 La composición del PDF se comprueba con Canvas nativo sobre bitmaps, revisando páginas de una nota larga. Robolectric no implementa aquí la creación nativa de `PdfDocument`: la escritura final del contenedor PDF, el selector SAF, los permisos reales, las notificaciones con la app cerrada y la hoja de compartir se revisarán en Android cuando se autorice usar el dispositivo. No se ha instalado ni ejecutado la app en teléfono.
 
 El rediseño, sus capturas y las referencias que no se pudieron contrastar se documentan en [UI de Figma](figma-ui.md).
+
+Las pruebas de almacenamiento comprueban que la fecha de creación no cambia al editar y que las notas antiguas utilizan la fecha persistida. Las pruebas de UI verifican la agrupación por creación aunque una nota se haya editado hoy, las dos acciones del botón central y los ajustes visibles sin desplegables.

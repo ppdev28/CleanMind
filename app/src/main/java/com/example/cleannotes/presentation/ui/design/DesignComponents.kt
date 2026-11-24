@@ -57,11 +57,11 @@ fun DesignRow(title: String, @DrawableRes icon: Int, subtitle: String? = null, s
 }
 
 @Composable
-fun DesignNoteCard(note: Note, modifier: Modifier = Modifier, onClick: () -> Unit, onLongClick: () -> Unit, compact: Boolean = false) {
+fun DesignNoteCard(note: Note, modifier: Modifier = Modifier, onClick: () -> Unit, onLongClick: () -> Unit, compact: Boolean = false, dateTimestamp: Long = note.timestamp) {
     val doc = NoteDocument.decode(note.content)
     val detail = buildList {
         if (doc.pinned) add("Fijada")
-        add(if (DateUtils.isToday(note.timestamp)) "Hoy" else if (DateUtils.isYesterday(note.timestamp)) "Ayer" else DateUtils.shortDate(note.timestamp))
+        add(if (DateUtils.isToday(dateTimestamp)) "Hoy" else if (DateUtils.isYesterday(dateTimestamp)) "Ayer" else DateUtils.shortDate(dateTimestamp))
         add("${doc.images.size} ${if (doc.images.size == 1) "imagen" else "imágenes"}")
         if (Regex("(?m)^(• |☐ |☑ |\\d+\\. )").containsMatchIn(doc.text)) add("Lista")
     }.joinToString(" · ")

@@ -26,7 +26,7 @@ fun BottomNavigationBar(selectedTab: NotesTab, onTabSelected: (NotesTab) -> Unit
         Triple(NotesTab.REMINDERS, R.string.nav_reminders, Icons.Outlined.Notifications),
         Triple(NotesTab.SEARCH, R.string.search, Icons.Outlined.Search)
     )
-    Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 8.dp) {
+    Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 0.dp) {
         Column {
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
             Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 6.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {

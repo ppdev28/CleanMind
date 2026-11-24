@@ -14,16 +14,16 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 
 @Composable
-fun CustomTopBar(onSettings: () -> Unit) {
+fun CustomTopBar(onSettings: () -> Unit, title: String? = null) {
     Row(
-        modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(start = 24.dp, end = 16.dp, top = 12.dp, bottom = 8.dp),
+        modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(start = 24.dp, end = 16.dp, top = 28.dp, bottom = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.primaryContainer) {
             Icon(painterResource(R.drawable.custom_top_bar_icon), null,
                 tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(7.dp).size(28.dp))
         }
-        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f).padding(start = 12.dp))
+        Text(title ?: stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f).padding(start = 12.dp))
         IconButton(onClick = onSettings) {
             Icon(Icons.Outlined.Settings, stringResource(R.string.settings), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }

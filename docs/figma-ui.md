@@ -6,15 +6,15 @@ Referencia: [Clean Notes, archivo de Figma](https://www.figma.com/design/qokv6yT
 
 ## Implementación
 
-- Inicio con búsqueda, captura rápida, notas fijadas «A mano», recordatorios de hoy, diez notas recientes y botón flotante.
-- Navegación inferior con Inicio, Notas y Recordatorios. La búsqueda forma parte de Notas.
+- Inicio con búsqueda, captura rápida y agenda vertical: fecha, separador horizontal, día/mes en el lateral y todas las notas creadas en ese día. No se limita a diez notas.
+- Barras anteriores recuperadas: icono de la app y mayor separación superior; Inicio, Notas, «+» central, Recordar y Buscar en la barra inferior. Se mantienen colores y tipografía del estilo actual.
 - Filtros Todas, Fijadas, Con imágenes y Archivadas; vistas de lista y cuadrícula.
 - Tarjetas de título, subtítulo y metadatos. Se mantiene la petición anterior de ocultar el cuerpo en Home: las vistas previas de la referencia reciben el subtítulo independiente, no una extracción del contenido.
 - Editor con guardado visible, fijado, archivo, deshacer archivo, captura de listas/imágenes y hoja de recordatorio. Las herramientas de formato, compartir y exportar permanecen disponibles.
 - Concentración sin herramientas inferiores; volver cierra este modo antes de abandonar la nota.
 - Listas de casillas editables, con estado independiente por elemento, además de las listas de texto ya existentes.
 - Recordatorios con opciones rápidas Más tarde y Mañana, fecha/hora personalizadas, configuración avanzada, posposición y completado sin eliminar la nota. Una recurrencia completada avanza a la siguiente ocurrencia.
-- Ajustes «A tu ritmo». Notificaciones y accesibilidad enlazan con Android; Sonido establece el valor predeterminado de los avisos nuevos. La apariencia y la carpeta de copias se conservan en una sección desplegable.
+- Ajustes anteriores recuperados: apariencia y carpeta de copias visibles directamente, información de la app y enlace a notificaciones de Android.
 
 El título del editor es opcional: al persistir, se utiliza el subtítulo, la primera línea del cuerpo o el primer elemento de lista como nombre cuando no se escribe uno. Una nota completamente vacía no genera una fila. Room sigue validando un nombre legible y conserva el identificador de la nota.
 
@@ -59,7 +59,7 @@ La familia Inter se distribuye localmente en cuatro pesos, generados a partir de
 
 ## Datos y comportamiento
 
-`NoteDocument` añade `pinned`, `archived`, `reminderCompleted` y `checklist` con valores predeterminados compatibles. No cambia el esquema Room. Las actualizaciones de metadatos se serializan y vuelven a leer la nota actual para no perder cambios concurrentes. Deshacer el cuerpo preserva estos metadatos. Las casillas se incluyen al buscar y exportar TXT/PDF.
+`NoteDocument` añade `pinned`, `archived`, `reminderCompleted`, `checklist` y `createdAt` con valores predeterminados compatibles. No cambia el esquema Room. Las actualizaciones de metadatos se serializan y vuelven a leer la nota actual para no perder cambios concurrentes. Deshacer el cuerpo preserva estos metadatos. Las casillas se incluyen al buscar y exportar TXT/PDF.
 
 Una notificación puede pertenecer a una nota normal o a un recordatorio explícito. Al completar un aviso único se cancela su programación; al completar uno periódico se guarda y programa la siguiente ocurrencia. Las notas archivadas se consultan desde su filtro. Archivar no elimina adjuntos ni cancela automáticamente un aviso ya configurado.
 
@@ -67,4 +67,11 @@ Una notificación puede pertenecer a una nota normal o a un recordatorio explíc
 
 `DesignUiTest` utiliza Compose y Robolectric con gráficos nativos, sin teléfono ni emulador. Comprueba ocultación del cuerpo, pulsación larga, búsqueda/cuadrícula, entrada/salida de concentración, completar sin eliminar, ajustes y selección de fecha/hora. Las capturas se generan en `/tmp/cleannotes-figma-*.png`; una selección está en [figma-preview](figma-preview/).
 
-La suite completa consta de 49 pruebas locales. La integración con selectores del sistema, cámara, alarmas reales, permisos y escritura nativa del contenedor PDF sigue pendiente de revisión en Android cuando el usuario autorice usar el dispositivo.
+La suite completa consta de 53 pruebas locales. La integración con selectores del sistema, cámara, alarmas reales, permisos y escritura nativa del contenedor PDF sigue pendiente de revisión en Android cuando el usuario autorice usar el dispositivo.
+
+
+## Ajustes solicitados el 24 de noviembre
+
+Home deja de utilizar las secciones «A mano» y «Recientes» de Figma y recupera la agenda anterior. Las barras y Ajustes también se restauran por petición expresa del usuario; estas diferencias visuales son intencionadas. La pulsación larga sigue dando acceso a compartir, fijar, archivar y eliminar.
+
+La agenda agrupa por `NoteDocument.createdAt`, no por la última edición. El repositorio fija ese valor al crear una nota y lo conserva al guardarla de nuevo, incluso si el borrador omite el campo. Las notas anteriores no tienen historial de creación: se utiliza su timestamp ya almacenado como referencia y se fija en la primera actualización. No se inventa una fecha histórica ni se modifica el esquema Room.

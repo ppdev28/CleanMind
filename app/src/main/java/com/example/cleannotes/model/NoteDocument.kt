@@ -21,7 +21,8 @@ data class NoteDocument(
     val pinned: Boolean = false,
     val archived: Boolean = false,
     val reminderCompleted: Boolean = false,
-    val checklist: List<CheckItem> = emptyList()
+    val checklist: List<CheckItem> = emptyList(),
+    val createdAt: Long? = null
 ) {
     fun completeReminder(now: Long): NoteDocument {
         val next = reminder?.let { it.nextAfter(maxOf(now, it.at)) }

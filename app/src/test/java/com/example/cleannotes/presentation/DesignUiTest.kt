@@ -36,14 +36,14 @@ class DesignUiTest {
         Note(3, "Idea para el salón", NoteDocument(subtitle = "Lámpara junto a la ventana.").encode(), System.currentTimeMillis()),
         Note(4, "Llamar a la clínica", NoteDocument(subtitle = "Preguntar por la cita de revisión.", reminder = ReminderConfig(java.util.Calendar.getInstance().apply { set(java.util.Calendar.HOUR_OF_DAY, 17) }.timeInMillis)).encode(), System.currentTimeMillis(), isReminder = true)
     )
-    private fun screen(dark: Boolean = true, initial: NotesTab = NotesTab.HOME) {
+    private fun screen(dark: Boolean = true, initial: NotesTab = NotesTab.HOME, onCreate: (Boolean) -> Unit = {}) {
         compose.setContent {
             var tab by remember { mutableStateOf(initial) }
             var query by remember { mutableStateOf("") }
             CleanNotesTheme(darkTheme = dark) {
                 NotebookScreen(NotesUiState(allNotes = sample, selectedTab = tab, query = query, isLoading = false),
                     onTabSelected = { tab = it }, onQueryChange = { query = it }, onDelete = {}, onRetry = {}, onDismissError = {},
-                    onOpenNote = {}, onCreate = {}, onSettings = {})
+                    onOpenNote = {}, onCreate = onCreate, onSettings = {})
             }
         }
     }
@@ -107,14 +107,18 @@ class DesignUiTest {
         assertEquals("Llamar a la clínica", persisted.title)
         assertTrue(NoteDocument.decode(persisted.content).reminderCompleted)
     }
-    @Test fun settingsMatchTheDesignWithoutOpeningSystemSettings() {
+    @Test fun settingsShowAppearanceAndStorageDirectly() {
+        val storage = com.example.cleannotes.presentation.ui.settings.StorageSettingsViewModel(
+            com.example.cleannotes.testing.FakeNoteRepository(), org.robolectric.RuntimeEnvironment.getApplication())
         compose.setContent {
             CleanNotesTheme(darkTheme = true) {
                 com.example.cleannotes.presentation.ui.settings.SettingsScreen(
-                    com.example.cleannotes.presentation.ui.settings.SettingsUiState(isLoading = false), {}, {}, {})
+                    com.example.cleannotes.presentation.ui.settings.SettingsUiState(isLoading = false), {}, {}, {},
+                    storageContent = { com.example.cleannotes.presentation.ui.settings.StorageSettings(storage) })
             }
         }
-        compose.onNodeWithText("A tu ritmo").assertExists()
+        compose.onNodeWithText("Apariencia").assertExists()
+        compose.onNodeWithText("Carpeta de las notas").assertExists()
         screenshot("settings-dark")
     }
     @Test fun reminderSheetShowsQuickChoices() {
@@ -131,6 +135,37 @@ class DesignUiTest {
         compose.onNodeWithText("Elegir fecha y hora").performClick()
         compose.onNodeWithText("Hora local · Formato de 24 horas").assertExists()
         screenshot("reminder-date-dark", dialog = true)
+    }
+
+    @Test fun agendaGroupsByCreationDayRatherThanLatestEdit() {
+        val now = System.currentTimeMillis()
+        val yesterday = java.util.Calendar.getInstance().apply { add(java.util.Calendar.DAY_OF_YEAR, -1) }.timeInMillis
+        val notes = listOf(
+            Note(101, "Primera de hoy", NoteDocument(createdAt = now).encode(), now),
+            Note(102, "Segunda de hoy", NoteDocument(createdAt = now).encode(), now),
+            Note(103, "Creada ayer y editada hoy", NoteDocument(createdAt = yesterday).encode(), now)
+        )
+        compose.setContent {
+            CleanNotesTheme(darkTheme = true) {
+                NotebookScreen(NotesUiState(allNotes = notes, isLoading = false), {}, {}, {}, {}, {}, {}, {}, {})
+            }
+        }
+        compose.onNodeWithText("Hoy", substring = false).assertExists()
+        compose.onNodeWithText("Ayer", substring = false).assertExists()
+        compose.onAllNodes(SemanticsMatcher.keyIsDefined(androidx.compose.ui.semantics.SemanticsProperties.Heading)).assertCountEquals(2)
+        compose.onNodeWithText("Creada ayer y editada hoy").assertExists()
+        screenshot("agenda-days-dark")
+    }
+
+    @Test fun restoredBottomBarOffersBothCreationActions() {
+        var reminder: Boolean? = null
+        screen(onCreate = { reminder = it })
+        compose.onNodeWithContentDescription("Crear").performClick()
+        compose.onNodeWithText("Nuevo recordatorio").performClick()
+        assertEquals(true, reminder)
+        compose.onNodeWithContentDescription("Crear").performClick()
+        compose.onNodeWithText("Nueva nota").performClick()
+        assertEquals(false, reminder)
     }
 
 }

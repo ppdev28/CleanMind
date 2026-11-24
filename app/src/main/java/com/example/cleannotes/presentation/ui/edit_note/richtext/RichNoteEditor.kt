@@ -215,7 +215,7 @@ class RichNoteEditor(context: Context) : EditText(context) {
     private fun restoreTextHistory(value: NoteDocument) = value.copy(
         subtitle = document.subtitle, images = document.images,
         reminder = document.reminder, backgroundColor = document.backgroundColor,
-        pinned = document.pinned, archived = document.archived, reminderCompleted = document.reminderCompleted, checklist = document.checklist
+        pinned = document.pinned, archived = document.archived, reminderCompleted = document.reminderCompleted, checklist = document.checklist, createdAt = document.createdAt
     )
     fun undoEdit() { if (undo.isNotEmpty()) { redo.addLast(document); document = restoreTextHistory(undo.removeLast()); render(); onDocumentChanged(document) } }
     fun redoEdit() { if (redo.isNotEmpty()) { undo.addLast(document); document = restoreTextHistory(redo.removeLast()); render(); onDocumentChanged(document) } }

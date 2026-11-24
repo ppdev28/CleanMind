@@ -8,3 +8,6 @@ data class Note(
     val timestamp: Long,
     val isReminder: Boolean = false
 )
+
+/** Older notes use their last known timestamp until their first update pins that reference. */
+fun Note.creationTimestamp(): Long = NoteDocument.decode(content).createdAt ?: timestamp

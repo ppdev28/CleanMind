@@ -136,3 +136,5 @@ La carpeta adicional se guarda como URI SAF en `note_export`, con permiso persis
 `subtitle` se guarda en el documento con valor predeterminado vacío: no cambia Room ni extrae texto del cuerpo de las notas antiguas. La búsqueda y las exportaciones TXT/PDF lo incluyen. Deshacer/rehacer del cuerpo conserva los metadatos editados por separado.
 
 La rama Figma añade campos opcionales `pinned`, `archived`, `reminderCompleted` y `checklist` al documento. Los documentos anteriores se leen con valores predeterminados sin cambiar Room 3. Las listas de casillas se buscan y exportan como texto; los ID de cada elemento se conservan al editar.
+
+`createdAt` es opcional en documentos antiguos. Al guardar, el repositorio conserva primero el valor persistido, después usa el timestamp anterior como referencia para notas legadas, y finalmente el timestamp de inserción para notas nuevas. La agenda usa `createdAt ?: timestamp`; la columna `timestamp` continúa representando la última escritura.
