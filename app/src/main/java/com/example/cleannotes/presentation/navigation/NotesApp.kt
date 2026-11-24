@@ -23,7 +23,7 @@ import com.example.cleannotes.presentation.ui.edit_note.EditNoteScreen
 import com.example.cleannotes.presentation.ui.edit_note.viewmodel.EditNoteViewModel
 import com.example.cleannotes.presentation.ui.settings.SettingsScreen
 import com.example.cleannotes.presentation.ui.settings.SettingsViewModel
-import com.example.cleannotes.presentation.ui.theme.CleanNotesTheme
+import com.example.cleannotes.presentation.ui.theme.CleanMindTheme
 
 @Composable
 fun NotesApp(
@@ -38,7 +38,7 @@ fun NotesApp(
 			ThemeMode.LIGHT -> false
 			ThemeMode.DARK -> true
 		}
-	CleanNotesTheme(darkTheme = dark) {
+	CleanMindTheme(darkTheme = dark) {
 		Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
 			if (settings.isLoading) {
 				Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

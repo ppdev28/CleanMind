@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.TextMark
-import com.example.cleannotes.presentation.ui.theme.CleanNotesTheme
+import com.example.cleannotes.presentation.ui.theme.CleanMindTheme
 
 @Preview(
 	name = "Editor · vacío",
@@ -15,7 +15,7 @@ import com.example.cleannotes.presentation.ui.theme.CleanNotesTheme
 )
 @Composable
 private fun EmptyEditorPreview() {
-	CleanNotesTheme { EditNoteScreen(EditNoteUiState(), {}, {}, {}) }
+	CleanMindTheme { EditNoteScreen(EditNoteUiState(), {}, {}, {}) }
 }
 
 @Preview(
@@ -51,7 +51,7 @@ private fun LargeTextEditorPreview() = EditorPreview(false)
 
 @Composable
 private fun EditorPreview(dark: Boolean) {
-	CleanNotesTheme(darkTheme = dark) {
+	CleanMindTheme(darkTheme = dark) {
 		EditNoteScreen(
 			EditNoteUiState(
 				title = "Ideas para el fin de semana",

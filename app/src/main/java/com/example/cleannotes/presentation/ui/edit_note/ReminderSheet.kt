@@ -62,8 +62,8 @@ fun ReminderSheet(
 		remember(context, dark) {
 			android.view.ContextThemeWrapper(
 				context,
-				if (dark) R.style.Theme_CleanNotes_Dialog_Dark
-				else R.style.Theme_CleanNotes_Dialog_Light,
+				if (dark) R.style.Theme_CleanMind_Dialog_Dark
+				else R.style.Theme_CleanMind_Dialog_Light,
 			)
 		}
 	val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]

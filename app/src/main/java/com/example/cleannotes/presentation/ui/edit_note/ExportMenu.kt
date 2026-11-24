@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.data.export.NoteExport
 import com.example.cleannotes.model.NoteDocument
-import com.example.cleannotes.presentation.ui.theme.CleanNotesTheme
+import com.example.cleannotes.presentation.ui.theme.CleanMindTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -440,7 +440,7 @@ private fun ShareLargeTextPreview() = SharePreview(false)
 
 @Composable
 private fun SharePreview(dark: Boolean) {
-	CleanNotesTheme(darkTheme = dark) {
+	CleanMindTheme(darkTheme = dark) {
 		Surface(color = MaterialTheme.colorScheme.surfaceContainerLow) {
 			ExportSheetContent(
 				"Ideas para el fin de semana",

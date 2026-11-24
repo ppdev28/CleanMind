@@ -116,7 +116,7 @@ private val DarkColors =
 	)
 
 @Composable
-fun CleanNotesTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun CleanMindTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
 	val view = LocalView.current
 	if (!view.isInEditMode) {
 		SideEffect {

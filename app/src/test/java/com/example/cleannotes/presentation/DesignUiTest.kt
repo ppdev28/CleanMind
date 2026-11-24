@@ -15,7 +15,7 @@ import com.example.cleannotes.presentation.notebook.*
 import com.example.cleannotes.presentation.ui.edit_note.EditNoteScreen
 import com.example.cleannotes.presentation.ui.edit_note.EditNoteUiState
 import com.example.cleannotes.presentation.ui.edit_note.SaveStatus
-import com.example.cleannotes.presentation.ui.theme.CleanNotesTheme
+import com.example.cleannotes.presentation.ui.theme.CleanMindTheme
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -85,7 +85,7 @@ class DesignUiTest {
 		compose.setContent {
 			var tab by remember { mutableStateOf(initial) }
 			var query by remember { mutableStateOf("") }
-			CleanNotesTheme(darkTheme = dark) {
+			CleanMindTheme(darkTheme = dark) {
 				NotebookScreen(
 					NotesUiState(
 						allNotes = sample,
@@ -122,7 +122,7 @@ class DesignUiTest {
 					android.graphics.Bitmap.Config.ARGB_8888,
 				)
 			view.draw(android.graphics.Canvas(bitmap))
-			java.io.File("/tmp/cleannotes-figma-$name.png").outputStream().use {
+			java.io.File("/tmp/cleanmind-ui-$name.png").outputStream().use {
 				bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
 			}
 		}
@@ -161,7 +161,7 @@ class DesignUiTest {
 	fun editorCanEnterAndLeaveFocusWithoutNavigatingAway() {
 		var back = false
 		compose.setContent {
-			CleanNotesTheme(darkTheme = true) {
+			CleanMindTheme(darkTheme = true) {
 				EditNoteScreen(
 					EditNoteUiState(
 						title = "Paseo del sábado",
@@ -190,7 +190,7 @@ class DesignUiTest {
 		var persisted = sample.last()
 		compose.setContent {
 			var notes by remember { mutableStateOf(listOf(persisted)) }
-			CleanNotesTheme(darkTheme = true) {
+			CleanMindTheme(darkTheme = true) {
 				NotebookScreen(
 					NotesUiState(
 						allNotes = notes,
@@ -230,7 +230,7 @@ class DesignUiTest {
 				org.robolectric.RuntimeEnvironment.getApplication(),
 			)
 		compose.setContent {
-			CleanNotesTheme(darkTheme = true) {
+			CleanMindTheme(darkTheme = true) {
 				com.example.cleannotes.presentation.ui.settings.SettingsScreen(
 					com.example.cleannotes.presentation.ui.settings.SettingsUiState(
 						isLoading = false
@@ -252,7 +252,7 @@ class DesignUiTest {
 	@Test
 	fun reminderSheetShowsQuickChoices() {
 		compose.setContent {
-			CleanNotesTheme(darkTheme = true) {
+			CleanMindTheme(darkTheme = true) {
 				Surface(
 					Modifier.fillMaxSize(),
 					color = androidx.compose.material3.MaterialTheme.colorScheme.background,
@@ -293,7 +293,7 @@ class DesignUiTest {
 				),
 			)
 		compose.setContent {
-			CleanNotesTheme(darkTheme = true) {
+			CleanMindTheme(darkTheme = true) {
 				NotebookScreen(
 					NotesUiState(allNotes = notes, isLoading = false),
 					{},

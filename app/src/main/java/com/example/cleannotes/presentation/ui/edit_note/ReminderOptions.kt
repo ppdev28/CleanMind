@@ -38,8 +38,8 @@ fun ReminderOptions(document: NoteDocument, enabled: Boolean, onChange: (String)
 		remember(context, dark) {
 			android.view.ContextThemeWrapper(
 				context,
-				if (dark) R.style.Theme_CleanNotes_Dialog_Dark
-				else R.style.Theme_CleanNotes_Dialog_Light,
+				if (dark) R.style.Theme_CleanMind_Dialog_Dark
+				else R.style.Theme_CleanMind_Dialog_Light,
 			)
 		}
 	val config = document.reminder

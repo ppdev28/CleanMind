@@ -24,6 +24,6 @@ dependencyResolutionManagement {
 	}
 }
 
-rootProject.name = "CleanNotes"
+rootProject.name = "CleanMind"
 
 include(":app")

@@ -4,7 +4,7 @@ env:
     # Nombre del módulo principal (usualmente 'app')
     main_project_module: app
     # Nombre para mostrar en los artefactos
-    app_name: Clean Notes
+    app_name: Clean Mind
 
 # 1. Trigger Manual Exclusivo
 on:

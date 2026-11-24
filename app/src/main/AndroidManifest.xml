@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CleanNotes"
+        android:theme="@style/Theme.CleanMind"
         android:name=".NotesApplication">
         <receiver
             android:name=".data.reminders.ReminderReceiver"
@@ -38,7 +38,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.CleanNotes">
+            android:theme="@style/Theme.CleanMind">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

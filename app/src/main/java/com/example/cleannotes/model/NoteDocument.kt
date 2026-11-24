@@ -35,13 +35,21 @@ data class NoteDocument(
 	fun encode(): String = PREFIX + Json.encodeToString(this)
 
 	companion object {
-		private const val PREFIX = "\u001eCleanNotes:document:1\n"
+		private const val PREFIX = "\u001eCleanMind:document:1\n"
+		private const val LEGACY_PREFIX = "\u001eCleanNotes:document:1\n"
 
-		fun decode(content: String): NoteDocument =
-			if (content.startsWith(PREFIX)) {
-				runCatching { Json.decodeFromString<NoteDocument>(content.removePrefix(PREFIX)) }
-					.getOrElse { NoteDocument(text = content) }
-			} else NoteDocument(text = content, extraLineSpacing = 0)
+		fun decode(content: String): NoteDocument {
+			val payload =
+				when {
+					content.startsWith(PREFIX) -> content.removePrefix(PREFIX)
+					content.startsWith(LEGACY_PREFIX) -> content.removePrefix(LEGACY_PREFIX)
+					else -> return NoteDocument(text = content, extraLineSpacing = 0)
+				}
+			return runCatching { Json.decodeFromString<NoteDocument>(payload) }
+				.getOrElse {
+					NoteDocument(text = content)
+				}
+		}
 
 		fun plainText(content: String): String =
 			decode(content).let {

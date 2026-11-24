@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
-import com.example.cleannotes.presentation.ui.theme.CleanNotesTheme
+import com.example.cleannotes.presentation.ui.theme.CleanMindTheme
 
 @Preview(
 	name = "Inicio · claro",
@@ -35,7 +35,7 @@ private fun HomeDarkPreview() = HomePreview(dark = true)
 )
 @Composable
 private fun HomeGridPreview() {
-	CleanNotesTheme {
+	CleanMindTheme {
 		com.example.cleannotes.presentation.ui.components.NotesCollection(
 			notes =
 				listOf(
@@ -86,7 +86,7 @@ private fun HomePreview(dark: Boolean, empty: Boolean = false) {
 					now - 86_400_000,
 				),
 			)
-	CleanNotesTheme(darkTheme = dark) {
+	CleanMindTheme(darkTheme = dark) {
 		com.example.cleannotes.presentation.notebook.NotebookScreen(
 			state =
 				com.example.cleannotes.presentation.notebook.NotesUiState(
