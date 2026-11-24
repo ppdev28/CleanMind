@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.example.cleannotes.model.CheckItem
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.design.*
+import com.example.cleannotes.presentation.ui.design.glassMaterial
 import com.example.cleannotes.presentation.ui.edit_note.richtext.*
 import com.example.cleannotes.presentation.ui.motion.AppMotion
 import kotlinx.coroutines.launch
@@ -196,14 +197,16 @@ fun EditNoteScreen(
 			}
 		}
 	Scaffold(
+		containerColor = androidx.compose.ui.graphics.Color.Transparent,
 		modifier = Modifier.imePadding(),
 		snackbarHost = { DesignSnackbarHost(snackbar) },
 		topBar = {
 			Row(
 				Modifier.fillMaxWidth()
 					.statusBarsPadding()
-					.padding(horizontal = 24.dp)
-					.padding(top = 8.dp),
+					.padding(horizontal = 16.dp)
+					.padding(top = 8.dp)
+					.glassMaterial(RoundedCornerShape(24.dp), prominent = true),
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				DesignIconButton(

@@ -2,14 +2,17 @@ package com.example.cleannotes.presentation.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.example.cleannotes.presentation.ui.design.GlassScene
 
 private val LightColors =
 	lightColorScheme(
@@ -116,7 +119,11 @@ private val DarkColors =
 	)
 
 @Composable
-fun CleanMindTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun CleanMindTheme(
+	darkTheme: Boolean = isSystemInDarkTheme(),
+	glassBlurEnabled: Boolean = true,
+	content: @Composable () -> Unit,
+) {
 	val view = LocalView.current
 	if (!view.isInEditMode) {
 		SideEffect {
@@ -130,6 +137,12 @@ fun CleanMindTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
 	MaterialTheme(
 		colorScheme = if (darkTheme) DarkColors else LightColors,
 		typography = Typography,
-		content = content,
+		content = {
+			CompositionLocalProvider(
+				LocalContentColor provides MaterialTheme.colorScheme.onBackground
+			) {
+				GlassScene(blurEnabled = glassBlurEnabled, content = content)
+			}
+		},
 	)
 }

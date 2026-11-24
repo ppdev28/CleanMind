@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.ui.motion.AppMotion
 
@@ -181,9 +182,8 @@ fun EditorBottomBar(
 		}
 	}
 	if (sheet != null) {
-		ModalBottomSheet(
+		GlassBottomSheet(
 			onDismissRequest = { sheet = null },
-			containerColor = MaterialTheme.colorScheme.surface,
 			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 		) {
 			when (sheet) {

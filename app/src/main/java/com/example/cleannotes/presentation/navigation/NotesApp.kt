@@ -4,7 +4,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,7 +44,10 @@ fun NotesApp(
 			ThemeMode.DARK -> true
 		}
 	CleanMindTheme(darkTheme = dark) {
-		Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+		Surface(
+			color = androidx.compose.ui.graphics.Color.Transparent,
+			modifier = Modifier.fillMaxSize(),
+		) {
 			if (settings.isLoading) {
 				Box(
 					Modifier.fillMaxSize(),

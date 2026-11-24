@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +32,7 @@ import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.ReminderConfig
 import com.example.cleannotes.presentation.ui.components.ScreenTopBar
 import com.example.cleannotes.presentation.ui.design.DesignRow
+import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.ui.motion.AppMotion
 import java.text.DateFormat
@@ -130,7 +132,7 @@ fun ReminderEditorScreen(
 			},
 		)
 	if (advanced)
-		ModalBottomSheet(
+		GlassBottomSheet(
 			onDismissRequest = { advanced = false },
 			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 		) {
@@ -151,6 +153,7 @@ fun ReminderEditorScreen(
 			}
 		}
 	Scaffold(
+		containerColor = androidx.compose.ui.graphics.Color.Transparent,
 		topBar = {
 			ScreenTopBar(
 				if (existing) "Editar recordatorio" else "Nuevo recordatorio",

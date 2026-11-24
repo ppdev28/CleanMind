@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteFolder
 import com.example.cleannotes.presentation.notebook.FolderOperation
+import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
 
 @Composable
@@ -181,7 +182,7 @@ fun FolderManager(
 			},
 		)
 	}
-	ModalBottomSheet(
+	GlassBottomSheet(
 		onDismissRequest = { if (!operation.busy) onDismiss() },
 		sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 	) {
@@ -263,7 +264,7 @@ fun MoveNoteSheet(
 ) {
 	val initialRevision = remember { operation.revision }
 	LaunchedEffect(operation.revision) { if (operation.revision != initialRevision) onDismiss() }
-	ModalBottomSheet(
+	GlassBottomSheet(
 		onDismissRequest = { if (!operation.busy) onDismiss() },
 		sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 	) {

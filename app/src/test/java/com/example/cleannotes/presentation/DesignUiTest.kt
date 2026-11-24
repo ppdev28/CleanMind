@@ -85,7 +85,7 @@ class DesignUiTest {
 		compose.setContent {
 			var tab by remember { mutableStateOf(initial) }
 			var query by remember { mutableStateOf("") }
-			CleanMindTheme(darkTheme = dark) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = dark) {
 				NotebookScreen(
 					NotesUiState(
 						allNotes = sample,
@@ -161,7 +161,7 @@ class DesignUiTest {
 	fun editorCanEnterAndLeaveFocusWithoutNavigatingAway() {
 		var back = false
 		compose.setContent {
-			CleanMindTheme(darkTheme = true) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
 				EditNoteScreen(
 					EditNoteUiState(
 						title = "Paseo del sábado",
@@ -190,7 +190,7 @@ class DesignUiTest {
 		var persisted = sample.last()
 		compose.setContent {
 			var notes by remember { mutableStateOf(listOf(persisted)) }
-			CleanMindTheme(darkTheme = true) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
 				NotebookScreen(
 					NotesUiState(
 						allNotes = notes,
@@ -230,7 +230,7 @@ class DesignUiTest {
 				org.robolectric.RuntimeEnvironment.getApplication(),
 			)
 		compose.setContent {
-			CleanMindTheme(darkTheme = true) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
 				com.example.cleannotes.presentation.ui.settings.SettingsScreen(
 					com.example.cleannotes.presentation.ui.settings.SettingsUiState(
 						isLoading = false
@@ -252,7 +252,7 @@ class DesignUiTest {
 	@Test
 	fun reminderSheetShowsQuickChoices() {
 		compose.setContent {
-			CleanMindTheme(darkTheme = true) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
 				Surface(
 					Modifier.fillMaxSize(),
 					color = androidx.compose.material3.MaterialTheme.colorScheme.background,
@@ -293,7 +293,7 @@ class DesignUiTest {
 				),
 			)
 		compose.setContent {
-			CleanMindTheme(darkTheme = true) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
 				NotebookScreen(
 					NotesUiState(allNotes = notes, isLoading = false),
 					{},
@@ -338,7 +338,7 @@ class DesignUiTest {
 		var back = false
 		compose.setContent {
 			var state by remember { mutableStateOf(EditNoteUiState(isReminder = true)) }
-			CleanMindTheme(darkTheme = true) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
 				com.example.cleannotes.presentation.ui.edit_note.ReminderEditorScreen(
 					state,
 					{ event ->
@@ -382,7 +382,7 @@ class DesignUiTest {
 					)
 				)
 			}
-			CleanMindTheme(darkTheme = true) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
 				NotebookScreen(
 					state,
 					{},
@@ -439,7 +439,7 @@ class DesignUiTest {
 		var tabChanged = false
 		compose.setContent {
 			androidx.activity.compose.BackHandler { fallbackHandled = true }
-			CleanMindTheme(darkTheme = true) {
+			CleanMindTheme(glassBlurEnabled = false, darkTheme = true) {
 				NotebookScreen(
 					NotesUiState(selectedTab = NotesTab.NOTES, isLoading = false),
 					{ tabChanged = true },

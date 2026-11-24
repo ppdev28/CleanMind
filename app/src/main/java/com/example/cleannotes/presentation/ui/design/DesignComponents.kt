@@ -2,7 +2,6 @@ package com.example.cleannotes.presentation.ui.design
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -83,11 +82,9 @@ fun DesignRow(
 ) {
 	Surface(
 		onClick = onClick,
+		modifier = Modifier.glassMaterial(RoundedCornerShape(16.dp), selected = selected),
 		shape = RoundedCornerShape(16.dp),
-		color =
-			if (selected) MaterialTheme.colorScheme.surfaceContainer
-			else MaterialTheme.colorScheme.surface,
-		border = if (selected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
+		color = Color.Transparent,
 	) {
 		Row(
 			Modifier.fillMaxWidth()
@@ -134,10 +131,10 @@ fun DesignNoteCard(
 	}
 		.joinToString(" · ")
 	Surface(
-		modifier = modifier.noteActions(onClick, onLongClick),
+		modifier =
+			modifier.noteActions(onClick, onLongClick).glassMaterial(RoundedCornerShape(22.dp)),
 		shape = RoundedCornerShape(22.dp),
-		color = MaterialTheme.colorScheme.surface,
-		border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+		color = Color.Transparent,
 	) {
 		Column(
 			Modifier.fillMaxWidth().heightIn(min = 112.dp).padding(16.dp),

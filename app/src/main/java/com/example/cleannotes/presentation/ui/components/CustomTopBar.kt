@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.presentation.ui.design.MindIcons
+import com.example.cleannotes.presentation.ui.design.glassMaterial
 
 @Composable
 fun CustomTopBar(onSettings: () -> Unit, title: String? = null) {
@@ -16,7 +17,13 @@ fun CustomTopBar(onSettings: () -> Unit, title: String? = null) {
 		modifier =
 			Modifier.fillMaxWidth()
 				.statusBarsPadding()
-				.padding(start = 24.dp, end = 16.dp, top = 28.dp, bottom = 20.dp),
+				.padding(start = 16.dp, end = 16.dp, top = 28.dp, bottom = 12.dp)
+				.glassMaterial(
+					androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+					prominent = true,
+					includeScrollingContent = true,
+				)
+				.padding(start = 12.dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		Text(

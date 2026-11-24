@@ -1,6 +1,5 @@
 package com.example.cleannotes.presentation.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -8,12 +7,15 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.presentation.notebook.NotesTab
+import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
+import com.example.cleannotes.presentation.ui.design.glassMaterial
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,13 +33,21 @@ fun BottomNavigationBar(
 			Triple(NotesTab.REMINDERS, R.string.nav_reminders, MindIcons.Notifications),
 			Triple(NotesTab.SEARCH, R.string.search, MindIcons.Search),
 		)
-	Surface(color = MaterialTheme.colorScheme.surface) {
+	Surface(
+		modifier =
+			Modifier.navigationBarsPadding()
+				.padding(start = 12.dp, end = 12.dp, bottom = 10.dp, top = 6.dp)
+				.glassMaterial(
+					RoundedCornerShape(28.dp),
+					prominent = true,
+					includeScrollingContent = true,
+				),
+		color = Color.Transparent,
+		shape = RoundedCornerShape(28.dp),
+	) {
 		Column {
-			HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
 			Row(
-				Modifier.fillMaxWidth()
-					.navigationBarsPadding()
-					.padding(horizontal = 6.dp, vertical = 8.dp),
+				Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 8.dp),
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				destinations.forEachIndexed { index, (route, label, icon) ->
@@ -78,10 +88,9 @@ fun BottomNavigationBar(
 		}
 	}
 	if (showMenu)
-		ModalBottomSheet(
+		GlassBottomSheet(
 			onDismissRequest = { showMenu = false },
 			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-			containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
 		) {
 			Column(
 				Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
@@ -129,8 +138,8 @@ private fun CreationOption(
 	Surface(
 		onClick = onClick,
 		shape = RoundedCornerShape(20.dp),
-		color = MaterialTheme.colorScheme.surface,
-		border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+		color = Color.Transparent,
+		modifier = Modifier.glassMaterial(RoundedCornerShape(20.dp)),
 	) {
 		Row(
 			Modifier.fillMaxWidth().padding(20.dp),

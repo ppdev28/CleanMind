@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.presentation.ui.design.MindIcons
+import com.example.cleannotes.presentation.ui.design.glassMaterial
 import com.example.cleannotes.presentation.util.DateUtils
 
 @Composable
@@ -111,6 +113,11 @@ fun ViewToggle(isListView: Boolean, onClick: () -> Unit) {
 @Composable
 fun ScreenTopBar(title: String, onBack: () -> Unit, actions: @Composable RowScope.() -> Unit = {}) {
 	TopAppBar(
+		modifier =
+			Modifier.statusBarsPadding()
+				.padding(horizontal = 16.dp, vertical = 8.dp)
+				.glassMaterial(RoundedCornerShape(24.dp), prominent = true),
+		windowInsets = WindowInsets(0.dp),
 		title = { Text(title, style = MaterialTheme.typography.titleLarge) },
 		navigationIcon = {
 			IconButton(onClick = onBack) {
@@ -121,10 +128,7 @@ fun ScreenTopBar(title: String, onBack: () -> Unit, actions: @Composable RowScop
 			}
 		},
 		actions = actions,
-		colors =
-			TopAppBarDefaults.topAppBarColors(
-				containerColor = MaterialTheme.colorScheme.background
-			),
+		colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
 	)
 }
 

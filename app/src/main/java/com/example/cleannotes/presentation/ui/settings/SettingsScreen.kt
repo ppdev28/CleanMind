@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -22,6 +23,7 @@ import com.example.cleannotes.R
 import com.example.cleannotes.model.ThemeMode
 import com.example.cleannotes.presentation.ui.components.ScreenTopBar
 import com.example.cleannotes.presentation.ui.design.MindIcons
+import com.example.cleannotes.presentation.ui.design.glassMaterial
 
 @Composable
 fun SettingsScreen(
@@ -32,7 +34,10 @@ fun SettingsScreen(
 	storageContent: @Composable () -> Unit = { StorageSettings() },
 ) {
 	val context = LocalContext.current
-	Scaffold(topBar = { ScreenTopBar(stringResource(R.string.settings), onBack) }) { padding ->
+	Scaffold(
+		containerColor = Color.Transparent,
+		topBar = { ScreenTopBar(stringResource(R.string.settings), onBack) },
+	) { padding ->
 		Column(
 			Modifier.fillMaxSize()
 				.padding(padding)
@@ -60,7 +65,11 @@ fun SettingsScreen(
 					color = MaterialTheme.colorScheme.onSurfaceVariant,
 				)
 			}
-			Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface) {
+			Surface(
+				modifier = Modifier.glassMaterial(RoundedCornerShape(22.dp)),
+				shape = RoundedCornerShape(22.dp),
+				color = Color.Transparent,
+			) {
 				Column(Modifier.selectableGroup().padding(vertical = 8.dp)) {
 					listOf(
 						ThemeMode.SYSTEM to R.string.theme_system,
@@ -88,7 +97,11 @@ fun SettingsScreen(
 						}
 				}
 			}
-			Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface) {
+			Surface(
+				modifier = Modifier.glassMaterial(RoundedCornerShape(22.dp)),
+				shape = RoundedCornerShape(22.dp),
+				color = Color.Transparent,
+			) {
 				Column(Modifier.padding(20.dp)) { storageContent() }
 			}
 			Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
