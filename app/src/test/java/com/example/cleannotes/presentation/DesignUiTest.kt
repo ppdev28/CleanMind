@@ -307,8 +307,8 @@ class DesignUiTest {
 				)
 			}
 		}
-		compose.onNodeWithText("Hoy", substring = false).assertExists()
-		compose.onNodeWithText("Ayer", substring = false).assertExists()
+		compose.onNodeWithText("Hoy", substring = false).assertDoesNotExist()
+		compose.onNodeWithText("Ayer", substring = false).assertDoesNotExist()
 		compose
 			.onAllNodes(
 				SemanticsMatcher.keyIsDefined(

@@ -222,27 +222,6 @@ fun NotebookScreen(
 									onClick = { onTabSelected(NotesTab.SEARCH) },
 								)
 							}
-							item {
-								Surface(
-									onClick = onQuickCreate,
-									color = MaterialTheme.colorScheme.surfaceContainer,
-									shape = RoundedCornerShape(14.dp),
-								) {
-									Row(
-										Modifier.fillMaxWidth()
-											.heightIn(min = 56.dp)
-											.padding(12.dp),
-										verticalAlignment = Alignment.CenterVertically,
-										horizontalArrangement = Arrangement.spacedBy(8.dp),
-									) {
-										DesignIcon(MindIcons.Add)
-										Text(
-											"¿Qué quieres guardar?",
-											style = MaterialTheme.typography.bodyMedium,
-										)
-									}
-								}
-							}
 							val days =
 								active
 									.sortedWith(
