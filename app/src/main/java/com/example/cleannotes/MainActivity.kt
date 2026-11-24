@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.example.cleannotes.presentation.navigation.NotesApp
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +23,24 @@ class MainActivity : ComponentActivity() {
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
+		val splash = installSplashScreen()
 		super.onCreate(savedInstanceState)
+		var contentReady by androidx.compose.runtime.mutableStateOf(false)
+		splash.setKeepOnScreenCondition { !contentReady }
+		splash.setOnExitAnimationListener { screen ->
+			if (
+				android.os.Build.VERSION.SDK_INT >= 26 &&
+				!android.animation.ValueAnimator.areAnimatorsEnabled()
+			)
+				screen.remove()
+			else
+				screen.view
+					.animate()
+					.alpha(0f)
+					.setDuration(180L)
+					.withEndAction { screen.remove() }
+					.start()
+		}
 		enableEdgeToEdge()
 		lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
 			com.example.cleannotes.data.reminders.ReminderScheduler.restore(applicationContext)
@@ -32,6 +50,7 @@ class MainActivity : ComponentActivity() {
 			NotesApp(
 				notificationNoteId = notificationNoteId,
 				onNotificationOpened = { notificationNoteId = null },
+				onReady = { contentReady = true },
 			)
 		}
 	}

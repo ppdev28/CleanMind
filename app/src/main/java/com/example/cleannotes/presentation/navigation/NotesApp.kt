@@ -30,8 +30,10 @@ fun NotesApp(
 	settingsViewModel: SettingsViewModel = hiltViewModel(),
 	notificationNoteId: Int? = null,
 	onNotificationOpened: () -> Unit = {},
+	onReady: () -> Unit = {},
 ) {
 	val settings by settingsViewModel.uiState.collectAsStateWithLifecycle()
+	LaunchedEffect(settings.isLoading) { if (!settings.isLoading) onReady() }
 	val dark =
 		when (settings.themeMode) {
 			ThemeMode.SYSTEM -> isSystemInDarkTheme()
