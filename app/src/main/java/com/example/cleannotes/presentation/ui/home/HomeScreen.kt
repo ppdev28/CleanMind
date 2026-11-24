@@ -1,9 +1,6 @@
 package com.example.cleannotes.presentation.ui.home
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.StickyNote2
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -15,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.presentation.ui.components.*
+import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.util.DateUtils
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -63,13 +61,7 @@ fun HomeScreen(
 									pluralStringResource(R.plurals.note_count, noteCount, noteCount)
 								)
 							},
-							icon = {
-								Icon(
-									Icons.AutoMirrored.Outlined.StickyNote2,
-									null,
-									Modifier.size(16.dp),
-								)
-							},
+							icon = { Icon(MindIcons.StickyNote2, null, Modifier.size(16.dp)) },
 						)
 						SuggestionChip(
 							onClick = onOpenReminders,
@@ -82,9 +74,7 @@ fun HomeScreen(
 									)
 								)
 							},
-							icon = {
-								Icon(Icons.Outlined.Notifications, null, Modifier.size(16.dp))
-							},
+							icon = { Icon(MindIcons.Notifications, null, Modifier.size(16.dp)) },
 						)
 					}
 					Row(

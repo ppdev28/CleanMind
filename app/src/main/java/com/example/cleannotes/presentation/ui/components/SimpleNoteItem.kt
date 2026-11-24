@@ -5,9 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.StickyNote2
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -19,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.ui.edit_note.ExportMenu
 import com.example.cleannotes.presentation.util.DateUtils
 
@@ -57,8 +55,7 @@ fun SimpleNoteItem(
 						shape = RoundedCornerShape(10.dp),
 					) {
 						Icon(
-							if (note.isReminder) Icons.Outlined.Notifications
-							else Icons.AutoMirrored.Outlined.StickyNote2,
+							if (note.isReminder) MindIcons.Notifications else MindIcons.StickyNote2,
 							null,
 							tint = accent,
 							modifier = Modifier.padding(8.dp).size(18.dp),
@@ -67,7 +64,7 @@ fun SimpleNoteItem(
 					Spacer(Modifier.weight(1f))
 					IconButton(onClick = { showOptions = true }) {
 						Icon(
-							Icons.Outlined.MoreHoriz,
+							MindIcons.MoreHoriz,
 							stringResource(R.string.note_options),
 							tint = MaterialTheme.colorScheme.onSurfaceVariant,
 						)
@@ -105,7 +102,7 @@ fun SimpleNoteItem(
 					horizontalArrangement = Arrangement.spacedBy(6.dp),
 				) {
 					Icon(
-						Icons.Outlined.Image,
+						MindIcons.Image,
 						null,
 						Modifier.size(15.dp),
 						tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -154,7 +151,7 @@ fun SimpleNoteItem(
 				ListItem(
 					headlineContent = { Text(stringResource(R.string.share_note)) },
 					supportingContent = { Text("Texto o PDF") },
-					leadingContent = { Icon(Icons.Outlined.Share, null, tint = accent) },
+					leadingContent = { Icon(MindIcons.Share, null, tint = accent) },
 					colors =
 						ListItemDefaults.colors(
 							containerColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -177,7 +174,7 @@ fun SimpleNoteItem(
 						)
 					},
 					leadingContent = {
-						Icon(Icons.Outlined.Delete, null, tint = MaterialTheme.colorScheme.error)
+						Icon(MindIcons.Delete, null, tint = MaterialTheme.colorScheme.error)
 					},
 					colors =
 						ListItemDefaults.colors(

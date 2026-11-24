@@ -30,7 +30,10 @@ fun ReminderSheet(
 			.apply {
 				if (tomorrow) add(Calendar.DAY_OF_YEAR, 1)
 				set(Calendar.HOUR_OF_DAY, if (tomorrow) 9 else 18)
-				set(Calendar.MINUTE, 0)
+				set(
+					Calendar.MINUTE,
+					0,
+				)
 				set(Calendar.SECOND, 0)
 				set(Calendar.MILLISECOND, 0)
 				if (!tomorrow && timeInMillis <= System.currentTimeMillis())
@@ -41,7 +44,10 @@ fun ReminderSheet(
 	val context = androidx.compose.ui.platform.LocalContext.current
 	val defaultSound = remember {
 		context
-			.getSharedPreferences("capture_preferences", android.content.Context.MODE_PRIVATE)
+			.getSharedPreferences(
+				"capture_preferences",
+				android.content.Context.MODE_PRIVATE,
+			)
 			.getBoolean("sound", false)
 	}
 	val later = remember { time(false) }
@@ -86,7 +92,7 @@ fun ReminderSheet(
 					Modifier.weight(1f),
 					style = MaterialTheme.typography.headlineSmall,
 				)
-				DesignIconButton(R.drawable.figma_close, "Cerrar recordatorio", onClick = onDismiss)
+				DesignIconButton(MindIcons.Close, "Cerrar recordatorio", onClick = onDismiss)
 			}
 			if (!custom) {
 				Text(
@@ -96,7 +102,7 @@ fun ReminderSheet(
 				)
 				DesignRow(
 					"Más tarde",
-					R.drawable.figma_clock,
+					MindIcons.Clock,
 					formatter.format(later),
 					draft.reminder?.at == later,
 				) {
@@ -105,14 +111,14 @@ fun ReminderSheet(
 				}
 				DesignRow(
 					"Mañana",
-					R.drawable.figma_bell,
+					MindIcons.Notifications,
 					formatter.format(tomorrow),
 					draft.reminder?.at == tomorrow,
 				) {
 					custom = false
 					draft = draft.copy(reminder = draft.reminder?.copy(at = tomorrow))
 				}
-				DesignRow("Elegir fecha y hora", R.drawable.figma_arrow, selected = custom) {
+				DesignRow("Elegir fecha y hora", MindIcons.Arrow, selected = custom) {
 					custom = true
 				}
 			}
@@ -120,7 +126,7 @@ fun ReminderSheet(
 				val at = draft.reminder?.at ?: tomorrow
 				DesignRow(
 					"Fecha",
-					R.drawable.figma_bell,
+					MindIcons.Notifications,
 					java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL, locale)
 						.format(at),
 				) {
@@ -166,18 +172,17 @@ fun ReminderSheet(
 						)
 					}
 				}
-				DesignRow(
-					"Hora",
-					R.drawable.figma_clock,
-					SimpleDateFormat("HH:mm", locale).format(at),
-				) {
+				DesignRow("Hora", MindIcons.Clock, SimpleDateFormat("HH:mm", locale).format(at)) {
 					val calendar = Calendar.getInstance().apply { timeInMillis = at }
 					android.app
 						.TimePickerDialog(
 							dialogContext,
 							{ _, hour, minute ->
 								calendar.set(Calendar.HOUR_OF_DAY, hour)
-								calendar.set(Calendar.MINUTE, minute)
+								calendar.set(
+									Calendar.MINUTE,
+									minute,
+								)
 								calendar.set(Calendar.SECOND, 0)
 								calendar.set(Calendar.MILLISECOND, 0)
 								draft =
@@ -249,7 +254,12 @@ fun ReminderSheet(
 			if (document.reminder != null)
 				TextButton(
 					onClick = {
-						onConfirm(document.copy(reminder = null, reminderCompleted = false))
+						onConfirm(
+							document.copy(
+								reminder = null,
+								reminderCompleted = false,
+							)
+						)
 					},
 					modifier = Modifier.fillMaxWidth(),
 				) {

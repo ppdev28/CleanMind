@@ -1,6 +1,5 @@
 package com.example.cleannotes.presentation.ui.design
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -10,33 +9,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.util.DateUtils
 
 @Composable
 fun DesignIcon(
-	@DrawableRes asset: Int,
+	asset: ImageVector,
 	description: String? = null,
 	modifier: Modifier = Modifier,
 	tint: Color = MaterialTheme.colorScheme.onSurface,
 ) {
-	Icon(painterResource(asset), description, modifier.size(24.dp), tint = tint)
+	Icon(asset, description, modifier.size(24.dp), tint = tint)
 }
 
 @Composable
 fun DesignIconButton(
-	@DrawableRes asset: Int,
+	asset: ImageVector,
 	description: String,
 	enabled: Boolean = true,
 	onClick: () -> Unit,
 ) {
 	IconButton(onClick = onClick, enabled = enabled, modifier = Modifier.size(48.dp)) {
-		DesignIcon(asset, description)
+		DesignIcon(
+			asset,
+			description,
+		)
 	}
 }
 
@@ -60,14 +61,14 @@ fun DesignHeader(title: String, onSettings: () -> Unit, date: Boolean = true) {
 					color = MaterialTheme.colorScheme.onSurfaceVariant,
 				)
 		}
-		DesignIconButton(R.drawable.figma_settings, "Ajustes", onClick = onSettings)
+		DesignIconButton(MindIcons.Settings, "Ajustes", onClick = onSettings)
 	}
 }
 
 @Composable
 fun DesignRow(
 	title: String,
-	@DrawableRes icon: Int,
+	icon: ImageVector,
 	subtitle: String? = null,
 	selected: Boolean = false,
 	onClick: () -> Unit,
@@ -98,7 +99,7 @@ fun DesignRow(
 					)
 				}
 			}
-			DesignIcon(if (selected) R.drawable.figma_check else R.drawable.figma_arrow)
+			DesignIcon(if (selected) MindIcons.Check else MindIcons.Arrow)
 		}
 	}
 }
@@ -186,10 +187,12 @@ fun DesignSnackbarHost(state: SnackbarHostState) {
 				horizontalArrangement = Arrangement.spacedBy(8.dp),
 			) {
 				if (
-					data.visuals.message.contains("archiv", true) ||
-					data.visuals.message.contains("restaur", true)
+					data.visuals.message.contains(
+						"archiv",
+						true,
+					) || data.visuals.message.contains("restaur", true)
 				)
-					DesignIcon(R.drawable.figma_archive)
+					DesignIcon(MindIcons.Archive)
 				Text(
 					data.visuals.message + (data.visuals.actionLabel?.let { " · $it" } ?: ""),
 					style = MaterialTheme.typography.bodyMedium,

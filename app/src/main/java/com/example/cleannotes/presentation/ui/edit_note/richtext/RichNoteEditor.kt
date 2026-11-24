@@ -214,7 +214,14 @@ class RichNoteEditor(context: Context) : EditText(context) {
 				marks =
 					kept +
 							if (kind != "clear" && !toggleOff)
-								listOf(TextMark(start, end, kind, amount))
+								listOf(
+									TextMark(
+										start,
+										end,
+										kind,
+										amount,
+									)
+								)
 							else emptyList()
 			)
 		commit(next)
@@ -340,7 +347,9 @@ class RichNoteEditor(context: Context) : EditText(context) {
 		for (index in 0 until clip.itemCount) {
 			val uri = clip.getItemAt(index).uri ?: continue
 			if (
-				runCatching { context.contentResolver.getType(uri)?.startsWith("image/") == true }
+				runCatching {
+					context.contentResolver.getType(uri)?.startsWith("image/") == true
+				}
 					.getOrDefault(false)
 			) {
 				onPasteImage(uri)

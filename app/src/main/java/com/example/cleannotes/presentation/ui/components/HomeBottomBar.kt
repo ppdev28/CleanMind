@@ -4,9 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
+import com.example.cleannotes.presentation.ui.design.MindIcons
 
 @Composable
 fun HomeBottomBar(modifier: Modifier = Modifier, onQuickAdd: (String, Boolean) -> Unit) {
@@ -41,12 +39,15 @@ fun HomeBottomBar(modifier: Modifier = Modifier, onQuickAdd: (String, Boolean) -
 		},
 		leadingIcon = {
 			IconToggleButton(checked = reminder, onCheckedChange = { reminder = it }) {
-				Icon(Icons.Outlined.Notifications, stringResource(R.string.reminder_mode))
+				Icon(MindIcons.Notifications, stringResource(R.string.reminder_mode))
 			}
 		},
 		trailingIcon = {
 			IconButton(onClick = submit, enabled = text.isNotBlank()) {
-				Icon(Icons.Default.Add, stringResource(R.string.create))
+				Icon(
+					MindIcons.Add,
+					stringResource(R.string.create),
+				)
 			}
 		},
 		textStyle = MaterialTheme.typography.bodyLarge,

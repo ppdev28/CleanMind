@@ -7,8 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.cleannotes.data.attachments.NoteImages
 import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.presentation.ui.design.MindIcons
 import kotlinx.coroutines.launch
 
 /** UI-only bridge. The document remains owned and persisted by EditNoteViewModel. */
@@ -171,8 +170,11 @@ fun NoteImageStrip(document: NoteDocument, enabled: Boolean, onChange: (String) 
 					)
 				} ?: Text("Imagen no disponible", Modifier.padding(24.dp))
 				Box(Modifier.align(Alignment.TopEnd).padding(4.dp)) {
-					FilledTonalIconButton(onClick = { menu = true }, enabled = enabled) {
-						Icon(Icons.Outlined.MoreVert, "Opciones de imagen")
+					FilledTonalIconButton(
+						onClick = { menu = true },
+						enabled = enabled,
+					) {
+						Icon(MindIcons.MoreVert, "Opciones de imagen")
 					}
 					DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
 						if (index > 0)

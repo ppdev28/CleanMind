@@ -8,11 +8,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CenterFocusStrong
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,7 +20,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cleannotes.R
 import com.example.cleannotes.model.CheckItem
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.design.*
@@ -79,7 +73,7 @@ fun EditNoteScreen(
 			state.loadFailed -> "No se pudo abrir"
 			state.saveStatus == SaveStatus.ERROR -> "No se pudo guardar"
 			state.saveStatus == SaveStatus.SAVING -> "Guardando…"
-			state.saveStatus == SaveStatus.SAVED -> "✓ Guardado"
+			state.saveStatus == SaveStatus.SAVED -> "Guardado"
 			else -> "Borrador"
 		}
 	LaunchedEffect(controller.error) {
@@ -175,7 +169,7 @@ fun EditNoteScreen(
 				verticalArrangement = Arrangement.spacedBy(12.dp),
 			) {
 				Text("Añadir imagen", style = MaterialTheme.typography.titleLarge)
-				DesignRow("Elegir imagen", R.drawable.figma_notes) {
+				DesignRow("Elegir imagen", MindIcons.Image) {
 					imageMenu = false
 					controller.chooseImage()
 				}
@@ -210,7 +204,7 @@ fun EditNoteScreen(
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				DesignIconButton(
-					if (focus) R.drawable.figma_close else R.drawable.figma_back,
+					if (focus) MindIcons.Close else MindIcons.ArrowBack,
 					if (focus) "Salir de concentración" else "Volver",
 				) {
 					if (focus) focus = false else close()
@@ -231,7 +225,7 @@ fun EditNoteScreen(
 						modifier = Modifier.size(48.dp),
 					) {
 						Icon(
-							Icons.Outlined.PushPin,
+							MindIcons.PushPin,
 							if (document.pinned) "Desfijar nota" else "Fijar nota",
 							tint =
 								if (document.pinned) MaterialTheme.colorScheme.primary
@@ -251,14 +245,14 @@ fun EditNoteScreen(
 						) {
 							CaptureTool(
 								"Lista",
-								R.drawable.figma_list,
+								MindIcons.List,
 								enabled,
 								Modifier.weight(1f),
 								::addItem,
 							)
 							CaptureTool(
 								"Imagen",
-								0,
+								MindIcons.Image,
 								enabled && !controller.importing,
 								Modifier.weight(1f),
 							) {
@@ -266,7 +260,7 @@ fun EditNoteScreen(
 							}
 							CaptureTool(
 								"Recordar",
-								R.drawable.figma_bell,
+								MindIcons.Notifications,
 								enabled,
 								Modifier.weight(1f),
 							) {
@@ -289,7 +283,7 @@ fun EditNoteScreen(
 							}
 							Box {
 								IconButton(onClick = { more = true }) {
-									Icon(Icons.Outlined.MoreVert, "Más opciones")
+									Icon(MindIcons.MoreVert, "Más opciones")
 								}
 								DropdownMenu(more, { more = false }) {
 									DropdownMenuItem(
@@ -323,7 +317,10 @@ fun EditNoteScreen(
 		},
 	) { padding ->
 		if (state.isLoading)
-			Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+			Box(
+				Modifier.fillMaxSize().padding(padding),
+				contentAlignment = Alignment.Center,
+			) {
 				CircularProgressIndicator()
 			}
 		else
@@ -349,8 +346,11 @@ fun EditNoteScreen(
 								verticalAlignment = Alignment.CenterVertically,
 								horizontalArrangement = Arrangement.spacedBy(8.dp),
 							) {
-								Icon(Icons.Outlined.CenterFocusStrong, null)
-								Text("Concentrarme", style = MaterialTheme.typography.bodyMedium)
+								Icon(MindIcons.CenterFocusStrong, null)
+								Text(
+									"Concentrarme",
+									style = MaterialTheme.typography.bodyMedium,
+								)
 							}
 						}
 						Surface(
@@ -371,9 +371,12 @@ fun EditNoteScreen(
 							shape = RoundedCornerShape(14.dp),
 							color = MaterialTheme.colorScheme.surfaceContainer,
 						) {
-							Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+							Box(
+								Modifier.size(48.dp),
+								contentAlignment = Alignment.Center,
+							) {
 								DesignIcon(
-									R.drawable.figma_archive,
+									MindIcons.Archive,
 									if (document.archived) "Desarchivar nota" else "Archivar nota",
 								)
 							}
@@ -514,7 +517,7 @@ fun EditNoteScreen(
 				if (document.reminder != null && !document.reminderCompleted && !focus)
 					DesignRow(
 						"Recordatorio",
-						R.drawable.figma_bell,
+						MindIcons.Notifications,
 						java.text.DateFormat.getDateTimeInstance(
 							java.text.DateFormat.SHORT,
 							java.text.DateFormat.SHORT,
@@ -537,7 +540,7 @@ fun EditNoteScreen(
 @Composable
 private fun CaptureTool(
 	label: String,
-	icon: Int,
+	icon: androidx.compose.ui.graphics.vector.ImageVector,
 	enabled: Boolean,
 	modifier: Modifier,
 	onClick: () -> Unit,
@@ -554,9 +557,12 @@ private fun CaptureTool(
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.Center,
 		) {
-			if (icon == 0) Icon(Icons.Outlined.Image, null) else DesignIcon(icon)
+			DesignIcon(icon)
 			Spacer(Modifier.width(8.dp))
-			Text(label, style = MaterialTheme.typography.bodyMedium)
+			Text(
+				label,
+				style = MaterialTheme.typography.bodyMedium,
+			)
 		}
 	}
 }

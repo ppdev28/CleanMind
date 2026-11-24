@@ -16,10 +16,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.PushPin
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,7 +25,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.creationTimestamp
@@ -120,7 +115,7 @@ fun NotebookScreen(
 						sharing = note
 					}
 				) {
-					Icon(Icons.Outlined.Share, null)
+					Icon(MindIcons.Share, null)
 					Spacer(Modifier.width(12.dp))
 					Text("Compartir nota")
 				}
@@ -130,7 +125,7 @@ fun NotebookScreen(
 						onUpdateNote(note) { it.copy(pinned = !it.pinned) }
 					}
 				) {
-					Icon(Icons.Outlined.PushPin, null)
+					Icon(MindIcons.PushPin, null)
 					Spacer(Modifier.width(12.dp))
 					Text(if (doc.pinned) "Desfijar" else "Fijar a mano")
 				}
@@ -140,7 +135,7 @@ fun NotebookScreen(
 						archive(note)
 					}
 				) {
-					DesignIcon(R.drawable.figma_archive)
+					DesignIcon(MindIcons.Archive)
 					Spacer(Modifier.width(12.dp))
 					Text(if (doc.archived) "Desarchivar" else "Archivar")
 				}
@@ -150,7 +145,7 @@ fun NotebookScreen(
 						deleting = note
 					}
 				) {
-					Icon(Icons.Outlined.Delete, null, tint = MaterialTheme.colorScheme.error)
+					Icon(MindIcons.Delete, null, tint = MaterialTheme.colorScheme.error)
 					Spacer(Modifier.width(12.dp))
 					Text("Eliminar", color = MaterialTheme.colorScheme.error)
 				}
@@ -240,7 +235,7 @@ fun NotebookScreen(
 										verticalAlignment = Alignment.CenterVertically,
 										horizontalArrangement = Arrangement.spacedBy(8.dp),
 									) {
-										DesignIcon(R.drawable.figma_plus)
+										DesignIcon(MindIcons.Add)
 										Text(
 											"¿Qué quieres guardar?",
 											style = MaterialTheme.typography.bodyMedium,
@@ -314,13 +309,14 @@ fun NotebookScreen(
 													else MaterialTheme.colorScheme.background,
 												shape = RoundedCornerShape(12.dp),
 											) {
-												Text(
-													(if (filter == label) "✓ " else "") + label,
-													Modifier.heightIn(min = 48.dp)
-														.wrapContentHeight()
-														.padding(horizontal = 10.dp),
-													style = MaterialTheme.typography.bodySmall,
-												)
+												Row(
+													Modifier.heightIn(min = 48.dp).padding(horizontal = 10.dp),
+													verticalAlignment = Alignment.CenterVertically,
+													horizontalArrangement = Arrangement.spacedBy(6.dp),
+												) {
+													if (filter == label) Icon(MindIcons.Check, null, Modifier.size(16.dp))
+													Text(label, style = MaterialTheme.typography.bodySmall)
+												}
 											}
 										}
 								}
@@ -336,7 +332,7 @@ fun NotebookScreen(
 										color = MaterialTheme.colorScheme.onSurfaceVariant,
 									)
 									DesignIconButton(
-										if (grid) R.drawable.figma_list else R.drawable.figma_grid,
+										if (grid) MindIcons.List else MindIcons.GridView,
 										"Cambiar vista",
 									) {
 										grid = !grid
@@ -403,7 +399,7 @@ private fun SearchEntry(value: String, onChange: (String) -> Unit, onClick: (() 
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.spacedBy(8.dp),
 		) {
-			DesignIcon(R.drawable.figma_search)
+			DesignIcon(MindIcons.Search)
 			if (onClick != null)
 				Text("Buscar en tus notas", style = MaterialTheme.typography.bodyMedium)
 			else
@@ -519,7 +515,7 @@ private fun ReminderCollection(
 								style = MaterialTheme.typography.bodyMedium,
 							)
 						}
-						DesignRow("Abrir nota", R.drawable.figma_arrow) { onOpen(note) }
+						DesignRow("Abrir nota", MindIcons.Arrow) { onOpen(note) }
 						Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 							Surface(
 								onClick = {
@@ -545,7 +541,7 @@ private fun ReminderCollection(
 									verticalAlignment = Alignment.CenterVertically,
 									horizontalArrangement = Arrangement.Center,
 								) {
-									DesignIcon(R.drawable.figma_clock)
+									DesignIcon(MindIcons.Clock)
 									Spacer(Modifier.width(8.dp))
 									Text("Posponer", style = MaterialTheme.typography.labelMedium)
 								}
@@ -565,7 +561,7 @@ private fun ReminderCollection(
 									verticalAlignment = Alignment.CenterVertically,
 									horizontalArrangement = Arrangement.Center,
 								) {
-									DesignIcon(R.drawable.figma_check)
+									DesignIcon(MindIcons.Check)
 									Spacer(Modifier.width(8.dp))
 									Text("Completar", style = MaterialTheme.typography.labelMedium)
 								}

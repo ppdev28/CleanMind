@@ -10,8 +10,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.model.ThemeMode
 import com.example.cleannotes.presentation.ui.components.ScreenTopBar
+import com.example.cleannotes.presentation.ui.design.MindIcons
 
 @Composable
 fun SettingsScreen(
@@ -94,7 +93,7 @@ fun SettingsScreen(
 			}
 			Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 				Icon(
-					Icons.Outlined.Notifications,
+					MindIcons.Notifications,
 					null,
 					tint = MaterialTheme.colorScheme.onSurfaceVariant,
 				)
@@ -109,7 +108,10 @@ fun SettingsScreen(
 							context.startActivity(
 								if (Build.VERSION.SDK_INT >= 26)
 									Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-										.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+										.putExtra(
+											Settings.EXTRA_APP_PACKAGE,
+											context.packageName,
+										)
 								else
 									Intent(
 										Settings.ACTION_APPLICATION_DETAILS_SETTINGS,

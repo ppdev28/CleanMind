@@ -2,12 +2,6 @@ package com.example.cleannotes.presentation.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.StickyNote2
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
+import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.notebook.NotesTab
 
 @Composable
@@ -26,10 +21,10 @@ fun BottomNavigationBar(
 	var showMenu by remember { mutableStateOf(false) }
 	val destinations =
 		listOf(
-			Triple(NotesTab.HOME, R.string.home, Icons.Outlined.Home),
-			Triple(NotesTab.NOTES, R.string.notes, Icons.AutoMirrored.Outlined.StickyNote2),
-			Triple(NotesTab.REMINDERS, R.string.nav_reminders, Icons.Outlined.Notifications),
-			Triple(NotesTab.SEARCH, R.string.search, Icons.Outlined.Search),
+			Triple(NotesTab.HOME, R.string.home, MindIcons.Home),
+			Triple(NotesTab.NOTES, R.string.notes, MindIcons.StickyNote2),
+			Triple(NotesTab.REMINDERS, R.string.nav_reminders, MindIcons.Notifications),
+			Triple(NotesTab.SEARCH, R.string.search, MindIcons.Search),
 		)
 	Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 0.dp) {
 		Column {
@@ -49,7 +44,7 @@ fun BottomNavigationBar(
 								shape = RoundedCornerShape(18.dp),
 							) {
 								Icon(
-									Icons.Default.Add,
+									MindIcons.Add,
 									stringResource(R.string.create),
 									modifier = Modifier.size(26.dp),
 								)
@@ -61,7 +56,7 @@ fun BottomNavigationBar(
 								DropdownMenuItem(
 									text = { Text(stringResource(R.string.new_note)) },
 									leadingIcon = {
-										Icon(Icons.AutoMirrored.Outlined.StickyNote2, null)
+										Icon(MindIcons.StickyNote2, null)
 									},
 									onClick = {
 										showMenu = false
@@ -70,7 +65,7 @@ fun BottomNavigationBar(
 								)
 								DropdownMenuItem(
 									text = { Text(stringResource(R.string.new_reminder)) },
-									leadingIcon = { Icon(Icons.Outlined.Notifications, null) },
+									leadingIcon = { Icon(MindIcons.Notifications, null) },
 									onClick = {
 										showMenu = false
 										onCreate(true)

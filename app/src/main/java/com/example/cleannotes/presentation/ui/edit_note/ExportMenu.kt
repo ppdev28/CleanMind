@@ -13,10 +13,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.InsertDriveFile
-import androidx.compose.material.icons.automirrored.outlined.Notes
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.data.export.NoteExport
 import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.ui.theme.CleanMindTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -153,7 +150,12 @@ fun ExportMenu(title: String, document: NoteDocument, onDismiss: () -> Unit) {
 			},
 			onSaveToFolder = {
 				execute("Archivo guardado en tu carpeta") {
-					NoteExport.saveToFolder(context, title, document, pdf)
+					NoteExport.saveToFolder(
+						context,
+						title,
+						document,
+						pdf,
+					)
 				}
 			},
 			onCopy = {
@@ -201,9 +203,7 @@ private fun ExportSheetContent(
 					color = MaterialTheme.colorScheme.onSurfaceVariant,
 				)
 			}
-			IconButton(onClick = onClose, enabled = enabled) {
-				Icon(Icons.Outlined.Close, "Cerrar")
-			}
+			IconButton(onClick = onClose, enabled = enabled) { Icon(MindIcons.Close, "Cerrar") }
 		}
 		Surface(
 			shape = RoundedCornerShape(16.dp),
@@ -214,7 +214,7 @@ private fun ExportSheetContent(
 				horizontalArrangement = Arrangement.spacedBy(12.dp),
 			) {
 				Icon(
-					Icons.AutoMirrored.Outlined.InsertDriveFile,
+					MindIcons.InsertDriveFile,
 					null,
 					tint = MaterialTheme.colorScheme.onSurfaceVariant,
 					modifier = Modifier.padding(top = 2.dp),
@@ -261,7 +261,7 @@ private fun ExportSheetContent(
 				FormatOption(
 					"Texto",
 					"TXT · Sin formato",
-					Icons.AutoMirrored.Outlined.Notes,
+					MindIcons.Notes,
 					!pdf,
 					enabled,
 					Modifier.weight(1f),
@@ -271,7 +271,7 @@ private fun ExportSheetContent(
 				FormatOption(
 					"PDF",
 					"Diseño e imágenes",
-					Icons.Outlined.PictureAsPdf,
+					MindIcons.PictureAsPdf,
 					pdf,
 					enabled,
 					Modifier.weight(1f),
@@ -294,7 +294,7 @@ private fun ExportSheetContent(
 				modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
 				shape = RoundedCornerShape(14.dp),
 			) {
-				Icon(Icons.Outlined.Share, null, Modifier.size(20.dp))
+				Icon(MindIcons.Share, null, Modifier.size(20.dp))
 				Spacer(Modifier.width(10.dp))
 				Text(if (pdf) "Compartir PDF" else "Compartir texto")
 			}
@@ -304,18 +304,18 @@ private fun ExportSheetContent(
 				modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
 				shape = RoundedCornerShape(14.dp),
 			) {
-				Icon(Icons.Outlined.FileDownload, null, Modifier.size(20.dp))
+				Icon(MindIcons.FileDownload, null, Modifier.size(20.dp))
 				Spacer(Modifier.width(10.dp))
 				Text("Guardar archivo…")
 			}
 			if (hasFolder)
 				ExportAction(
-					Icons.Outlined.FolderOpen,
+					MindIcons.FolderOpen,
 					"Guardar en mi carpeta",
 					enabled,
 					onSaveToFolder,
 				)
-			ExportAction(Icons.Outlined.ContentCopy, "Copiar texto", enabled, onCopy)
+			ExportAction(MindIcons.ContentCopy, "Copiar texto", enabled, onCopy)
 		}
 		if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
 		message?.let {
@@ -381,7 +381,7 @@ private fun FormatOption(
 				Spacer(Modifier.weight(1f))
 				if (selected)
 					Icon(
-						Icons.Outlined.CheckCircle,
+						MindIcons.CheckCircle,
 						null,
 						tint = MaterialTheme.colorScheme.primary,
 						modifier = Modifier.size(18.dp),

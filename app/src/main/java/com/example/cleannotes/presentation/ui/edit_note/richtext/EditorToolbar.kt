@@ -7,9 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.presentation.ui.design.MindIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +79,7 @@ fun EditorBottomBar(
 					Modifier.weight(1f),
 					{ editor?.format("bold") },
 				) {
-					Icon(Icons.Outlined.FormatBold, null)
+					Icon(MindIcons.FormatBold, null)
 				}
 				FormatButton(
 					"Cursiva",
@@ -90,7 +88,7 @@ fun EditorBottomBar(
 					Modifier.weight(1f),
 					{ editor?.format("italic") },
 				) {
-					Icon(Icons.Outlined.FormatItalic, null)
+					Icon(MindIcons.FormatItalic, null)
 				}
 				FormatButton(
 					"Subrayado",
@@ -99,7 +97,7 @@ fun EditorBottomBar(
 					Modifier.weight(1f),
 					{ editor?.format("underline") },
 				) {
-					Icon(Icons.Outlined.FormatUnderlined, null)
+					Icon(MindIcons.FormatUnderlined, null)
 				}
 				FormatButton(
 					"Borrar formato",
@@ -108,10 +106,13 @@ fun EditorBottomBar(
 					Modifier.weight(1f),
 					{ editor?.format("clear") },
 				) {
-					Icon(Icons.Outlined.FormatClear, null)
+					Icon(MindIcons.FormatClear, null)
 				}
 				IconButton(onClick = { formatting = false }, modifier = Modifier.weight(1f)) {
-					Icon(Icons.Outlined.Close, "Cerrar formato")
+					Icon(
+						MindIcons.Close,
+						"Cerrar formato",
+					)
 				}
 			}
 		} else {
@@ -123,15 +124,21 @@ fun EditorBottomBar(
 					onClick = { sheet = "insert" },
 					enabled = enabled && !controller.importing,
 				) {
-					BottomActionIcon(Icons.Outlined.AddBox, "Añadir a la nota")
+					BottomActionIcon(MindIcons.AddBox, "Añadir a la nota")
 				}
-				IconButton(onClick = { formatting = true }, enabled = enabled) {
-					BottomActionIcon(Icons.Outlined.TextFormat, "Formato de texto")
+				IconButton(
+					onClick = { formatting = true },
+					enabled = enabled,
+				) {
+					BottomActionIcon(MindIcons.TextFormat, "Formato de texto")
 				}
 				Spacer(Modifier.weight(1f))
 				Box {
-					IconButton(onClick = { more = true }, enabled = enabled) {
-						BottomActionIcon(Icons.Outlined.MoreVert, "Más opciones")
+					IconButton(
+						onClick = { more = true },
+						enabled = enabled,
+					) {
+						BottomActionIcon(MindIcons.MoreVert, "Más opciones")
 					}
 					DropdownMenu(expanded = more, onDismissRequest = { more = false }) {
 						if (status.isNotEmpty())
@@ -146,7 +153,7 @@ fun EditorBottomBar(
 							)
 						DropdownMenuItem(
 							text = { Text("Enviar") },
-							leadingIcon = { Icon(Icons.Outlined.Share, null) },
+							leadingIcon = { Icon(MindIcons.Share, null) },
 							onClick = {
 								more = false
 								onShare()
@@ -154,7 +161,7 @@ fun EditorBottomBar(
 						)
 						DropdownMenuItem(
 							text = { Text("Formato y espaciado") },
-							leadingIcon = { Icon(Icons.Outlined.FormatLineSpacing, null) },
+							leadingIcon = { Icon(MindIcons.FormatLineSpacing, null) },
 							onClick = {
 								more = false
 								sheet = "advanced"
@@ -174,32 +181,29 @@ fun EditorBottomBar(
 			when (sheet) {
 				"insert" ->
 					Column(Modifier.padding(bottom = 24.dp)) {
-						InsertAction(Icons.Outlined.PhotoCamera, "Hacer foto") {
+						InsertAction(MindIcons.PhotoCamera, "Hacer foto") {
 							sheet = null
 							controller.takePhoto()
 						}
-						InsertAction(Icons.Outlined.Image, "Añadir imagen") {
+						InsertAction(MindIcons.Image, "Añadir imagen") {
 							sheet = null
 							controller.chooseImage()
 						}
-						InsertAction(Icons.Outlined.ContentPaste, "Pegar imagen") {
+						InsertAction(MindIcons.ContentPaste, "Pegar imagen") {
 							sheet = null
 							if (editor?.pasteImage() != true)
 								controller.error =
 									"Copia una imagen al portapapeles para pegarla aquí."
 						}
-						InsertAction(Icons.Outlined.CheckBox, "Casillas de verificación") {
+						InsertAction(MindIcons.CheckBox, "Casillas de verificación") {
 							sheet = null
 							editor?.checkItem()
 						}
-						InsertAction(
-							Icons.AutoMirrored.Outlined.FormatListBulleted,
-							"Lista con viñetas",
-						) {
+						InsertAction(MindIcons.FormatListBulleted, "Lista con viñetas") {
 							sheet = null
 							editor?.list("• ")
 						}
-						InsertAction(Icons.Outlined.FormatListNumbered, "Lista numerada") {
+						InsertAction(MindIcons.FormatListNumbered, "Lista numerada") {
 							sheet = null
 							editor?.list("number")
 						}
@@ -286,28 +290,54 @@ private fun AdvancedFormatting(document: NoteDocument, controller: RichEditorCon
 		)
 		Row(Modifier.horizontalScroll(rememberScrollState())) {
 			IconButton(onClick = { editor?.format("strike") }) {
-				Icon(Icons.Outlined.StrikethroughS, "Tachado")
+				Icon(
+					MindIcons.StrikethroughS,
+					"Tachado",
+				)
 			}
 			IconButton(onClick = { editor?.format("align", 0) }) {
-				Icon(Icons.AutoMirrored.Outlined.FormatAlignLeft, "Alinear a la izquierda")
+				Icon(
+					MindIcons.FormatAlignLeft,
+					"Alinear a la izquierda",
+				)
 			}
 			IconButton(onClick = { editor?.format("align", 2) }) {
-				Icon(Icons.Outlined.FormatAlignCenter, "Centrar")
+				Icon(
+					MindIcons.FormatAlignCenter,
+					"Centrar",
+				)
 			}
 			IconButton(onClick = { editor?.format("align", 1) }) {
-				Icon(Icons.AutoMirrored.Outlined.FormatAlignRight, "Alinear a la derecha")
+				Icon(
+					MindIcons.FormatAlignRight,
+					"Alinear a la derecha",
+				)
 			}
 			IconButton(onClick = { editor?.format("indent", 48) }) {
-				Icon(Icons.AutoMirrored.Outlined.FormatIndentIncrease, "Aumentar sangría")
+				Icon(
+					MindIcons.FormatIndentIncrease,
+					"Aumentar sangría",
+				)
 			}
 			IconButton(onClick = { editor?.format("indent", 0) }) {
-				Icon(Icons.AutoMirrored.Outlined.FormatIndentDecrease, "Quitar sangría")
+				Icon(
+					MindIcons.FormatIndentDecrease,
+					"Quitar sangría",
+				)
 			}
 		}
-		SpacingOptions("Interlineado", listOf(1f, 1.3f, 1.5f, 2f), document.lineSpacing) {
+		SpacingOptions(
+			"Interlineado",
+			listOf(1f, 1.3f, 1.5f, 2f),
+			document.lineSpacing,
+		) {
 			editor?.spacing(it, document.extraLineSpacing)
 		}
-		SpacingOptions("Espacio entre párrafos", listOf(0, 8, 16, 24), document.paragraphSpacing) {
+		SpacingOptions(
+			"Espacio entre párrafos",
+			listOf(0, 8, 16, 24),
+			document.paragraphSpacing,
+		) {
 			editor?.paragraphSpacing(it)
 		}
 		SpacingOptions(

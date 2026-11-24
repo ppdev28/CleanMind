@@ -1,8 +1,6 @@
 package com.example.cleannotes.presentation.ui.search
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -13,6 +11,7 @@ import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.presentation.notebook.NotesUiState
 import com.example.cleannotes.presentation.ui.components.*
+import com.example.cleannotes.presentation.ui.design.MindIcons
 
 @Composable
 fun SearchScreen(
@@ -38,7 +37,7 @@ fun SearchScreen(
 						if (term.isEmpty()) R.string.search_body else R.string.no_results_body
 					),
 					modifier = Modifier.weight(1f),
-					icon = Icons.Outlined.Search,
+					icon = MindIcons.Search,
 				)
 			} else {
 				Text(

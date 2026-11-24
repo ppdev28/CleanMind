@@ -8,12 +8,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ViewList
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.StickyNote2
-import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
+import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.util.DateUtils
 
 @Composable
@@ -32,7 +27,7 @@ fun EmptyNotesState(
 	title: String,
 	body: String,
 	modifier: Modifier = Modifier,
-	icon: ImageVector = Icons.AutoMirrored.Outlined.StickyNote2,
+	icon: ImageVector = MindIcons.StickyNote2,
 	action: String? = null,
 	onAction: () -> Unit = {},
 ) {
@@ -73,7 +68,7 @@ fun DeleteNoteDialog(note: Note?, onDismiss: () -> Unit, onConfirm: (Note) -> Un
 	if (note == null) return
 	AlertDialog(
 		onDismissRequest = onDismiss,
-		icon = { Icon(Icons.Outlined.Delete, null) },
+		icon = { Icon(MindIcons.Delete, null) },
 		title = {
 			Text(
 				stringResource(
@@ -89,7 +84,10 @@ fun DeleteNoteDialog(note: Note?, onDismiss: () -> Unit, onConfirm: (Note) -> Un
 					onDismiss()
 				}
 			) {
-				Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+				Text(
+					stringResource(R.string.delete),
+					color = MaterialTheme.colorScheme.error,
+				)
 			}
 		},
 		dismissButton = {
@@ -102,7 +100,7 @@ fun DeleteNoteDialog(note: Note?, onDismiss: () -> Unit, onConfirm: (Note) -> Un
 fun ViewToggle(isListView: Boolean, onClick: () -> Unit) {
 	IconButton(onClick = onClick) {
 		Icon(
-			if (isListView) Icons.Default.GridView else Icons.AutoMirrored.Filled.ViewList,
+			if (isListView) MindIcons.GridView else MindIcons.ViewList,
 			stringResource(if (isListView) R.string.view_grid else R.string.view_list),
 			tint = MaterialTheme.colorScheme.primary,
 		)
@@ -116,7 +114,10 @@ fun ScreenTopBar(title: String, onBack: () -> Unit, actions: @Composable RowScop
 		title = { Text(title, style = MaterialTheme.typography.titleLarge) },
 		navigationIcon = {
 			IconButton(onClick = onBack) {
-				Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.back))
+				Icon(
+					MindIcons.ArrowBack,
+					stringResource(R.string.back),
+				)
 			}
 		},
 		actions = actions,

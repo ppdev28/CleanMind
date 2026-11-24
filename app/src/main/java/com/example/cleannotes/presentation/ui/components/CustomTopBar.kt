@@ -8,8 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
+import com.example.cleannotes.presentation.ui.design.MindIcons
 
 @Composable
 fun CustomTopBar(onSettings: () -> Unit, title: String? = null) {
@@ -27,7 +26,7 @@ fun CustomTopBar(onSettings: () -> Unit, title: String? = null) {
 		)
 		IconButton(onClick = onSettings) {
 			Icon(
-				Icons.Outlined.Settings,
+				MindIcons.Settings,
 				stringResource(R.string.settings),
 				tint = MaterialTheme.colorScheme.onSurfaceVariant,
 			)
