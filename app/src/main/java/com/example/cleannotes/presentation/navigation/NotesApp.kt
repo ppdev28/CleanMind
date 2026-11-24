@@ -41,7 +41,10 @@ fun NotesApp(
 	CleanMindTheme(darkTheme = dark) {
 		Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
 			if (settings.isLoading) {
-				Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+				Box(
+					Modifier.fillMaxSize(),
+					contentAlignment = Alignment.Center,
+				) {
 					CircularProgressIndicator()
 				}
 			} else {
@@ -105,13 +108,22 @@ fun NotesApp(
 								LaunchedEffect(state.exitRequested) {
 									if (state.exitRequested) goBack()
 								}
-								EditNoteScreen(
-									state,
-									viewModel::onEvent,
-									viewModel::saveAndClose,
-									goBack,
-									destination.quickCapture,
-								)
+								if (state.isReminder)
+									com.example.cleannotes.presentation.ui.edit_note
+										.ReminderEditorScreen(
+											state,
+											viewModel::onEvent,
+											viewModel::saveAndClose,
+											goBack,
+										)
+								else
+									EditNoteScreen(
+										state,
+										viewModel::onEvent,
+										viewModel::saveAndClose,
+										goBack,
+										destination.quickCapture,
+									)
 							}
 						},
 				)

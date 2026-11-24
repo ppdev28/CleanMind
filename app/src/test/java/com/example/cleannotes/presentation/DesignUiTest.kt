@@ -216,7 +216,7 @@ class DesignUiTest {
 			}
 		}
 		screenshot("reminders-dark")
-		compose.onNodeWithText("Completar").performClick()
+		compose.onNodeWithContentDescription("Completar Llamar a la clínica").performClick()
 		compose.onNodeWithText("Todo al día").assertExists()
 		assertEquals("Llamar a la clínica", persisted.title)
 		assertTrue(NoteDocument.decode(persisted.content).reminderCompleted)
@@ -331,5 +331,39 @@ class DesignUiTest {
 		compose.onNodeWithContentDescription("Crear").performClick()
 		compose.onNodeWithText("Nueva nota").performClick()
 		assertEquals(false, reminder)
+	}
+
+	@Test
+	fun reminderEditorIsTaskFocusedAndAsksBeforeDiscarding() {
+		var back = false
+		compose.setContent {
+			var state by remember { mutableStateOf(EditNoteUiState(isReminder = true)) }
+			CleanMindTheme(darkTheme = true) {
+				com.example.cleannotes.presentation.ui.edit_note.ReminderEditorScreen(
+					state,
+					{ event ->
+						state =
+							when (event) {
+								is com.example.cleannotes.presentation.ui.edit_note.EditNoteEvent.EnteredTitle ->
+									state.copy(title = event.value, hasChanges = true)
+
+								is com.example.cleannotes.presentation.ui.edit_note.EditNoteEvent.EnteredContent ->
+									state.copy(content = event.value, hasChanges = true)
+							}
+					},
+					{},
+					{ back = true },
+				)
+			}
+		}
+		compose.onNodeWithText("¿Qué quieres recordar?").performTextInput("Llamar mañana")
+		compose.onNodeWithText("Guardar recordatorio").assertExists()
+		compose.onNodeWithText("Concentrarme").assertDoesNotExist()
+		compose.onNodeWithText("Imagen").assertDoesNotExist()
+		screenshot("reminder-editor-dark")
+		compose.onNodeWithContentDescription("Volver").performClick()
+		assertFalse(back)
+		compose.onNodeWithText("Descartar").performClick()
+		assertTrue(back)
 	}
 }

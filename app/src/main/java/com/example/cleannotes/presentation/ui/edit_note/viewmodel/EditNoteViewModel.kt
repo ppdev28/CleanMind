@@ -101,6 +101,7 @@ constructor(
 			)
 		rememberDraft()
 		debounceJob?.cancel()
+		if (edited.isReminder) return
 		debounceJob = viewModelScope.launch {
 			delay(600)
 			// Do not cancel a database write when the user types again.

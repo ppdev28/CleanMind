@@ -3,6 +3,7 @@ package com.example.cleannotes.presentation.notebook
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,7 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
@@ -95,7 +97,9 @@ fun NotebookScreen(
 	}
 	DeleteNoteDialog(deleting, { deleting = null }, onDelete)
 	sharing?.let { note ->
-		ExportMenu(note.title, NoteDocument.decode(note.content)) { sharing = null }
+		ExportMenu(note.title, NoteDocument.decode(note.content)) {
+			sharing = null
+		}
 	}
 	options?.let { note ->
 		val doc = NoteDocument.decode(note.content)
@@ -115,7 +119,10 @@ fun NotebookScreen(
 						sharing = note
 					}
 				) {
-					Icon(MindIcons.Share, null)
+					Icon(
+						MindIcons.Share,
+						null,
+					)
 					Spacer(Modifier.width(12.dp))
 					Text("Compartir nota")
 				}
@@ -125,7 +132,10 @@ fun NotebookScreen(
 						onUpdateNote(note) { it.copy(pinned = !it.pinned) }
 					}
 				) {
-					Icon(MindIcons.PushPin, null)
+					Icon(
+						MindIcons.PushPin,
+						null,
+					)
 					Spacer(Modifier.width(12.dp))
 					Text(if (doc.pinned) "Desfijar" else "Fijar a mano")
 				}
@@ -145,9 +155,16 @@ fun NotebookScreen(
 						deleting = note
 					}
 				) {
-					Icon(MindIcons.Delete, null, tint = MaterialTheme.colorScheme.error)
+					Icon(
+						MindIcons.Delete,
+						null,
+						tint = MaterialTheme.colorScheme.error,
+					)
 					Spacer(Modifier.width(12.dp))
-					Text("Eliminar", color = MaterialTheme.colorScheme.error)
+					Text(
+						"Eliminar",
+						color = MaterialTheme.colorScheme.error,
+					)
 				}
 			}
 		}
@@ -196,7 +213,10 @@ fun NotebookScreen(
 					}
 				}
 			if (state.isLoading)
-				Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+				Box(
+					Modifier.fillMaxSize(),
+					contentAlignment = Alignment.Center,
+				) {
 					CircularProgressIndicator()
 				}
 			else
@@ -222,8 +242,10 @@ fun NotebookScreen(
 									onClick = { onTabSelected(NotesTab.SEARCH) },
 								)
 							}
+
+							val agendaNotes = active.filterNot { it.isReminder }
 							val days =
-								active
+								agendaNotes
 									.sortedWith(
 										compareByDescending<Note> { it.creationTimestamp() }
 											.thenByDescending { it.id }
@@ -232,7 +254,7 @@ fun NotebookScreen(
 							items(days.entries.toList(), key = { "agenda-${it.key}" }) { (_, notesOfDay) ->
 								AgendaDayGroup(notesOfDay, onOpenNote) { options = it }
 							}
-							if (active.isEmpty())
+							if (agendaNotes.isEmpty())
 								item {
 									EmptyDesignState(
 										"Un lugar para tus ideas",
@@ -260,7 +282,10 @@ fun NotebookScreen(
 										}
 									matchesFilter &&
 											(state.query.isBlank() ||
-													note.title.contains(state.query, true) ||
+													note.title.contains(
+														state.query,
+														true,
+													) ||
 													NoteDocument.plainText(note.content)
 														.contains(state.query, true))
 								}
@@ -354,7 +379,9 @@ fun NotebookScreen(
 					}
 
 					else ->
-						ReminderCollection(active, onSettings, onOpenNote, onCreate, onUpdateNote)
+						ReminderCollection(active, onOpenNote, onCreate, onUpdateNote) {
+							deleting = it
+						}
 				}
 		}
 	}
@@ -427,13 +454,25 @@ private fun EmptyDesignState(title: String, body: String, action: String, onActi
 @Composable
 private fun ReminderCollection(
 	notes: List<Note>,
-	onSettings: () -> Unit,
 	onOpen: (Note) -> Unit,
 	onCreate: (Boolean) -> Unit,
 	update: NoteChange,
+	onDelete: (Note) -> Unit,
 ) {
-	val scope = rememberCoroutineScope()
 	val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+	var editing by remember { mutableStateOf<Note?>(null) }
+	var snoozing by remember { mutableStateOf<Int?>(null) }
+	editing?.let { note ->
+		com.example.cleannotes.presentation.ui.edit_note.ReminderSheet(
+			note.title,
+			NoteDocument.decode(note.content),
+			onConfirm = { draft ->
+				update(note) { it.copy(reminder = draft.reminder, reminderCompleted = false) }
+				editing = null
+			},
+			onDismiss = { editing = null },
+		)
+	}
 	val reminders =
 		notes
 			.filter {
@@ -443,13 +482,14 @@ private fun ReminderCollection(
 			.sortedBy { NoteDocument.decode(it.content).reminder?.at ?: Long.MAX_VALUE }
 	LazyColumn(
 		contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 24.dp),
-		verticalArrangement = Arrangement.spacedBy(16.dp),
+		verticalArrangement = Arrangement.spacedBy(8.dp),
 	) {
 		item {
 			Text(
-				"Lo que quieres retomar, a su tiempo.",
+				"Tus pendientes, en orden.",
 				style = MaterialTheme.typography.bodyMedium,
 				color = MaterialTheme.colorScheme.onSurfaceVariant,
+				modifier = Modifier.padding(bottom = 16.dp),
 			)
 		}
 		val groups = reminders.groupBy {
@@ -458,95 +498,88 @@ private fun ReminderCollection(
 		groups.forEach { (_, group) ->
 			val at = NoteDocument.decode(group.first().content).reminder?.at
 			item {
-				SectionLabel(
-					if (at == null) "Sin fecha"
-					else
-						(if (DateUtils.isToday(at)) "Hoy · " else "") +
-								SimpleDateFormat("d MMMM", locale).format(Date(at))
-				)
+				Column(
+					Modifier.padding(top = 12.dp),
+					verticalArrangement = Arrangement.spacedBy(8.dp),
+				) {
+					Text(
+						if (at == null) "Sin aviso"
+						else SimpleDateFormat("d MMMM", locale).format(Date(at)),
+						style = MaterialTheme.typography.labelLarge,
+						color = MaterialTheme.colorScheme.onSurfaceVariant,
+					)
+					HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+				}
 			}
 			items(group, key = { requireNotNull(it.id) }) { note ->
 				val doc = NoteDocument.decode(note.content)
-				Surface(
-					shape = RoundedCornerShape(22.dp),
-					color = MaterialTheme.colorScheme.surface,
+				Row(
+					Modifier.fillMaxWidth().heightIn(min = 72.dp),
+					verticalAlignment = Alignment.CenterVertically,
+					horizontalArrangement = Arrangement.spacedBy(8.dp),
 				) {
+					Checkbox(
+						false,
+						{ update(note) { it.completeReminder(System.currentTimeMillis()) } },
+						modifier =
+							Modifier.semantics { contentDescription = "Completar ${note.title}" },
+					)
 					Column(
-						Modifier.padding(16.dp),
-						verticalArrangement = Arrangement.spacedBy(12.dp),
-					) {
-						Text(
-							note.title,
-							style = MaterialTheme.typography.bodyLarge,
-							fontWeight = FontWeight.Medium,
-						)
-						val message =
-							doc.reminder?.message?.ifBlank { doc.subtitle } ?: doc.subtitle
-						if (message.isNotBlank())
-							Text(
-								message,
-								style = MaterialTheme.typography.bodyMedium,
-								color = MaterialTheme.colorScheme.onSurfaceVariant,
-							)
-						doc.reminder?.let {
-							Text(
-								DateUtils.shortDate(it.at) + ", " + DateUtils.getTime(it.at),
-								style = MaterialTheme.typography.bodyMedium,
-							)
-						}
-						DesignRow("Abrir nota", MindIcons.Arrow) { onOpen(note) }
-						Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-							Surface(
+						Modifier.weight(1f)
+							.combinedClickable(
 								onClick = {
-									update(note) { latest ->
-										latest.copy(
-											reminder =
-												latest.reminder?.copy(
-													at =
-														System.currentTimeMillis() +
-																(latest.reminder?.snoozeMinutes ?: 10) *
-																60_000L
-												)
+									if (note.isReminder) onOpen(note) else editing = note
+								},
+								onLongClick = { onDelete(note) },
+								onLongClickLabel = "Eliminar recordatorio",
+							)
+							.padding(vertical = 12.dp),
+						verticalArrangement = Arrangement.spacedBy(4.dp),
+					) {
+						Text(note.title, style = MaterialTheme.typography.titleSmall)
+						Text(
+							doc.reminder?.let {
+								DateUtils.getTime(it.at) +
+										(if (it.repeatUnit == "none") "" else " · Repite")
+							} ?: "Sin notificación",
+							style = MaterialTheme.typography.bodySmall,
+							color = MaterialTheme.colorScheme.onSurfaceVariant,
+						)
+					}
+					if (doc.reminder != null)
+						Box {
+							IconButton(onClick = { snoozing = note.id }) {
+								Icon(
+									MindIcons.Clock,
+									"Posponer ${note.title}",
+								)
+							}
+							DropdownMenu(snoozing == note.id, { snoozing = null }) {
+								listOf(
+									10 to "10 minutos",
+									60 to "1 hora",
+									1440 to "1 día",
+								)
+									.forEach { (minutes, label) ->
+										DropdownMenuItem(
+											text = { Text(label) },
+											onClick = {
+												snoozing = null
+												update(note) { latest ->
+													latest.copy(
+														reminder =
+															latest.reminder?.copy(
+																at =
+																	System.currentTimeMillis() +
+																			minutes * 60_000L
+															)
+													)
+												}
+											},
 										)
 									}
-								},
-								enabled = doc.reminder != null,
-								modifier = Modifier.weight(1f),
-								shape = RoundedCornerShape(12.dp),
-								color = MaterialTheme.colorScheme.surfaceContainer,
-							) {
-								Row(
-									Modifier.heightIn(min = 48.dp),
-									verticalAlignment = Alignment.CenterVertically,
-									horizontalArrangement = Arrangement.Center,
-								) {
-									DesignIcon(MindIcons.Clock)
-									Spacer(Modifier.width(8.dp))
-									Text("Posponer", style = MaterialTheme.typography.labelMedium)
-								}
-							}
-							Surface(
-								onClick = {
-									update(note) { latest ->
-										latest.completeReminder(System.currentTimeMillis())
-									}
-								},
-								modifier = Modifier.weight(1f),
-								shape = RoundedCornerShape(12.dp),
-								color = MaterialTheme.colorScheme.surfaceContainer,
-							) {
-								Row(
-									Modifier.heightIn(min = 48.dp),
-									verticalAlignment = Alignment.CenterVertically,
-									horizontalArrangement = Arrangement.Center,
-								) {
-									DesignIcon(MindIcons.Check)
-									Spacer(Modifier.width(8.dp))
-									Text("Completar", style = MaterialTheme.typography.labelMedium)
-								}
 							}
 						}
-					}
 				}
 			}
 		}
@@ -560,14 +593,5 @@ private fun ReminderCollection(
 					onCreate(true)
 				}
 			}
-		item {
-			Text(
-				"Sin avisos de más. Tú eliges cuándo.",
-				style = MaterialTheme.typography.bodyMedium,
-				color = MaterialTheme.colorScheme.onSurfaceVariant,
-			)
-		}
-		if (reminders.isNotEmpty())
-			item { TextButton(onClick = { onCreate(true) }) { Text("+ Recordatorio") } }
 	}
 }
