@@ -2,7 +2,9 @@ package com.example.cleannotes.presentation.notebook
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -341,6 +344,8 @@ fun NotebookScreen(
 								}
 
 							notesTab -> {
+								val listLayoutState = rememberLazyGridState()
+								val gridLayoutState = rememberLazyGridState()
 								val filtered =
 									(if (selectedTab == NotesTab.SEARCH) state.allNotes else notes)
 										.filter { note ->
@@ -361,7 +366,8 @@ fun NotebookScreen(
 																note.folderId == null
 															else
 																note.folderId == state.selectedFolderId)) &&
-													(state.query.isBlank() ||
+													(selectedTab != NotesTab.SEARCH ||
+															state.query.isBlank() ||
 															note.title.contains(
 																state.query,
 																true,
@@ -371,17 +377,8 @@ fun NotebookScreen(
 										}
 								val header: @Composable () -> Unit = {
 									Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-										SearchEntry(state.query, onQueryChange)
-										if (selectedTab == NotesTab.NOTES)
-											FolderStrip(
-												state.folders,
-												notes,
-												state.selectedFolderId,
-												onFolderSelected,
-											) {
-												managingFolders = true
-												onClearFolderError()
-											}
+										if (selectedTab == NotesTab.SEARCH)
+											SearchEntry(state.query, onQueryChange)
 										Row(
 											Modifier.fillMaxWidth()
 												.horizontalScroll(rememberScrollState())
@@ -435,16 +432,18 @@ fun NotebookScreen(
 											verticalAlignment = Alignment.CenterVertically,
 										) {
 											Text(
-												if (state.query.isBlank())
-													(state.folders
+												if (selectedTab == NotesTab.SEARCH) {
+													if (state.query.isBlank()) "Busca en tu libreta"
+													else "Coincidencias en título y contenido"
+												} else
+													state.folders
 														.firstOrNull {
 															it.id == state.selectedFolderId
 														}
 														?.name
 														?: if (state.selectedFolderId == 0)
 															"Sin carpeta"
-														else "Tus notas")
-												else "Coincidencias en título y contenido",
+														else "Todas las notas",
 												Modifier.weight(1f),
 												style = MaterialTheme.typography.bodyMedium,
 												color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -458,38 +457,95 @@ fun NotebookScreen(
 										}
 									}
 								}
-								LazyVerticalGrid(
-									columns = GridCells.Fixed(if (grid) 2 else 1),
-									contentPadding =
-										PaddingValues(
-											start = 24.dp,
-											end = 24.dp,
-											top = 8.dp,
-											bottom = padding.calculateBottomPadding() + 24.dp,
-										),
-									verticalArrangement = Arrangement.spacedBy(16.dp),
-									horizontalArrangement = Arrangement.spacedBy(16.dp),
-								) {
-									item(span = { GridItemSpan(maxLineSpan) }) { header() }
-									items(filtered, key = { requireNotNull(it.id) }) { note ->
-										DesignNoteCard(
-											note,
-											modifier = Modifier.animateItem(),
-											onClick = { onOpenNote(note) },
-											onLongClick = { options = note },
-											compact = grid,
-										)
-									}
-									if (filtered.isEmpty())
-										item(span = { GridItemSpan(maxLineSpan) }) {
-											EmptyDesignState(
-												"Sin notas aquí",
-												"Prueba otra búsqueda o guarda una nueva idea.",
-												"Crear una nota",
+								Crossfade(
+									targetState = grid,
+									animationSpec = tween(AppMotion.Short),
+									label = "noteCollectionLayout",
+								) { gridMode ->
+									LazyVerticalGrid(
+										columns = GridCells.Adaptive(128.dp),
+										state = if (gridMode) gridLayoutState else listLayoutState,
+										contentPadding =
+											PaddingValues(
+												start = 24.dp,
+												end = 24.dp,
+												top = 8.dp,
+												bottom = padding.calculateBottomPadding() + 24.dp,
+											),
+										verticalArrangement = Arrangement.spacedBy(16.dp),
+										horizontalArrangement = Arrangement.spacedBy(16.dp),
+									) {
+										if (selectedTab == NotesTab.NOTES) {
+											item(
+												key = "folder-header",
+												span = { GridItemSpan(maxLineSpan) },
 											) {
-												onCreate(false)
+												FolderGridHeader {
+													managingFolders = true
+													onClearFolderError()
+												}
+											}
+											item(key = "folder-all") {
+												FolderTile(
+													"Todas las notas",
+													notes.size,
+													state.selectedFolderId == null,
+													{ onFolderSelected(null) },
+													Modifier.animateItem(),
+												)
+											}
+											item(key = "folder-unfiled") {
+												FolderTile(
+													"Sin carpeta",
+													notes.count { it.folderId == null },
+													state.selectedFolderId == 0,
+													{ onFolderSelected(0) },
+													Modifier.animateItem(),
+												)
+											}
+											items(state.folders, key = { "folder-${it.id}" }) { folder ->
+												FolderTile(
+													folder.name,
+													notes.count { it.folderId == folder.id },
+													state.selectedFolderId == folder.id,
+													{ onFolderSelected(folder.id) },
+													Modifier.animateItem(),
+												)
 											}
 										}
+										item(
+											key = "collection-tools",
+											span = { GridItemSpan(maxLineSpan) },
+										) {
+											header()
+										}
+
+										items(
+											filtered,
+											key = { requireNotNull(it.id) },
+											span = {
+												GridItemSpan(if (gridMode) 1 else maxLineSpan)
+											},
+										) { note ->
+											DesignNoteCard(
+												note,
+												modifier = Modifier.animateItem(),
+												onClick = { onOpenNote(note) },
+												onLongClick = { options = note },
+												compact = gridMode,
+											)
+										}
+										if (filtered.isEmpty())
+											item(span = { GridItemSpan(maxLineSpan) }) {
+												EmptyDesignState(
+													"Sin notas aquí",
+													"Prueba otra búsqueda o guarda una nueva idea.",
+													"Crear una nota",
+												) {
+													onCreate(false)
+												}
+											}
+									}
 								}
 							}
 

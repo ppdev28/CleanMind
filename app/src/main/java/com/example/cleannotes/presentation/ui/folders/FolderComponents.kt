@@ -1,18 +1,17 @@
 package com.example.cleannotes.presentation.ui.folders
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -21,50 +20,75 @@ import com.example.cleannotes.model.NoteFolder
 import com.example.cleannotes.presentation.notebook.FolderOperation
 import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
+import com.example.cleannotes.presentation.ui.design.glassMaterial
 
 @Composable
-fun FolderStrip(
-	folders: List<NoteFolder>,
-	notes: List<Note>,
-	selected: Int?,
-	onSelect: (Int?) -> Unit,
-	onManage: () -> Unit,
-) {
-	Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-		Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-			Text("Carpetas", Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-			TextButton(
-				onClick = onManage,
-				modifier = Modifier.semantics { contentDescription = "Gestionar carpetas" },
-			) {
-				Icon(MindIcons.CreateNewFolder, null, Modifier.size(20.dp))
-				Spacer(Modifier.width(8.dp))
-				Text("Gestionar")
-			}
+fun FolderGridHeader(onManage: () -> Unit) {
+	Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+		Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+			Text("Carpetas", style = MaterialTheme.typography.titleLarge)
+			Text(
+				"Un espacio para cada idea",
+				style = MaterialTheme.typography.bodySmall,
+				color = MaterialTheme.colorScheme.onSurfaceVariant,
+			)
 		}
-		Row(
-			Modifier.horizontalScroll(rememberScrollState()),
-			horizontalArrangement = Arrangement.spacedBy(8.dp),
-		) {
-			FilterChip(selected == null, { onSelect(null) }, label = { Text("Todas las notas") })
-			FilterChip(selected == 0, { onSelect(0) }, label = { Text("Sin carpeta") })
-			folders.forEach { folder ->
-				val bringIntoView = remember(folder.id) { BringIntoViewRequester() }
-				LaunchedEffect(selected, folder) {
-					if (selected == folder.id) {
-						withFrameNanos {}
-						bringIntoView.bringIntoView()
-					}
+		IconButton(onClick = onManage) { Icon(MindIcons.CreateNewFolder, "Gestionar carpetas") }
+	}
+}
+
+@Composable
+fun FolderTile(
+	name: String,
+	count: Int,
+	selected: Boolean,
+	onSelect: () -> Unit,
+	modifier: Modifier = Modifier,
+) {
+	Surface(
+		onClick = onSelect,
+		modifier =
+			modifier
+				.fillMaxWidth()
+				.heightIn(min = 140.dp)
+				.semantics {
+					contentDescription = "Abrir carpeta $name"
+					this.selected = selected
 				}
-				val count = notes.count { it.folderId == folder.id }
-				FilterChip(
-					modifier = Modifier.bringIntoViewRequester(bringIntoView),
-					selected = selected == folder.id,
-					onClick = { onSelect(folder.id) },
-					label = { Text("${folder.name} · $count") },
-					leadingIcon = { Icon(MindIcons.FolderOpen, null, Modifier.size(18.dp)) },
+				.glassMaterial(RoundedCornerShape(24.dp), selected = selected),
+		shape = RoundedCornerShape(24.dp),
+		color = Color.Transparent,
+		contentColor = MaterialTheme.colorScheme.onSurface,
+	) {
+		Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+			Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+				Icon(
+					MindIcons.FolderOpen,
+					null,
+					Modifier.size(28.dp),
+					tint = MaterialTheme.colorScheme.tertiary,
 				)
+				Spacer(Modifier.weight(1f))
+				if (selected)
+					Icon(
+						MindIcons.Check,
+						"Carpeta seleccionada",
+						Modifier.size(18.dp),
+						tint = MaterialTheme.colorScheme.tertiary,
+					)
 			}
+			Spacer(Modifier.height(12.dp))
+			Text(
+				name,
+				style = MaterialTheme.typography.titleSmall,
+				maxLines = 2,
+				overflow = TextOverflow.Ellipsis,
+			)
+			Text(
+				"$count ${if (count == 1) "nota" else "notas"}",
+				style = MaterialTheme.typography.bodySmall,
+				color = MaterialTheme.colorScheme.onSurfaceVariant,
+			)
 		}
 	}
 }
@@ -312,7 +336,10 @@ private fun FolderDestination(
 	TextButton(
 		onClick = onClick,
 		enabled = enabled,
-		modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+		modifier =
+			Modifier.fillMaxWidth().heightIn(min = 56.dp).semantics {
+				contentDescription = "Mover a $name"
+			},
 	) {
 		Icon(MindIcons.FolderOpen, null)
 		Text(name, Modifier.weight(1f).padding(horizontal = 12.dp))

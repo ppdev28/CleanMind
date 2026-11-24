@@ -142,10 +142,10 @@ class DesignUiTest {
 	}
 
 	@Test
-	fun notesCanSearchAndSwitchToGrid() {
-		screen(initial = NotesTab.NOTES)
+	fun searchCanFilterAndSwitchToGrid() {
+		screen(initial = NotesTab.SEARCH)
 		compose.onNodeWithContentDescription("Cambiar vista").performClick()
-		screenshot("notes-grid-dark")
+		screenshot("search-grid-dark")
 		compose.onNode(hasSetTextAction()).performTextInput("Lámpara")
 		compose.onNodeWithText("Idea para el salón").assertExists()
 		compose.onNodeWithText("Paseo del sábado").assertDoesNotExist()
@@ -410,24 +410,21 @@ class DesignUiTest {
 				)
 			}
 		}
-		compose.onNodeWithText("Trabajo · 1").performClick()
+		compose.onNodeWithContentDescription("Abrir carpeta Trabajo").performClick()
+		compose.onNode(hasScrollToIndexAction()).performScrollToKey(301)
 		compose.onNodeWithText("Reunión del equipo").assertExists()
 		compose.onNodeWithText("Comprar café").assertDoesNotExist()
 		screenshot("folders-dark")
 		compose.onNodeWithText("Reunión del equipo").performTouchInput { longClick() }
 		compose.onNodeWithText("Mover a carpeta").performClick()
-		compose
-			.onNode(
-				hasText("Sin carpeta") and
-						SemanticsMatcher.expectValue(
-							androidx.compose.ui.semantics.SemanticsProperties.Role,
-							androidx.compose.ui.semantics.Role.Button,
-						)
-			)
-			.performClick()
+		compose.onNodeWithContentDescription("Mover a Sin carpeta").performClick()
 		compose.onNodeWithText("Reunión del equipo").assertDoesNotExist()
-		compose.onNodeWithText("Sin carpeta").performClick()
+		compose.onNode(hasScrollToIndexAction()).performScrollToKey("folder-unfiled")
+		compose.onNodeWithContentDescription("Abrir carpeta Sin carpeta").performClick()
+		compose.onNode(hasScrollToIndexAction()).performScrollToKey(302)
 		compose.onNodeWithText("Comprar café").assertExists()
+		compose.onNode(hasScrollToIndexAction()).performScrollToKey("folder-header")
+
 		compose.onNodeWithContentDescription("Gestionar carpetas").performClick()
 		compose.onNodeWithText("Tus carpetas").assertExists()
 		screenshot("folder-manager-dark", dialog = true)
@@ -457,5 +454,25 @@ class DesignUiTest {
 		compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
 		assertTrue(fallbackHandled)
 		assertFalse(tabChanged)
+	}
+
+	@Test
+	fun notesShowsAFolderGridWithoutASearchField() {
+		screen(initial = NotesTab.NOTES)
+		compose.onAllNodes(hasSetTextAction()).assertCountEquals(0)
+		val all =
+			compose
+				.onNodeWithContentDescription("Abrir carpeta Todas las notas")
+				.fetchSemanticsNode()
+				.boundsInRoot
+		val unfiled =
+			compose
+				.onNodeWithContentDescription("Abrir carpeta Sin carpeta")
+				.fetchSemanticsNode()
+				.boundsInRoot
+		assertTrue(kotlin.math.abs(all.top - unfiled.top) < 1f)
+		assertTrue(all.right <= unfiled.left)
+		compose.onNodeWithContentDescription("Cambiar vista").performClick()
+		screenshot("notes-grid-dark")
 	}
 }

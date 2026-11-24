@@ -3,7 +3,7 @@
 `AppMotion.kt` centraliza un ritmo breve: 160 ms para desapariciones y 240 ms para navegación y cambios de contenido. Los desplazamientos son cortos y sin rebotes.
 
 - Navegación entre cuaderno, editor y ajustes: fundido y desplazamiento horizontal, con dirección inversa al volver y soporte de navegación predictiva. La dirección se adapta a RTL.
-- Carpetas: la carpeta seleccionada se desplaza a la vista cuando queda fuera de la fila horizontal.
+- Carpetas: cuadrícula adaptable con selección visible y reordenación animada. Lista/cuadrícula de notas: fundido entre dos contenedores con scroll independiente para mantener estable la colocación de elementos.
 - Pestañas y carga inicial: transición entre contenidos; cada pestaña conserva su estado de scroll mediante un contenedor guardable.
 - Lista/cuadrícula y recordatorios: aparición, retirada y reordenación con claves estables y `animateItem`.
 - Agenda y estados vacíos: ajuste animado de tamaño.
