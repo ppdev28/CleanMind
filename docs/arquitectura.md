@@ -2,7 +2,7 @@
 
 ## Decisión
 
-Clean Notes utiliza **MVVM con flujo unidireccional de datos (UDF), dos capas y un único módulo Gradle**. La decisión se tomó para el alcance actual: notas locales, recordatorios sencillos, búsqueda y una preferencia de apariencia.
+Clean Mind utiliza **MVVM con flujo unidireccional de datos (UDF), dos capas y un único módulo Gradle**. La decisión se tomó para el alcance actual: notas locales, recordatorios sencillos, búsqueda y una preferencia de apariencia.
 
 La capa de presentación recibe datos mediante repositorios y expone estado a Compose. La capa de datos encapsula Room y DataStore. Los modelos compartidos no dependen de Android.
 
@@ -174,3 +174,7 @@ El cuerpo del editor integra `RichNoteEditor`, un EditText nativo dentro de Comp
 `NoteExport` encapsula TXT UTF-8, PDF A4 con saltos de página e imágenes, archivos compartidos en caché y escritura mediante DocumentsContract. El permiso persistente SAF limita el acceso a la carpeta elegida; no se solicitan permisos generales de almacenamiento. `ExportMenu` realiza IO en background. Room sigue siendo la fuente de verdad; las copias TXT no restauran formatos ni adjuntos.
 
 La agenda de Inicio se presenta con `AgendaDayGroup`, agrupando por `Note.creationTimestamp()`. El repositorio conserva la creación dentro del documento independientemente del timestamp de edición. `CustomTopBar` y `BottomNavigationBar` vuelven a ser las barras activas de la libreta. Ajustes expone de nuevo apariencia y almacenamiento directamente.
+
+## Recordatorios como tareas
+
+`NotesApp` muestra `ReminderEditorScreen` cuando el documento es un recordatorio independiente. Comparte el ViewModel y el repositorio con las notas para conservar compatibilidad de datos; la presentación y el guardado son distintos. `EditNoteViewModel` mantiene el borrador pero no inicia autoguardado para `isReminder`: solo `saveAndClose` persiste la tarea. Las notas normales conservan el debounce de 600 ms. Los recordatorios vinculados a notas mantienen su hoja de configuración y no cambian el tipo de la nota.

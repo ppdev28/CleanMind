@@ -16,7 +16,7 @@ Room conserva las notas guardadas. Preferences DataStore conserva la selección 
 | `timestamp` | `Long` | Instante de la última escritura realizada por el editor, en milisegundos. |
 | `isReminder` | `Boolean` | Tipo explícito de la nota; por defecto `false`. |
 
-No hay columnas independientes de creación, vencimiento, etiqueta o estado completado. El formato y las referencias a imágenes se guardan dentro del contenido versionado. El editor de recordatorios incluye cuerpo y configuración de notificación dentro del documento.
+No hay columnas independientes de creación, vencimiento, etiqueta o estado completado. El formato y las referencias a imágenes se guardan dentro del contenido versionado. El formulario de recordatorios conserva el detalle opcional y la configuración de notificación dentro del documento.
 
 ## Persistencia Room
 
@@ -138,3 +138,7 @@ La carpeta adicional se guarda como URI SAF en `note_export`, con permiso persis
 La rama Figma añade campos opcionales `pinned`, `archived`, `reminderCompleted` y `checklist` al documento. Los documentos anteriores se leen con valores predeterminados sin cambiar Room 3. Las listas de casillas se buscan y exportan como texto; los ID de cada elemento se conservan al editar.
 
 `createdAt` es opcional en documentos antiguos. Al guardar, el repositorio conserva primero el valor persistido, después usa el timestamp anterior como referencia para notas legadas, y finalmente el timestamp de inserción para notas nuevas. La agenda usa `createdAt ?: timestamp`; la columna `timestamp` continúa representando la última escritura.
+
+## Compatibilidad del cambio de marca
+
+El nombre visible y el proyecto Gradle pasan a Clean Mind. Se mantienen el paquete/applicationId `com.example.cleannotes`, el nombre de la base y los directorios privados para actualizar la instalación anterior. Los documentos nuevos usan el prefijo `CleanMind:document:1`; el lector sigue aceptando el prefijo histórico `CleanNotes:document:1` y el texto plano. Cambiar el nombre no requiere borrar datos ni migrar el esquema Room.

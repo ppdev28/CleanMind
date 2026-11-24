@@ -70,7 +70,7 @@ Las versiones se centralizan en [libs.versions.toml](../gradle/libs.versions.tom
 
 | Responsabilidad | Bibliotecas |
 | --- | --- |
-| Interfaz | Compose, Foundation, Material 3 e iconos Material. |
+| Interfaz | Compose, Foundation, Material 3 y Material Symbols locales. |
 | Ciclo de vida | Lifecycle, ViewModel y recopilación de estado en Compose. |
 | Navegación | Navigation 3 y Kotlin Serialization. |
 | Inyección y generación | Hilt y KSP. |
@@ -114,3 +114,15 @@ No soluciones un error de migración borrando datos como comportamiento de produ
 `ExportMenu.kt` presenta una hoja inferior con formato seleccionable, vista previa y acciones de compartir, guardar y copiar texto. Incluye previsualizaciones claras, oscuras y a 320 dp con texto grande. Los resultados del selector de archivos conservan una instantánea del documento y el formato solicitado; abrir la hoja de compartir no se considera una entrega confirmada.
 
 La UI activa de la libreta está en `presentation/notebook/NotebookScreen.kt` y los componentes importados en `presentation/ui/design/DesignComponents.kt`. Los wrappers antiguos se conservan para compatibilidad; las nuevas referencias son [UI de Figma](figma-ui.md).
+
+## Formato compartido
+
+El estilo sigue `CustomTopBar`: tabuladores de ancho 2 y continuación de 4. `.editorconfig` y `.idea/codeStyles/Project.xml` se comparten en Git. El estado local de Android Studio permanece ignorado.
+
+```bash
+STUDIO_FORMATTER="/ruta/Android Studio.app/Contents/bin/format.sh" ./scripts/format-code.sh
+# Verificar sin modificar archivos:
+STUDIO_FORMATTER="/ruta/Android Studio.app/Contents/bin/format.sh" ./scripts/format-code.sh -d
+```
+
+El script aísla la configuración del formateador para poder usarlo con Android Studio abierto. Si se define `KTFMT_JAR`, aplica primero ktfmt con estilo Kotlin. Los iconos se regeneran con `scripts/update_material_icons.py`; consulta [Recursos](../design/README.md).

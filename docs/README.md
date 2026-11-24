@@ -1,4 +1,4 @@
-# Documentación de Clean Notes
+# Documentación de Clean Mind
 
 Esta documentación describe la implementación del repositorio, incluidos el rediseño de la interfaz y la arquitectura MVVM + UDF. Está escrita en español y distingue las funciones disponibles de las comprobaciones pendientes.
 
@@ -13,6 +13,8 @@ Empieza por la [guía de uso](guia-de-uso.md). Explica cómo crear y encontrar n
 3. Consulta [Datos y migraciones](datos-y-migraciones.md) antes de modificar almacenamiento.
 4. Ejecuta las comprobaciones de [Pruebas](pruebas.md).
 5. Sigue [Mantenimiento](mantenimiento.md) al ampliar funcionalidades.
+
+Consulta también [Cambios de Clean Mind](cambios-clean-mind.md) para el estilo compartido, recursos y verificación en Xiaomi.
 
 ## Fuentes de verdad
 

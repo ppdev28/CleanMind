@@ -1,6 +1,6 @@
 # Guía de uso
 
-Clean Notes permite guardar ideas y apuntes personales en Android. No necesitas una cuenta para utilizarla.
+Clean Mind permite guardar ideas y apuntes personales en Android. No necesitas una cuenta para utilizarla.
 
 ## Pantallas
 
@@ -13,7 +13,7 @@ Clean Notes permite guardar ideas y apuntes personales en Android. No necesitas 
 | Editor | Título, subtítulo opcional, cuerpo de la nota, estado de guardado y acciones. |
 | Ajustes | Selección de apariencia e información sobre almacenamiento y recordatorios. |
 
-La barra inferior da acceso a Inicio, Notas, Recordar y Buscar. El **+** central permite crear una nota o un recordatorio; **¿Qué quieres guardar?** abre la captura rápida. El icono de la app vuelve a la barra superior, con más separación. El engranaje abre Ajustes.
+La barra inferior da acceso a Inicio, Notas, Recordar y Buscar. El **+** central permite crear una nota o un recordatorio; **¿Qué quieres guardar?** abre la captura rápida. La barra superior muestra Clean Mind o el nombre de la sección, con más separación. El engranaje abre Ajustes. La hoja del **+** presenta dos acciones grandes con su descripción.
 
 ## Crear una nota
 
@@ -43,7 +43,7 @@ No uses el borrador temporal como sustituto del guardado: antes de cerrar o forz
 
 ## Editar y consultar
 
-En Inicio las tarjetas se agrupan por día de creación, con fecha y separador horizontal y el día/mes en el lateral. Muestran título, subtítulo si se ha escrito y conteo de imágenes; no muestran el cuerpo. La fecha de cada grupo no cambia al editar una nota. Las notas antiguas utilizan su fecha ya almacenada como referencia porque no hay un historial de creación. Las notas antiguas no obtienen un subtítulo a partir del contenido: puedes escribirlo en el editor.
+En Inicio las tarjetas se agrupan por día de creación, con un separador horizontal y la fecha completa. No hay círculos ni etiquetas de día independientes. Muestran título, subtítulo si se ha escrito y conteo de imágenes; no muestran el cuerpo. La fecha de cada grupo no cambia al editar una nota. Las notas antiguas utilizan su fecha ya almacenada como referencia porque no hay un historial de creación. Las notas antiguas no obtienen un subtítulo a partir del contenido: puedes escribirlo en el editor.
 
 Mantén pulsada una tarjeta para abrir las opciones **Compartir nota** (texto o PDF) y **Eliminar**. Eliminar sigue solicitando confirmación. La pulsación normal abre la nota. Estas opciones también están disponibles desde **⋯** en las colecciones.
 
@@ -58,12 +58,17 @@ La elección de vista pertenece al estado de cada pestaña. No hay un ajuste glo
 
 ## Crear un recordatorio
 
-1. Desde una nota, pulsa **Recordar**, o utiliza **+ → Nuevo recordatorio**.
-2. Escribe en el título lo que quieres recordar.
-3. Espera a que se guarde o pulsa la flecha de volver.
-4. Consúltalo desde **Recordar**.
+1. Pulsa **+ → Nuevo recordatorio**.
+2. Escribe **¿Qué quieres recordar?**.
+3. Activa **Avisarme** y elige la fecha y la hora, o desactívalo para guardar un pendiente sin notificación.
+4. Añade un detalle opcional y pulsa **Guardar recordatorio**.
+5. Consúltalo desde **Recordar**.
 
-El editor permite añadir contenido y activar **Notificación del sistema**. Configura fecha, hora, mensaje, repetición (una vez o cada 1–365 minutos, horas, días, semanas o meses), sonido, vibración y prioridad. El título es opcional y se genera un nombre legible si se deja vacío. También puedes configurar los minutos de posposición. Puedes elegir el tono desde **Personalizar tono en Android**; Android controla los canales y puede silenciarlos.
+Los recordatorios independientes usan un formulario de tarea, sin herramientas de formato, fotografías ni archivo de notas. Se guardan al pulsar el botón; si vuelves con cambios pendientes, la app pide confirmar si quieres descartarlos. La lista muestra una casilla para completar, el título y la hora. El reloj permite posponer y la pulsación larga permite eliminar. No aparecen como tarjetas en la agenda de Inicio.
+
+**Repetición y opciones de aviso** permite configurar el mensaje, repetición (una vez o cada 1–365 minutos, horas, días, semanas o meses), sonido, vibración, prioridad y minutos de posposición. Puedes elegir el tono desde **Personalizar tono en Android**; Android controla los canales y puede silenciarlos.
+
+También puedes añadir una notificación a una nota normal desde **Recordar** en su editor. En ese caso se conserva la nota y la fecha se configura desde una hoja inferior.
 
 Concede el permiso de notificaciones en Android 13 o posterior. Para puntualidad, permite **avisos exactos** en Android 12 o posterior; sin ese acceso se programa un aviso aproximado que el sistema puede retrasar. Una fecha pasada sin repetición no programa otro aviso. Las repeticiones omiten ocurrencias pasadas. Al borrar el recordatorio o desactivar su notificación se cancela la alarma pendiente. Se recuperan las futuras tras reiniciar y actualizar la app. Una detención forzada desde Android puede impedir avisos hasta volver a abrir la app.
 
@@ -115,7 +120,7 @@ Las notas se guardan localmente y se pueden consultar sin conexión. La aplicaci
 
 El manifiesto permite copias de seguridad del sistema. Por tanto, «sin sincronización propia» no equivale a garantizar que Android nunca respalde los datos. Consulta [Datos y migraciones](datos-y-migraciones.md) para conocer la configuración implementada.
 
-La interacción con el teclado, los gestos y el diseño en dispositivos reales sigue pendiente de validación. Esta guía describe los controles implementados en el código.
+Se han probado creación, edición básica, agenda, formularios, compartir y notificaciones en un Xiaomi con API 36. Cámara, pegado de imágenes, lectores de pantalla y otros tamaños de dispositivo siguen pendientes; consulta [Pruebas](pruebas.md).
 
 [Índice de documentación](README.md).
 

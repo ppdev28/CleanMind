@@ -1,4 +1,4 @@
-# Clean Notes
+# Clean Mind
 
 Aplicación Android para escribir, consultar y organizar notas y recordatorios personales. Funciona sin conexión y guarda las notas en una base de datos local.
 
@@ -10,7 +10,7 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 - Guardar automáticamente mientras escribes y mostrar el estado de guardado.
 - Consultar la actividad por fecha o cambiar a una cuadrícula adaptable.
 - Buscar por título y contenido.
-- Crear recordatorios como apuntes independientes de las notas normales.
+- Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.
 - Elegir un tema claro, oscuro o vinculado al dispositivo.
 - Conservar el tema y restaurar determinados estados de navegación y edición.
@@ -37,6 +37,8 @@ Necesitas Android Studio con soporte para Android Gradle Plugin 9.1.0, Android S
 git clone https://github.com/PPDev28/CleanNotes.git
 cd CleanNotes
 ```
+
+El nombre visible es **Clean Mind**. Se conserva el identificador `com.example.cleannotes` y la URL histórica del repositorio para actualizar la instalación existente sin perder datos.
 
 Abre la carpeta en Android Studio y sincroniza Gradle. Desde la raíz puedes compilar y verificar sin instalar ni abrir la aplicación:
 
@@ -65,8 +67,10 @@ Las versiones configuradas están en [libs.versions.toml](gradle/libs.versions.t
 
 La verificación local incluye compilación debug, lint y pruebas JVM/Robolectric; consulta el recuento en [Pruebas](docs/pruebas.md). Hay avisos de dependencias y recursos. Las pruebas de integración con SQLite y preferencias se ejecutaron con Robolectric en el ordenador.
 
-La revisión visual e interactiva en teléfono o emulador está pendiente. Las imágenes de [screenshots/](screenshots/) pertenecen a una interfaz anterior y no representan el diseño actual. Hay previsualizaciones de Compose en [HomePreviews.kt](app/src/main/java/com/example/cleannotes/presentation/ui/home/HomePreviews.kt).
+Se ha revisado la app en un Xiaomi Redmi Note 8 Pro con Android API 36: creación, agenda, recordatorios, notificación en segundo plano, compartir TXT/PDF y apariencia clara/oscura. Los resultados y límites están en [Pruebas](docs/pruebas.md). Las imágenes de [screenshots/](screenshots/) pertenecen a una interfaz anterior y no representan el diseño actual. Hay previsualizaciones de Compose en [HomePreviews.kt](app/src/main/java/com/example/cleannotes/presentation/ui/home/HomePreviews.kt).
 
 ## Rama de UI de Figma
 
 `feat/figma-complete-ui` implementa el nuevo flujo de Inicio, Notas, Recordatorios, editor y concentración. Consulta [implementación, capturas y límites de fidelidad](docs/figma-ui.md).
+
+Los últimos ajustes de marca, agenda, iconos, formato y recordatorios están descritos en [Cambios de Clean Mind](docs/cambios-clean-mind.md).
