@@ -17,4 +17,4 @@ La importación es aditiva: no elimina ni sobrescribe notas. Un marcador persist
 
 La variante **release** no incluye el archivo de muestra ni ejecuta la importación. Cambiar de debug a release conserva los datos que ya hubiera en el dispositivo; no retira las notas que ya se hayan creado.
 
-La colección se incluye en el APK debug preparado. En esta revisión no se ha instalado ni probado en el realme: después de obtener una copia privada de sus datos, ADB dejó de detectarlo y se respetó la indicación de no continuar las pruebas en el teléfono.
+La colección se instaló en el realme RMX3370 después de recuperar la conexión USB. Se verificaron los seis textos y su pertenencia a Ciencia, sin modificar los cuatro registros que ya existían. Los resultados están en [Pruebas](pruebas.md).

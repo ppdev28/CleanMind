@@ -77,4 +77,4 @@ Se ha revisado la app en un Xiaomi Redmi Note 8 Pro con Android API 36: creació
 
 Los últimos ajustes de marca, agenda, iconos, formato y recordatorios están descritos en [Cambios de Clean Mind](docs/cambios-clean-mind.md).
 
-La variante debug incluye [seis notas científicas breves](docs/ciencia-breve.md), que se incorporan una sola vez sin sobrescribir contenido. Release no instala muestras. Esta última revisión se verificó localmente; no se continuaron las pruebas del realme al perderse ADB.
+La variante debug incluye [seis notas científicas breves](docs/ciencia-breve.md), que se incorporan una sola vez sin sobrescribir contenido. Release no instala muestras. La revisión se verificó localmente y en un realme RMX3370 tras recuperar la conexión USB; consulta los [resultados de pruebas](docs/pruebas.md).

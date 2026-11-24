@@ -18,7 +18,7 @@ Se conserva `com.example.cleannotes` como identificador y namespace, además de 
 
 ## Verificación
 
-Compilación debug, lint y 66 pruebas locales sin fallos ni omisiones. El formateador de Android Studio valida 100 archivos. Las capturas de [ui-preview](ui-preview/) usan datos sintéticos de Robolectric.
+Compilación debug y release, lint de ambas variantes, 68 pruebas locales y dos instrumentadas sin fallos ni omisiones. El formateador de Android Studio valida 101 archivos. Las capturas de [ui-preview](ui-preview/) usan datos sintéticos de Robolectric.
 
 En Xiaomi se probaron los flujos principales, una notificación con la app en segundo plano y la generación/compartición de texto y PDF. Se eliminaron los datos de prueba y se verificó que los registros originales permanecen idénticos. Consulta [Pruebas](pruebas.md) para los resultados y los casos aún pendientes.
 
@@ -28,4 +28,4 @@ Las instrucciones de formato están en [Desarrollo](desarrollo.md#formato-compar
 
 Las ampliaciones posteriores de carpetas, arranque y transiciones se documentan en [Carpetas](carpetas.md) y [Movimiento](movimiento.md).
 
-La revisión de cristal, cuadrícula y colección científica está en [Cristal](glass-ui.md) y [Ciencia breve](ciencia-breve.md). La última validación fue local, sin continuar en el realme al fallar ADB.
+La revisión de cristal, cuadrícula y colección científica está en [Cristal](glass-ui.md) y [Ciencia breve](ciencia-breve.md). Tras recuperar ADB se verificó también la actualización en el realme, el cristal acelerado, las notas científicas, imágenes, avisos y exportación SAF; se corrigieron la accesibilidad del cuerpo nativo del editor y la lectura de los botones al ampliar el texto del sistema.
