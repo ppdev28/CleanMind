@@ -18,15 +18,31 @@ import com.example.cleannotes.R
 
 @Composable
 fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
-    val focus = LocalFocusManager.current
-    OutlinedTextField(
-        value = query, onValueChange = onQueryChange, singleLine = true,
-        placeholder = { Text(stringResource(R.string.search_hint), style = MaterialTheme.typography.bodyMedium) },
-        leadingIcon = { Icon(Icons.Outlined.Search, null) },
-        trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQueryChange("") }) { Icon(Icons.Default.Close, stringResource(R.string.clear_search)) } },
-        shape = RoundedCornerShape(18.dp), textStyle = MaterialTheme.typography.bodyLarge,
-        colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant, unfocusedContainerColor = MaterialTheme.colorScheme.surface, focusedContainerColor = MaterialTheme.colorScheme.surface),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)
-    )
+	val focus = LocalFocusManager.current
+	OutlinedTextField(
+		value = query,
+		onValueChange = onQueryChange,
+		singleLine = true,
+		placeholder = {
+			Text(stringResource(R.string.search_hint), style = MaterialTheme.typography.bodyMedium)
+		},
+		leadingIcon = { Icon(Icons.Outlined.Search, null) },
+		trailingIcon = {
+			if (query.isNotEmpty())
+				IconButton(onClick = { onQueryChange("") }) {
+					Icon(Icons.Default.Close, stringResource(R.string.clear_search))
+				}
+		},
+		shape = RoundedCornerShape(18.dp),
+		textStyle = MaterialTheme.typography.bodyLarge,
+		colors =
+			OutlinedTextFieldDefaults.colors(
+				unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+				unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+				focusedContainerColor = MaterialTheme.colorScheme.surface,
+			),
+		keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+		keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
+		modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
+	)
 }

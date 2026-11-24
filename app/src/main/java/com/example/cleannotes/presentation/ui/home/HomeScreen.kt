@@ -1,7 +1,6 @@
 package com.example.cleannotes.presentation.ui.home
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.outlined.Notifications
@@ -21,42 +20,94 @@ import com.example.cleannotes.presentation.util.DateUtils
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreen(
-    notes: List<Note>,
-    onDelete: (Note) -> Unit,
-    onOpenNote: (Note) -> Unit,
-    onSettings: () -> Unit,
-    onOpenNotes: () -> Unit,
-    onOpenReminders: () -> Unit,
-    onCreateNote: () -> Unit
+	notes: List<Note>,
+	onDelete: (Note) -> Unit,
+	onOpenNote: (Note) -> Unit,
+	onSettings: () -> Unit,
+	onOpenNotes: () -> Unit,
+	onOpenReminders: () -> Unit,
+	onCreateNote: () -> Unit,
 ) {
-    var isListView by rememberSaveable { mutableStateOf(true) }
-    var noteToDelete by remember { mutableStateOf<Note?>(null) }
-    DeleteNoteDialog(noteToDelete, { noteToDelete = null }, onDelete)
-    Scaffold(topBar = { CustomTopBar(onSettings) }) { padding ->
-        NotesCollection(
-            notes = notes, isListView = isListView, showContent = false,
-            onClick = onOpenNote, onLongClick = { noteToDelete = it },
-            modifier = Modifier.fillMaxSize().padding(padding),
-            header = {
-                Column {
-                    Spacer(Modifier.height(16.dp))
-                    Text(DateUtils.fullDate(System.currentTimeMillis()).replaceFirstChar { it.titlecase() }, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(Modifier.height(12.dp))
-                    val reminders = notes.count { it.isReminder }
-                    val noteCount = notes.size - reminders
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                        SuggestionChip(onClick = onOpenNotes, label = { Text(pluralStringResource(R.plurals.note_count, noteCount, noteCount)) }, icon = { Icon(Icons.AutoMirrored.Outlined.StickyNote2, null, Modifier.size(16.dp)) })
-                        SuggestionChip(onClick = onOpenReminders, label = { Text(pluralStringResource(R.plurals.reminder_count, reminders, reminders)) }, icon = { Icon(Icons.Outlined.Notifications, null, Modifier.size(16.dp)) })
-                    }
-                    Row(Modifier.fillMaxWidth().padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.recent_activity), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-                        ViewToggle(isListView) { isListView = !isListView }
-                    }
-                    if (notes.isEmpty()) {
-                        EmptyNotesState(stringResource(R.string.empty_notes_title), stringResource(R.string.empty_notes_body), action = stringResource(R.string.new_note), onAction = onCreateNote)
-                    }
-                }
-            }
-        )
-    }
+	var isListView by rememberSaveable { mutableStateOf(true) }
+	var noteToDelete by remember { mutableStateOf<Note?>(null) }
+	DeleteNoteDialog(noteToDelete, { noteToDelete = null }, onDelete)
+	Scaffold(topBar = { CustomTopBar(onSettings) }) { padding ->
+		NotesCollection(
+			notes = notes,
+			isListView = isListView,
+			showContent = false,
+			onClick = onOpenNote,
+			onLongClick = { noteToDelete = it },
+			modifier = Modifier.fillMaxSize().padding(padding),
+			header = {
+				Column {
+					Spacer(Modifier.height(16.dp))
+					Text(
+						DateUtils.fullDate(System.currentTimeMillis()).replaceFirstChar {
+							it.titlecase()
+						},
+						style = MaterialTheme.typography.labelLarge,
+						color = MaterialTheme.colorScheme.onSurfaceVariant,
+					)
+					Spacer(Modifier.height(12.dp))
+					val reminders = notes.count { it.isReminder }
+					val noteCount = notes.size - reminders
+					FlowRow(
+						horizontalArrangement = Arrangement.spacedBy(10.dp),
+						modifier = Modifier.fillMaxWidth(),
+					) {
+						SuggestionChip(
+							onClick = onOpenNotes,
+							label = {
+								Text(
+									pluralStringResource(R.plurals.note_count, noteCount, noteCount)
+								)
+							},
+							icon = {
+								Icon(
+									Icons.AutoMirrored.Outlined.StickyNote2,
+									null,
+									Modifier.size(16.dp),
+								)
+							},
+						)
+						SuggestionChip(
+							onClick = onOpenReminders,
+							label = {
+								Text(
+									pluralStringResource(
+										R.plurals.reminder_count,
+										reminders,
+										reminders,
+									)
+								)
+							},
+							icon = {
+								Icon(Icons.Outlined.Notifications, null, Modifier.size(16.dp))
+							},
+						)
+					}
+					Row(
+						Modifier.fillMaxWidth().padding(top = 16.dp),
+						verticalAlignment = Alignment.CenterVertically,
+					) {
+						Text(
+							stringResource(R.string.recent_activity),
+							style = MaterialTheme.typography.titleLarge,
+							modifier = Modifier.weight(1f),
+						)
+						ViewToggle(isListView) { isListView = !isListView }
+					}
+					if (notes.isEmpty()) {
+						EmptyNotesState(
+							stringResource(R.string.empty_notes_title),
+							stringResource(R.string.empty_notes_body),
+							action = stringResource(R.string.new_note),
+							onAction = onCreateNote,
+						)
+					}
+				}
+			},
+		)
+	}
 }

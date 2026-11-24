@@ -69,10 +69,22 @@
     <string name="discard_body">Hay cambios que todavía no se han guardado.</string>
     <string name="discard">Descartar cambios</string>
     <string name="keep_editing">Seguir escribiendo</string>
-    <plurals name="note_count"><item quantity="one">%d nota</item><item quantity="other">%d notas</item></plurals>
-    <plurals name="reminder_count"><item quantity="one">%d recordatorio</item><item quantity="other">%d recordatorios</item></plurals>
-    <plurals name="result_count"><item quantity="one">%d resultado</item><item quantity="other">%d resultados</item></plurals>
-    <plurals name="word_count"><item quantity="one">%d palabra</item><item quantity="other">%d palabras</item></plurals>
+    <plurals name="note_count">
+        <item quantity="one">%d nota</item>
+        <item quantity="other">%d notas</item>
+    </plurals>
+    <plurals name="reminder_count">
+        <item quantity="one">%d recordatorio</item>
+        <item quantity="other">%d recordatorios</item>
+    </plurals>
+    <plurals name="result_count">
+        <item quantity="one">%d resultado</item>
+        <item quantity="other">%d resultados</item>
+    </plurals>
+    <plurals name="word_count">
+        <item quantity="one">%d palabra</item>
+        <item quantity="other">%d palabras</item>
+    </plurals>
     <string name="notes_load_error">No se han podido cargar las notas.</string>
     <string name="delete_error">No se ha podido eliminar la nota. Vuelve a intentarlo.</string>
     <string name="preferences_error">No se han podido leer o guardar los ajustes. Vuelve a seleccionar el tema para reintentar el guardado.</string>
