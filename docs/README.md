@@ -18,7 +18,7 @@ Consulta también [Cambios de Clean Mind](cambios-clean-mind.md) para el estilo 
 
 Consulta [Carpetas](carpetas.md) para organización y migraciones, y [Movimiento y arranque](movimiento.md) para las transiciones y la splash monocroma.
 
-Consulta [Cristal y superficies](glass-ui.md) para el material compartido y [Ciencia breve](ciencia-breve.md) para las seis notas incluidas en la versión de desarrollo.
+Consulta [Superficies y contraste Material 3](glass-ui.md) para el material compartido y [Ciencia breve](ciencia-breve.md) para las seis notas incluidas en la versión de desarrollo.
 
 ## Fuentes de verdad
 

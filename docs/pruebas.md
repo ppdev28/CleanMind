@@ -46,9 +46,9 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | `RichEditorTest` | 12 | Compatibilidad con texto antiguo, serialización, reapertura con negrita, deshacer/rehacer, limpieza parcial, listas, casillas, espaciado, color con selección conservada y estado de la barra y continuación/salida de listas con Intro, subtítulos y conservación de metadatos al deshacer y disponibilidad del campo nativo para accesibilidad. |
 | `ExampleUnitTest` | 1 | Prueba aritmética de ejemplo del proyecto; no valida funcionalidad de Clean Mind. |
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
-| `DesignUiTest` | 14 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35. |
+| `DesignUiTest` | 15 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación/reaparición de la cabecera con scroll y acceso a Crear mientras está oculta. |
 
-Total actual: **68 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
+Total actual: **69 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
 Las pruebas de ViewModel usan `kotlinx-coroutines-test` para controlar la ejecución y el tiempo virtual. `FakeNoteRepository` permite simular lentitud, errores y cambios observables.
 
@@ -67,7 +67,7 @@ Las carpetas `build/` contienen salidas generadas. No forman parte de la documen
 
 ## Estado conocido
 
-La última ejecución local de verificación de código terminó con compilación debug correcta, lint sin errores y 68 pruebas locales superadas, sin fallos ni casos omitidos. Lint conserva avisos sobre versiones de dependencias y recursos.
+La última ejecución local de verificación de código terminó con compilación debug correcta, lint sin errores y 69 pruebas locales superadas, sin fallos ni casos omitidos. Lint conserva avisos sobre versiones de dependencias y recursos.
 
 La comprobación de formato de Android Studio terminó con 101 archivos revisados y conformes al estilo compartido.
 
@@ -151,3 +151,13 @@ Comprobaciones realizadas:
 - Limpieza de la nota, carpeta, aviso, adjuntos, imagen de galería, copias y exportaciones temporales, además del APK de pruebas. La comparación final conserva idénticos los cuatro registros originales y mantiene exactamente las seis notas científicas. No aparecen crashes ni ANR del paquete en los registros conservados durante la validación. El teléfono queda en Inicio, con su tema Oscuro y sus preferencias de pantalla restauradas.
 
 La compilación debug y release, lint debug y release, las 68 pruebas locales y la repetición final de las dos instrumentadas han pasado. El APK release continúa sin contener el archivo científico de desarrollo.
+
+## Material 3 y contraste · 25 de noviembre de 2026
+
+La revisión adopta la alternativa Material 3 pedida por el usuario. Se retiraron Haze y los efectos de cristal simulados. La compilación debug/release y lint de ambas variantes finalizaron correctamente, con las **69 pruebas locales** superadas. La nueva regresión recorre una agenda larga, comprueba que la cabecera se oculta y reaparece y conserva visible la acción Crear.
+
+En el realme RMX3370, API 33, se revisaron el fondo negro uniforme, el contraste de texto, la fecha de la agenda, la cabecera al desplazar y la permanencia de la barra inferior. Se eliminó un recorte redundante en las superficies que interfería con su dibujo en hardware. La franja de estado protege el reloj al pasar contenido por debajo.
+
+Se abrieron y cerraron las hojas de creación, carpetas, formato e imágenes. Su contenedor se prolonga hasta el borde inferior, cubriendo el área de navegación en lugar de dejar ver la barra de la app. Se comprobó también el tema claro y se restauró la preferencia previa Oscuro. Esta revisión física utiliza navegación por gestos; no se cambió la configuración de navegación del teléfono.
+
+La comparación final conservó idénticos los 11 registros de notas y recordatorios y la carpeta que había al comenzar esta revisión. Las capturas de `ui-preview/` se regeneraron con datos sintéticos; las capturas del dispositivo y sus copias de datos se conservan solo como material privado local.

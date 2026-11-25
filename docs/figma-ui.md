@@ -58,7 +58,7 @@ Una notificación puede pertenecer a una nota normal o a un recordatorio explíc
 
 `DesignUiTest` utiliza Compose y Robolectric con gráficos nativos, sin teléfono ni emulador. Comprueba ocultación del cuerpo, pulsación larga, búsqueda/cuadrícula, entrada/salida de concentración, completar sin eliminar, ajustes y selección de fecha/hora. Las capturas se generan en `/tmp/cleanmind-ui-*.png`; una selección está en [ui-preview](ui-preview/).
 
-La suite consta de 68 pruebas locales y dos pruebas instrumentadas. Además de los flujos comprobados anteriormente en Xiaomi, en el realme RMX3370 se verificaron cristal acelerado, carpetas, edición, imágenes de galería/cámara, portapapeles nativo, notificación en segundo plano y escritura SAF de TXT/PDF y copias automáticas. Consulta [Pruebas](pruebas.md) para el alcance y los casos pendientes.
+La suite consta de 69 pruebas locales y dos pruebas instrumentadas. Además de los flujos comprobados anteriormente en Xiaomi, en el realme RMX3370 se verificaron cristal acelerado, carpetas, edición, imágenes de galería/cámara, portapapeles nativo, notificación en segundo plano y escritura SAF de TXT/PDF y copias automáticas. Consulta [Pruebas](pruebas.md) para el alcance y los casos pendientes.
 
 
 ## Ajustes solicitados el 24 de noviembre
@@ -71,4 +71,4 @@ La revisión posterior simplifica los recordatorios independientes en tareas con
 
 Las carpetas, el arranque monocromo y las transiciones se incorporan por las nuevas peticiones del usuario y amplían la referencia original. Consulta [Carpetas](carpetas.md) y [Movimiento y arranque](movimiento.md).
 
-La UI de cristal y las carpetas en cuadrícula son cambios posteriores pedidos por el usuario. Notas ya no incorpora una búsqueda local; la búsqueda global continúa en su pestaña.
+Las carpetas en cuadrícula son un cambio posterior pedido por el usuario. El 25 de noviembre, el acabado de cristal se sustituyó por la alternativa Material 3: fondo negro uniforme en oscuro, contraste alto, cabecera transparente con scroll y hojas continuas hasta el área de navegación. Notas ya no incorpora una búsqueda local; la búsqueda global continúa en su pestaña.

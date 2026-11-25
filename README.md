@@ -14,7 +14,7 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.
 - Elegir un tema claro, oscuro o vinculado al dispositivo.
-- Arranque monocromo, [superficies de cristal](docs/glass-ui.md) y transiciones breves entre pantallas, pestañas y herramientas.
+- Arranque monocromo, [superficies Material 3](docs/glass-ui.md) y transiciones breves entre pantallas, pestañas y herramientas.
 - Conservar el tema y restaurar determinados estados de navegación y edición.
 
 Los recordatorios permiten notificaciones configurables, repetición y posposición. Se pueden guardar y compartir TXT/PDF y mantener copias TXT en una carpeta elegida. La app no incluye cuentas, sincronización propia, restauración de copias completas ni papelera. Consulta los detalles en la [guía de uso](docs/guia-de-uso.md).

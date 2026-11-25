@@ -29,3 +29,7 @@ Las instrucciones de formato están en [Desarrollo](desarrollo.md#formato-compar
 Las ampliaciones posteriores de carpetas, arranque y transiciones se documentan en [Carpetas](carpetas.md) y [Movimiento](movimiento.md).
 
 La revisión de cristal, cuadrícula y colección científica está en [Cristal](glass-ui.md) y [Ciencia breve](ciencia-breve.md). Tras recuperar ADB se verificó también la actualización en el realme, el cristal acelerado, las notas científicas, imágenes, avisos y exportación SAF; se corrigieron la accesibilidad del cuerpo nativo del editor y la lectura de los botones al ampliar el texto del sistema.
+
+## Material 3 · 25 de noviembre
+
+Se adopta la alternativa Material 3 solicitada para sustituir el cristal anterior. Fondo negro uniforme en oscuro, texto más contrastado, contenedores tonales, cabecera transparente con desplazamiento y protección del reloj, hojas inferiores continuas hasta el área de navegación y fecha de agenda de 16 sp en seminegrita. Haze deja de ser una dependencia. Compilación y lint de ambas variantes y 69 pruebas locales correctas; revisión visual en realme con tema claro y oscuro.
