@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.creationTimestamp
@@ -33,9 +34,10 @@ fun AgendaDayGroup(notes: List<Note>, onOpen: (Note) -> Unit, onOptions: (Note) 
 	) {
 		Text(
 			fullDate,
-			style = MaterialTheme.typography.bodySmall,
-			color = MaterialTheme.colorScheme.onSurfaceVariant,
-			modifier = Modifier.semantics { heading() },
+			style = MaterialTheme.typography.titleSmall,
+			fontWeight = FontWeight.SemiBold,
+			color = MaterialTheme.colorScheme.onSurface,
+			modifier = Modifier.padding(top = 8.dp).semantics { heading() },
 		)
 		HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 		notes.forEach { note ->
