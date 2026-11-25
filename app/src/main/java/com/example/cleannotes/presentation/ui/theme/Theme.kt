@@ -12,7 +12,11 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.example.cleannotes.presentation.ui.design.GlassScene
+import android.os.Build
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 
 private val LightColors =
 	lightColorScheme(
@@ -81,16 +85,16 @@ private val DarkColors =
 		onTertiary = BlueInk,
 		tertiaryContainer = BlueContainerDark,
 		onTertiaryContainer = BlueInkDark,
-		background = Color(0xFF101010),
-		onBackground = Color(0xFFF2F2F2),
-		surface = Color(0xFF191919),
-		onSurface = Color(0xFFF2F2F2),
+		background = Color.Black,
+		onBackground = Color.White,
+		surface = Color(0xFF141414),
+		onSurface = Color.White,
 		surfaceVariant = Gray800,
-		onSurfaceVariant = Gray400,
+		onSurfaceVariant = Gray300,
 		surfaceDim = Gray950,
 		surfaceBright = Gray750,
-		surfaceContainerLowest = Color(0xFF0D0D0D),
-		surfaceContainerLow = Color(0xFF191919),
+		surfaceContainerLowest = Color.Black,
+		surfaceContainerLow = Color(0xFF141414),
 		surfaceContainer = Gray850,
 		surfaceContainerHigh = Gray800,
 		surfaceContainerHighest = Gray750,
@@ -98,7 +102,7 @@ private val DarkColors =
 		inverseSurface = Gray200,
 		inverseOnSurface = Gray900,
 		outline = Gray500,
-		outlineVariant = Color(0xFF303030),
+		outlineVariant = Color(0xFF404040),
 		error = Color(0xFFF2B8B5),
 		onError = Color(0xFF601410),
 		errorContainer = Color(0xFF5C2523),
@@ -121,13 +125,13 @@ private val DarkColors =
 @Composable
 fun CleanMindTheme(
 	darkTheme: Boolean = isSystemInDarkTheme(),
-	glassBlurEnabled: Boolean = true,
 	content: @Composable () -> Unit,
 ) {
 	val view = LocalView.current
 	if (!view.isInEditMode) {
 		SideEffect {
 			val window = (view.context as Activity).window
+			if (Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
 			WindowCompat.getInsetsController(window, view).apply {
 				isAppearanceLightStatusBars = !darkTheme
 				isAppearanceLightNavigationBars = !darkTheme
@@ -141,7 +145,7 @@ fun CleanMindTheme(
 			CompositionLocalProvider(
 				LocalContentColor provides MaterialTheme.colorScheme.onBackground
 			) {
-				GlassScene(blurEnabled = glassBlurEnabled, content = content)
+				Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
 			}
 		},
 	)

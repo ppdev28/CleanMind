@@ -23,7 +23,7 @@ import com.example.cleannotes.R
 import com.example.cleannotes.model.ThemeMode
 import com.example.cleannotes.presentation.ui.components.ScreenTopBar
 import com.example.cleannotes.presentation.ui.design.MindIcons
-import com.example.cleannotes.presentation.ui.design.glassMaterial
+import com.example.cleannotes.presentation.ui.design.appSurface
 
 @Composable
 fun SettingsScreen(
@@ -66,7 +66,7 @@ fun SettingsScreen(
 				)
 			}
 			Surface(
-				modifier = Modifier.glassMaterial(RoundedCornerShape(22.dp)),
+				modifier = Modifier.appSurface(RoundedCornerShape(22.dp)),
 				shape = RoundedCornerShape(22.dp),
 				color = Color.Transparent,
 			) {
@@ -98,7 +98,7 @@ fun SettingsScreen(
 				}
 			}
 			Surface(
-				modifier = Modifier.glassMaterial(RoundedCornerShape(22.dp)),
+				modifier = Modifier.appSurface(RoundedCornerShape(22.dp)),
 				shape = RoundedCornerShape(22.dp),
 				color = Color.Transparent,
 			) {

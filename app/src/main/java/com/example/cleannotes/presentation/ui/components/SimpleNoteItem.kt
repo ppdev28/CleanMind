@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.ui.edit_note.ExportMenu
 import com.example.cleannotes.presentation.util.DateUtils
@@ -135,10 +136,9 @@ fun SimpleNoteItem(
 		}
 	}
 	if (showOptions)
-		ModalBottomSheet(
+		AppBottomSheet(
 			onDismissRequest = { showOptions = false },
 			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-			containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
 		) {
 			Column(Modifier.padding(bottom = 24.dp)) {
 				Text(

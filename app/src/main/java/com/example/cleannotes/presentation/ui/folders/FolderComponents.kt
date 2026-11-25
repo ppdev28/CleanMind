@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteFolder
 import com.example.cleannotes.presentation.notebook.FolderOperation
-import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
+import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
-import com.example.cleannotes.presentation.ui.design.glassMaterial
+import com.example.cleannotes.presentation.ui.design.appSurface
 
 @Composable
 fun FolderGridHeader(onManage: () -> Unit) {
@@ -55,7 +55,7 @@ fun FolderTile(
 					contentDescription = "Abrir carpeta $name"
 					this.selected = selected
 				}
-				.glassMaterial(RoundedCornerShape(24.dp), selected = selected),
+				.appSurface(RoundedCornerShape(24.dp), selected = selected),
 		shape = RoundedCornerShape(24.dp),
 		color = Color.Transparent,
 		contentColor = MaterialTheme.colorScheme.onSurface,
@@ -206,7 +206,7 @@ fun FolderManager(
 			},
 		)
 	}
-	GlassBottomSheet(
+	AppBottomSheet(
 		onDismissRequest = { if (!operation.busy) onDismiss() },
 		sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 	) {
@@ -288,7 +288,7 @@ fun MoveNoteSheet(
 ) {
 	val initialRevision = remember { operation.revision }
 	LaunchedEffect(operation.revision) { if (operation.revision != initialRevision) onDismiss() }
-	GlassBottomSheet(
+	AppBottomSheet(
 		onDismissRequest = { if (!operation.busy) onDismiss() },
 		sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 	) {

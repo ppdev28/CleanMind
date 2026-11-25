@@ -82,7 +82,7 @@ fun DesignRow(
 ) {
 	Surface(
 		onClick = onClick,
-		modifier = Modifier.glassMaterial(RoundedCornerShape(16.dp), selected = selected),
+		modifier = Modifier.appSurface(RoundedCornerShape(16.dp), selected = selected),
 		shape = RoundedCornerShape(16.dp),
 		color = Color.Transparent,
 	) {
@@ -132,7 +132,7 @@ fun DesignNoteCard(
 		.joinToString(" · ")
 	Surface(
 		modifier =
-			modifier.noteActions(onClick, onLongClick).glassMaterial(RoundedCornerShape(22.dp)),
+			modifier.noteActions(onClick, onLongClick).appSurface(RoundedCornerShape(22.dp)),
 		shape = RoundedCornerShape(22.dp),
 		color = Color.Transparent,
 	) {

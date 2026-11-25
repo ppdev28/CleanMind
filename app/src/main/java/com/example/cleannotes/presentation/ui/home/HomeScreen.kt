@@ -15,7 +15,7 @@ import com.example.cleannotes.presentation.ui.components.*
 import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.util.DateUtils
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
 	notes: List<Note>,

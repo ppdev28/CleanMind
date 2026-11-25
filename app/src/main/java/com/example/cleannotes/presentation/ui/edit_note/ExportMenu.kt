@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.data.export.NoteExport
 import com.example.cleannotes.model.NoteDocument
-import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
+import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.ui.theme.CleanMindTheme
 import kotlinx.coroutines.Dispatchers
@@ -92,7 +92,7 @@ fun ExportMenu(title: String, document: NoteDocument, onDismiss: () -> Unit) {
 					}
 				}
 		}
-	GlassBottomSheet(
+	AppBottomSheet(
 		onDismissRequest = { if (!busy) onDismiss() },
 		sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 		scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f),

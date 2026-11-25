@@ -6,6 +6,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -40,7 +42,7 @@ import com.example.cleannotes.presentation.ui.components.BottomNavigationBar
 import com.example.cleannotes.presentation.ui.components.CustomTopBar
 import com.example.cleannotes.presentation.ui.components.DeleteNoteDialog
 import com.example.cleannotes.presentation.ui.design.*
-import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
+import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.edit_note.ExportMenu
 import com.example.cleannotes.presentation.ui.folders.*
 import com.example.cleannotes.presentation.ui.motion.AppMotion
@@ -72,6 +74,11 @@ fun NotebookScreen(
 	onClearFolderError: () -> Unit = {},
 	active: Boolean = true,
 ) {
+	val topBarScroll = TopAppBarDefaults.enterAlwaysScrollBehavior()
+	LaunchedEffect(state.selectedTab) {
+		topBarScroll.state.heightOffset = 0f
+		topBarScroll.state.contentOffset = 0f
+	}
 	BackHandler(enabled = active && state.selectedTab != NotesTab.HOME) {
 		onTabSelected(NotesTab.HOME)
 	}
@@ -150,7 +157,7 @@ fun NotebookScreen(
 	}
 	options?.let { note ->
 		val doc = NoteDocument.decode(note.content)
-		GlassBottomSheet(
+		AppBottomSheet(
 			onDismissRequest = { options = null },
 			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 		) {
@@ -228,20 +235,29 @@ fun NotebookScreen(
 		}
 	}
 	Scaffold(
+		modifier = Modifier.nestedScroll(topBarScroll.nestedScrollConnection),
 		containerColor = androidx.compose.ui.graphics.Color.Transparent,
 		contentWindowInsets = WindowInsets.statusBars,
 		snackbarHost = { DesignSnackbarHost(snackbar) },
 		topBar = {
-			CustomTopBar(
-				onSettings,
-				title =
-					when (state.selectedTab) {
-						NotesTab.HOME -> null
-						NotesTab.NOTES -> "Notas"
-						NotesTab.REMINDERS -> "Recordatorios"
-						NotesTab.SEARCH -> "Buscar"
-					},
-			)
+			Column {
+				Box(
+					Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars)
+						.background(MaterialTheme.colorScheme.background)
+				)
+				CustomTopBar(
+					onSettings,
+					scrollBehavior = topBarScroll,
+					windowInsets = WindowInsets(0.dp),
+					title =
+						when (state.selectedTab) {
+							NotesTab.HOME -> null
+							NotesTab.NOTES -> "Notas"
+							NotesTab.REMINDERS -> "Recordatorios"
+							NotesTab.SEARCH -> "Buscar"
+						},
+				)
+			}
 		},
 		bottomBar = {
 			BottomNavigationBar(
@@ -258,12 +274,11 @@ fun NotebookScreen(
 			)
 		},
 	) { padding ->
-		Column(
-			Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).glassContentSource()
-		) {
+		val contentTopInset = if (state.error == null) padding.calculateTopPadding() else 0.dp
+		Column(Modifier.fillMaxSize()) {
 			if (state.error != null)
 				Row(
-					Modifier.padding(horizontal = 24.dp),
+					Modifier.padding(top = padding.calculateTopPadding()).padding(horizontal = 24.dp),
 					verticalAlignment = Alignment.CenterVertically,
 				) {
 					Text(
@@ -288,7 +303,7 @@ fun NotebookScreen(
 				val notesTab = selectedTab in listOf(NotesTab.NOTES, NotesTab.SEARCH)
 				if (loading)
 					Box(
-						Modifier.fillMaxSize(),
+						Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
 						contentAlignment = Alignment.Center,
 					) {
 						CircularProgressIndicator()
@@ -302,7 +317,7 @@ fun NotebookScreen(
 										PaddingValues(
 											start = 24.dp,
 											end = 24.dp,
-											top = 8.dp,
+											top = contentTopInset + 8.dp,
 											bottom = padding.calculateBottomPadding() + 24.dp,
 										),
 									verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -469,7 +484,7 @@ fun NotebookScreen(
 											PaddingValues(
 												start = 24.dp,
 												end = 24.dp,
-												top = 8.dp,
+												top = contentTopInset + 8.dp,
 												bottom = padding.calculateBottomPadding() + 24.dp,
 											),
 										verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -556,6 +571,7 @@ fun NotebookScreen(
 									onCreate,
 									onUpdateNote,
 									bottomInset = padding.calculateBottomPadding(),
+									topInset = contentTopInset,
 								) {
 									deleting = it
 								}
@@ -573,7 +589,7 @@ private fun SectionLabel(value: String) = Text(value, style = MaterialTheme.typo
 private fun SearchEntry(value: String, onChange: (String) -> Unit, onClick: (() -> Unit)? = null) {
 	Surface(
 		shape = RoundedCornerShape(14.dp),
-		modifier = Modifier.glassMaterial(RoundedCornerShape(14.dp)),
+		modifier = Modifier.appSurface(RoundedCornerShape(14.dp)),
 		color = androidx.compose.ui.graphics.Color.Transparent,
 	) {
 		Row(
@@ -637,6 +653,7 @@ private fun ReminderCollection(
 	onCreate: (Boolean) -> Unit,
 	update: NoteChange,
 	bottomInset: androidx.compose.ui.unit.Dp = 0.dp,
+	topInset: androidx.compose.ui.unit.Dp = 0.dp,
 	onDelete: (Note) -> Unit,
 ) {
 	val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
@@ -662,7 +679,12 @@ private fun ReminderCollection(
 			.sortedBy { NoteDocument.decode(it.content).reminder?.at ?: Long.MAX_VALUE }
 	LazyColumn(
 		contentPadding =
-			PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = bottomInset + 24.dp),
+			PaddingValues(
+				start = 24.dp,
+				end = 24.dp,
+				top = topInset + 8.dp,
+				bottom = bottomInset + 24.dp
+			),
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 	) {
 		item {

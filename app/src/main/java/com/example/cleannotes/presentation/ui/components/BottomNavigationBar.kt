@@ -13,9 +13,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.presentation.notebook.NotesTab
-import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
+import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
-import com.example.cleannotes.presentation.ui.design.glassMaterial
+import com.example.cleannotes.presentation.ui.design.appSurface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,11 +36,10 @@ fun BottomNavigationBar(
 	Surface(
 		modifier =
 			Modifier.navigationBarsPadding()
-				.padding(start = 12.dp, end = 12.dp, bottom = 10.dp, top = 6.dp)
-				.glassMaterial(
+				.padding(start = 12.dp, end = 12.dp, top = 6.dp)
+				.appSurface(
 					RoundedCornerShape(28.dp),
 					prominent = true,
-					includeScrollingContent = true,
 				),
 		color = Color.Transparent,
 		shape = RoundedCornerShape(28.dp),
@@ -88,7 +87,7 @@ fun BottomNavigationBar(
 		}
 	}
 	if (showMenu)
-		GlassBottomSheet(
+		AppBottomSheet(
 			onDismissRequest = { showMenu = false },
 			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 		) {
@@ -139,7 +138,7 @@ private fun CreationOption(
 		onClick = onClick,
 		shape = RoundedCornerShape(20.dp),
 		color = Color.Transparent,
-		modifier = Modifier.glassMaterial(RoundedCornerShape(20.dp)),
+		modifier = Modifier.appSurface(RoundedCornerShape(20.dp)),
 	) {
 		Row(
 			Modifier.fillMaxWidth().padding(20.dp),

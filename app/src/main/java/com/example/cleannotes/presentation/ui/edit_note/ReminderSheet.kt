@@ -14,7 +14,7 @@ import com.example.cleannotes.R
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.ReminderConfig
 import com.example.cleannotes.presentation.ui.design.*
-import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
+import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -75,7 +75,7 @@ fun ReminderSheet(
 		}
 	val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
 	val formatter = remember(locale) { SimpleDateFormat("d MMM yyyy · HH:mm", locale) }
-	GlassBottomSheet(
+	AppBottomSheet(
 		onDismissRequest = onDismiss,
 		sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 	) {

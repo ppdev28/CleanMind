@@ -32,7 +32,7 @@ import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.ReminderConfig
 import com.example.cleannotes.presentation.ui.components.ScreenTopBar
 import com.example.cleannotes.presentation.ui.design.DesignRow
-import com.example.cleannotes.presentation.ui.design.GlassBottomSheet
+import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
 import com.example.cleannotes.presentation.ui.motion.AppMotion
 import java.text.DateFormat
@@ -132,7 +132,7 @@ fun ReminderEditorScreen(
 			},
 		)
 	if (advanced)
-		GlassBottomSheet(
+		AppBottomSheet(
 			onDismissRequest = { advanced = false },
 			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 		) {

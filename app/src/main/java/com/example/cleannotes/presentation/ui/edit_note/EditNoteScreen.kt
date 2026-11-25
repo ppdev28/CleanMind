@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import com.example.cleannotes.model.CheckItem
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.design.*
-import com.example.cleannotes.presentation.ui.design.glassMaterial
 import com.example.cleannotes.presentation.ui.edit_note.richtext.*
 import com.example.cleannotes.presentation.ui.motion.AppMotion
 import kotlinx.coroutines.launch
@@ -148,9 +147,8 @@ fun EditNoteScreen(
 			onDismiss = { reminder = false },
 		)
 	if (formatting)
-		ModalBottomSheet(
+		AppBottomSheet(
 			onDismissRequest = { formatting = false },
-			containerColor = MaterialTheme.colorScheme.background,
 		) {
 			EditorBottomBar(
 				document,
@@ -166,9 +164,8 @@ fun EditNoteScreen(
 			)
 		}
 	if (imageMenu)
-		ModalBottomSheet(
+		AppBottomSheet(
 			onDismissRequest = { imageMenu = false },
-			containerColor = MaterialTheme.colorScheme.background,
 		) {
 			Column(
 				Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
@@ -207,8 +204,7 @@ fun EditNoteScreen(
 				Modifier.fillMaxWidth()
 					.statusBarsPadding()
 					.padding(horizontal = 16.dp)
-					.padding(top = 8.dp)
-					.glassMaterial(RoundedCornerShape(24.dp), prominent = true),
+					.padding(top = 8.dp),
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				DesignIconButton(

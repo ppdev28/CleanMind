@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.presentation.ui.design.MindIcons
-import com.example.cleannotes.presentation.ui.design.glassMaterial
 import com.example.cleannotes.presentation.util.DateUtils
 
 @Composable
@@ -115,8 +114,7 @@ fun ScreenTopBar(title: String, onBack: () -> Unit, actions: @Composable RowScop
 	TopAppBar(
 		modifier =
 			Modifier.statusBarsPadding()
-				.padding(horizontal = 16.dp, vertical = 8.dp)
-				.glassMaterial(RoundedCornerShape(24.dp), prominent = true),
+				.padding(horizontal = 16.dp, vertical = 8.dp),
 		windowInsets = WindowInsets(0.dp),
 		title = { Text(title, style = MaterialTheme.typography.titleLarge) },
 		navigationIcon = {
@@ -128,7 +126,10 @@ fun ScreenTopBar(title: String, onBack: () -> Unit, actions: @Composable RowScop
 			}
 		},
 		actions = actions,
-		colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+		colors = TopAppBarDefaults.topAppBarColors(
+			containerColor = Color.Transparent,
+			scrolledContainerColor = Color.Transparent
+		),
 	)
 }
 
