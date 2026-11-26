@@ -6,7 +6,9 @@ La revisión del 25 de noviembre de 2026 adopta la alternativa Material 3 solici
 
 Las tarjetas emplean `surfaceContainerLow`, las barras inferiores `surfaceContainer` y los estados seleccionados `tertiaryContainer`. Los límites usan los roles de contorno del tema. Los colores se resuelven como superficies Material 3 y no como transparencias que varíen el contraste del texto según el contenido situado detrás.
 
-Desde la revisión del 26 de noviembre, las cabeceras son fijas y tienen el color de fondo del tema. No se ocultan al desplazar ni dejan pasar texto por detrás. El contenido del cuaderno aplica el padding medido por `Scaffold` y consume esos insets antes de componer listas, cuadrículas y recordatorios; cada viewport queda entre las barras, con su espaciado propio de 8/24 dp. La fecha de cada grupo conserva su semántica de encabezado y utiliza 16 sp y peso seminegrita.
+Las cabeceras conservan el fondo opaco del tema para impedir superposiciones. En las pestañas del cuaderno, el `TopAppBar` usa `exitUntilCollapsed`: se oculta al desplazarse hacia abajo y reaparece cuando el contenido alcanza su inicio. Invertir la dirección a mitad de la lista no lo muestra. Las pantallas con Volver y el editor mantienen sus cabeceras fijas.
+
+El contenido del cuaderno aplica el padding medido por `Scaffold` y consume esos insets antes de componer listas, cuadrículas y recordatorios. Ese espacio se adapta a la altura visible de la cabecera y mantiene el viewport fuera de las barras. La franja de estado continúa protegida por el color del tema. La fecha de cada grupo conserva su semántica de encabezado y utiliza 16 sp y peso seminegrita.
 
 La barra inferior es un `NavigationBar` Material 3 acoplado al borde, sin márgenes exteriores, esquinas de tarjeta ni elevación flotante. Su superficie ocupa todo el ancho y también el área de navegación del sistema. Se conserva la acción central Crear.
 
