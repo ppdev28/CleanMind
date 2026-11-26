@@ -8,8 +8,9 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 
 - Crear, editar y eliminar notas con formato visual, listas, imágenes y deshacer/rehacer.
 - Guardar automáticamente mientras escribes y mostrar el estado de guardado.
+- Eliminar casillas y recuperarlas con Deshacer; herramientas visibles y un panel único de formato.
 - Consultar la actividad por fecha o cambiar a una cuadrícula adaptable.
-- Navegar y crear desde las opciones que se despliegan sobre el propio FAB; doble toque en la lupa para buscar directamente por título y contenido.
+- Navegar y crear desde las opciones radiales del FAB; doble toque en la lupa para buscar directamente por título y contenido.
 - Organizar notas en [carpetas](docs/carpetas.md) en cuadrícula, con creación, renombrado y movimiento.
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.

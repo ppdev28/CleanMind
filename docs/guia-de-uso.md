@@ -13,7 +13,7 @@ Clean Mind permite guardar ideas y apuntes personales en Android. No necesitas u
 | Editor | Título, subtítulo opcional, cuerpo de la nota, estado de guardado y acciones. |
 | Ajustes | Selección de apariencia e información sobre almacenamiento y recordatorios. |
 
-El botón flotante **+** despliega encima de sí mismo las acciones Inicio, Notas, Recordar, Buscar, Nueva nota y Nuevo recordatorio. El botón gira a **×** para cerrarlas; Volver también cierra el despliegue sin cambiar de pantalla. Un doble toque en la lupa abre Buscar con el campo enfocado para escribir. La cabecera se oculta al bajar y reaparece al llegar al inicio; el engranaje abre Ajustes.
+El botón flotante **+** despliega seis acciones en dos arcos radiales: Inicio, Notas, Recordar, Buscar, Nueva nota y Nuevo aviso (nuevo recordatorio). El botón gira a **×** para cerrarlas; Volver también cierra el despliegue sin cambiar de pantalla. Un doble toque en la lupa abre Buscar con el campo enfocado para escribir. La cabecera se oculta al bajar y reaparece al llegar al inicio; el engranaje abre Ajustes.
 
 ## Crear una nota
 
@@ -25,7 +25,7 @@ El botón flotante **+** despliega encima de sí mismo las acciones Inicio, Nota
 
 También puedes crear la primera nota desde el botón del estado vacío.
 
-El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelves con cambios válidos pendientes, intenta guardarlos antes de cerrar. La acción **Aa · Selecciona texto para dar formato** muestra las herramientas del editor normal.
+El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelves con cambios válidos pendientes, intenta guardarlos antes de cerrar. La barra de formato muestra directamente negrita, cursiva, subrayado y listas; **Más formato y espaciado** abre el panel completo del editor normal.
 
 ## Entender el guardado
 
@@ -55,7 +55,7 @@ La elección de vista pertenece al estado de cada pestaña. No hay un ajuste glo
 
 ## Crear un recordatorio
 
-1. Pulsa **+ → Nuevo recordatorio**.
+1. Pulsa **+ → Nuevo aviso**.
 2. Escribe **¿Qué quieres recordar?**.
 3. Activa **Avisarme** y elige la fecha y la hora, o desactívalo para guardar un pendiente sin notificación.
 4. Añade un detalle opcional y pulsa **Guardar recordatorio**.
@@ -127,18 +127,11 @@ El historial de pruebas físicas está en [Pruebas](pruebas.md). Consulta la rev
 
 ## Formato y fotografías
 
-Pulsa **Aa · Selecciona texto para dar formato** en el editor para mostrar la fila **H₁, H₂, Aa, negrita, cursiva, subrayado y borrar formato**. La **×** cierra esa fila. Las opciones de tachado, alineación, sangría y espaciado están en **⋮ → Formato y espaciado**. Selecciona una palabra o un fragmento antes de cambiarlo. Sin selección, el formato se aplica al párrafo actual cuando contiene texto.
+La fila de formato permanece visible sobre el teclado. Muestra negrita, cursiva, subrayado y listas; deslízala horizontalmente para acceder a las demás herramientas. **Más formato y espaciado** abre un único panel con tamaños H1–H6 y Normal, estilos, listas, alineación, sangría e interlineado y espacios. Los ajustes de espaciado afectan a toda la nota. Se mantiene el editor visual normal, con selección de texto y sin escribir sintaxis Markdown.
 
-- Negrita, cursiva, subrayado y tachado. Los colores siguen el tema de la app.
-- Tamaños de título, subtítulo y texto normal.
-- Alineación izquierda, centro o derecha y sangría.
-- Listas con viñetas o numeradas sobre las líneas seleccionadas.
-- **Casilla**: añade una casilla al párrafo del cursor; vuelve a pulsar para marcarla o desmarcarla.
-- Interlineado de 1 a 2, espacio adicional entre líneas y separación entre párrafos. Estos ajustes de espaciado afectan a toda la nota.
-- **Sin formato** elimina las marcas del fragmento seleccionado; no restablece los ajustes globales de espaciado.
-- **Deshacer/Rehacer** funciona durante la sesión del editor; el historial no se guarda al cerrar.
+Cada casilla de la lista tiene una **×** a la derecha para eliminarla, esté vacía, escrita o marcada. El aviso **Casilla eliminada · Deshacer** permite recuperarla con su contenido, estado y posición. La eliminación no cambia el cuerpo ni el resto de la lista.
 
-En **+**, **Añadir imagen** abre el selector y **Hacer foto** permite tomar una fotografía con una aplicación de cámara instalada. **Pegar imagen** y el menú nativo de pegado aceptan imágenes que el portapapeles exponga mediante una URI accesible. No descargan enlaces web como imágenes.
+**Imagen** ofrece elegir una fotografía, hacerla con una cámara instalada o pegar una imagen que el portapapeles exponga mediante una URI accesible.
 
 Las imágenes se copian como JPEG privados de la app, con reducción de resolución y corrección de orientación EXIF. Aparecen después del texto y las casillas y pueden quitarse o moverse hacia arriba desde su menú **⋮**. Quitar un adjunto de una nota no borra la fotografía original de la galería. Los archivos privados que queden sin referencia todavía no tienen limpieza automática.
 

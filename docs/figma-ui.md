@@ -86,3 +86,8 @@ Se implementaron en orden numérico: limpieza de pantallas/recursos sin uso, FAB
 ## Corrección tras revisar «To Dos»
 
 Se restaura el editor normal y su formato visual. La compatibilidad de lectura conserva las notas guardadas en Markdown, sin mantener su editor de sintaxis. El FAB despliega seis acciones ancladas encima del botón y Volver cierra el despliegue. La celda mínima de Home pasa de 156 a 128 dp: en los 360 dp del realme la vista de cuadrícula muestra dos columnas y el modo agenda una, manteniendo las fechas de creación.
+
+
+## Formato conservado, casillas y FAB radial
+
+Se recuperan la fila visible de formato y el panel único, aplicados al editor normal. Cada casilla incorpora eliminación y deshacer. El FAB pasa a dos arcos radiales de tres acciones, con controles circulares y animación desde el centro del botón; conserva navegación, creación, cierre y doble toque de búsqueda. Estas adaptaciones son posteriores a la referencia Figma.

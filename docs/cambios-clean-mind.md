@@ -43,3 +43,8 @@ Los seis puntos se implementaron por orden numérico y con commits por funcional
 ## Corrección posterior: editor y acciones flotantes
 
 Se restaura el editor normal anterior, manteniendo lectura de notas guardadas en Markdown sin reescribirlas al abrir. El FAB despliega sus seis acciones encima del mismo botón, con cierre desde × o Volver. La cuadrícula de Home baja su celda mínima de 156 a 128 dp para mostrar dos columnas en el realme de 360 dp; conserva el modo agenda de una columna. Las pruebas locales quedan en 79 casos y pasan las compilaciones debug/release y lint de ambas variantes.
+
+
+## Menú moderno, eliminación de casillas y FAB radial
+
+El editor normal conserva de nuevo la barra visible y el panel único de formato, sin volver al editor de sintaxis. Cada casilla se puede eliminar desde su × y recuperar desde Deshacer. El FAB presenta sus seis acciones en dos arcos radiales concéntricos, con animación y controles sin solapamiento a 320 dp. Se mantienen la cuadrícula de Inicio y los cambios anteriores de compatibilidad de documentos.
