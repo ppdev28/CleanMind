@@ -298,26 +298,26 @@ class DesignUiTest {
 	}
 
 	@Test
-	fun markdownPreviewKeepsTheDocumentAndReturnsToEditing() {
+	fun normalEditorShowsRichTextWithoutMarkdownControls() {
 		val original = NoteDocument(
-			text = "# Ciencia\n\n**La luz** viaja por el vacío.\n\n- [ ] Medir",
-			markdown = true
+			text = "Ciencia",
+			marks = listOf(com.example.cleannotes.model.TextMark(0, 7, "bold"))
 		)
 		var changes = 0
 		compose.setContent {
 			CleanMindTheme(darkTheme = true) {
 				EditNoteScreen(
-					EditNoteUiState(title = "Ciencia", content = original.encode()),
+					EditNoteUiState(title = "Nota", content = original.encode()),
 					{ changes++ },
 					{},
 					{})
 			}
 		}
-		compose.onNodeWithText("Vista previa").performClick()
-		compose.onNodeWithContentDescription("Vista previa de Markdown").assertIsDisplayed()
-		screenshot("markdown-preview-dark")
-		compose.onNodeWithText("Editar Markdown").performClick()
 		compose.onNodeWithContentDescription("Cuerpo de la nota").assertIsDisplayed()
+		compose.onNodeWithText("Markdown").assertDoesNotExist()
+		compose.onNodeWithText("Vista previa").assertDoesNotExist()
+		compose.onNodeWithText("Aa · Selecciona texto para dar formato").performClick()
+		compose.onNodeWithContentDescription("Negrita").assertExists()
 		assertEquals(0, changes)
 	}
 
@@ -333,8 +333,6 @@ class DesignUiTest {
 				}
 			}
 		}
-		compose.onNodeWithContentDescription("Negrita").assertIsDisplayed()
-		compose.onNodeWithContentDescription("Más formato y espaciado").assertIsDisplayed()
 		listOf("Lista", "Imagen", "Recordar").forEach { label ->
 			val layouts = mutableListOf<TextLayoutResult>()
 			compose.onNodeWithText(label).assertIsDisplayed().performSemanticsAction(

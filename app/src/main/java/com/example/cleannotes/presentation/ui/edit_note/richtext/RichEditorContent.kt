@@ -1,6 +1,5 @@
 package com.example.cleannotes.presentation.ui.edit_note.richtext
 
-import com.example.cleannotes.text.MarkdownRendering
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -18,7 +17,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -126,7 +124,6 @@ fun RichEditorContent(
 	controller: RichEditorController,
 	onChange: (String) -> Unit,
 	focusMode: Boolean = false,
-	visible: Boolean = true,
 ) {
 	val currentChange by rememberUpdatedState(onChange)
 	val color = MaterialTheme.colorScheme.onSurface.toArgb()
@@ -150,15 +147,13 @@ fun RichEditorContent(
 			view.isEnabled = enabled
 			view.setTextColor(color)
 			view.setHintTextColor(hintColor)
-			view.hint = "Escribe en Markdown…"
+			view.hint = "Nota"
 			view.bind(document)
 		},
 		modifier =
-			Modifier.fillMaxWidth().then(
-				if (visible) Modifier.heightIn(min = 48.dp)
-					.semantics { contentDescription = "Cuerpo de la nota" }
-				else Modifier.height(0.dp).clearAndSetSemantics { }
-			),
+			Modifier.fillMaxWidth().heightIn(min = 48.dp).semantics {
+				contentDescription = "Cuerpo de la nota"
+			},
 	)
 }
 
@@ -214,38 +209,4 @@ fun NoteImageStrip(document: NoteDocument, enabled: Boolean, onChange: (String) 
 			}
 		}
 	}
-}
-
-/** Read mode uses native selectable text and never loads remote images or HTML. */
-@Composable
-fun MarkdownPreview(document: NoteDocument) {
-	val color = MaterialTheme.colorScheme.onSurface.toArgb()
-	val accent = MaterialTheme.colorScheme.primary.toArgb()
-	val density = androidx.compose.ui.platform.LocalDensity.current.density
-	val rendered = remember(document.text, document.paragraphSpacing, density) {
-		MarkdownRendering.render(document.text, (document.paragraphSpacing * density).toInt())
-	}
-	AndroidView(
-		factory = { context ->
-			android.widget.TextView(context).apply {
-				setTextIsSelectable(true)
-				movementMethod = android.text.method.LinkMovementMethod.getInstance()
-				textSize = 16f
-				setPadding(0, 0, 0, 24)
-			}
-		},
-		update = { view ->
-			view.setTextColor(color)
-			view.setLinkTextColor(accent)
-			view.setLineSpacing(document.extraLineSpacing.toFloat(), document.lineSpacing)
-			view.textAlignment = when (document.textAlignment) {
-				2 -> android.view.View.TEXT_ALIGNMENT_CENTER
-				1 -> android.view.View.TEXT_ALIGNMENT_VIEW_END
-				else -> android.view.View.TEXT_ALIGNMENT_VIEW_START
-			}
-			view.text = rendered
-		},
-		modifier = Modifier.fillMaxWidth().heightIn(min = 80.dp)
-			.semantics { contentDescription = "Vista previa de Markdown" },
-	)
 }

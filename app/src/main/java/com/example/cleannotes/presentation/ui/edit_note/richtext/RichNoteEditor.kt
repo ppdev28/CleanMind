@@ -22,7 +22,6 @@ class RichNoteEditor(context: Context) : EditText(context) {
 	private var changing = false
 	private val undo = ArrayDeque<NoteDocument>()
 	private val redo = ArrayDeque<NoteDocument>()
-	private val syntaxSpans = mutableListOf<Any>()
 
 	init {
 		importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
@@ -56,14 +55,7 @@ class RichNoteEditor(context: Context) : EditText(context) {
 					if (changing) return
 					val newline = insertedNewline
 					insertedNewline = -1
-					if (s != null && newline >= 0 && document.markdown) {
-						MarkdownEditing.enter(s.toString(), newline)?.let { edit ->
-							changing = true
-							s.replace(0, s.length, edit.text)
-							setSelection(edit.start.coerceIn(0, s.length), edit.end.coerceIn(0, s.length))
-							changing = false
-						}
-					} else if (s != null && newline >= 0) {
+					if (s != null && newline >= 0) {
 						val start = s.toString().lastIndexOf('\n', newline - 1) + 1
 						val line = s.substring(start, newline)
 						val match = Regex("^(\\s*)(• |☐ |☑ |([0-9]+)\\. )(.*)$").matchEntire(line)
@@ -106,18 +98,7 @@ class RichNoteEditor(context: Context) : EditText(context) {
 				.filter { mark -> mark.start <= start && mark.end >= end }
 				.map { if (it.kind == "size") "size:${it.value}" else it.kind }
 				.toSet()
-		val syntaxFormats =
-			if (document.markdown) text?.getSpans(start, end, Any::class.java).orEmpty().filter {
-				text!!.getSpanStart(it) <= start && text!!.getSpanEnd(it) >= end
-			}.mapNotNull {
-				when (it) {
-					is StyleSpan -> if (it.style == Typeface.BOLD) "bold" else "italic"
-					is UnderlineSpan -> "underline"
-					is StrikethroughSpan -> "strike"
-					else -> null
-				}
-			}.toSet() else emptySet()
-		onEditorStateChanged(undo.isNotEmpty(), redo.isNotEmpty(), formats + syntaxFormats)
+		onEditorStateChanged(undo.isNotEmpty(), redo.isNotEmpty(), formats)
 	}
 
 	fun bind(value: NoteDocument) {
@@ -154,7 +135,6 @@ class RichNoteEditor(context: Context) : EditText(context) {
 			value.setSpan(span, mark.start, mark.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 		}
 		applyParagraphSpacing(value)
-		applyMarkdownSyntax(value)
 		setText(value)
 		setSelection(cursor, selectionEndBeforeRender)
 		setLineSpacing(document.extraLineSpacing.toFloat(), document.lineSpacing)
@@ -196,14 +176,11 @@ class RichNoteEditor(context: Context) : EditText(context) {
 					TextMark(value.getSpanStart(span), value.getSpanEnd(span), type, amount)
 				}
 				.filter { it.start < it.end }
-		return document.copy(
-			text = value.toString(),
-			marks = if (document.markdown) emptyList() else marks
-		)
+		return document.copy(text = value.toString(), marks = marks)
 	}
 
 	private fun publish() {
-		text?.let { applyParagraphSpacing(it); applyMarkdownSyntax(it) }
+		text?.let { applyParagraphSpacing(it) }
 		val next = snapshot()
 		if (next == document) return
 		undo.addLast(document)
@@ -215,38 +192,6 @@ class RichNoteEditor(context: Context) : EditText(context) {
 	}
 
 	fun format(kind: String, amount: Int = 0) {
-		if (document.markdown) {
-			when (kind) {
-				"bold" -> markdownWrap("**")
-				"italic" -> markdownWrap("*")
-				"underline" -> markdownWrap("<u>", "</u>")
-				"strike" -> markdownWrap("~~")
-				"size" -> markdownBlock(
-					when {
-						amount >= 160 -> "# "; amount >= 125 -> "## "; else -> ""
-					}
-				)
-
-				"indent" -> markdownBlock(if (amount > 0) "indent" else "outdent")
-				"clear" -> {
-					var a = minOf(selectionStart, selectionEnd).coerceAtLeast(0)
-					var b = maxOf(selectionStart, selectionEnd).coerceAtLeast(a)
-					if (a == b) {
-						a = document.text.lastIndexOf('\n', a - 1) + 1
-						b = document.text.indexOf('\n', b).let { if (it < 0) document.text.length else it }
-					}
-					val plain = com.example.cleannotes.model.MarkdownText.plain(document.text.substring(a, b))
-					applyMarkdownEdit(
-						MarkdownEditing.Edit(
-							document.text.replaceRange(a, b, plain),
-							a,
-							a + plain.length
-						)
-					)
-				}
-			}
-			return
-		}
 		val value = text ?: return
 		var start = minOf(selectionStart, selectionEnd).coerceAtLeast(0)
 		var end = maxOf(selectionStart, selectionEnd).coerceAtLeast(0)
@@ -289,43 +234,7 @@ class RichNoteEditor(context: Context) : EditText(context) {
 		setSelection(start, end)
 	}
 
-	fun markdownWrap(open: String, close: String = open) {
-		applyMarkdownEdit(
-			MarkdownEditing.wrap(
-				document.text,
-				selectionStart,
-				selectionEnd,
-				open,
-				close
-			)
-		)
-	}
-
-	fun markdownBlock(prefix: String) {
-		applyMarkdownEdit(MarkdownEditing.block(document.text, selectionStart, selectionEnd, prefix))
-	}
-
-	fun markdownInsert(value: String) {
-		val a = minOf(selectionStart, selectionEnd).coerceAtLeast(0)
-		val b = maxOf(selectionStart, selectionEnd).coerceAtLeast(a)
-		applyMarkdownEdit(
-			MarkdownEditing.Edit(
-				document.text.replaceRange(a, b, value),
-				a + value.length
-			)
-		)
-	}
-
-	private fun applyMarkdownEdit(edit: MarkdownEditing.Edit) {
-		commit(document.copy(text = edit.text, marks = emptyList(), markdown = true))
-		setSelection(edit.start, edit.end)
-	}
-
 	fun list(prefix: String) {
-		if (document.markdown) {
-			markdownBlock(if (prefix == "number") "number" else "- "); return
-		}
-
 		val value = text ?: return
 		val start =
 			value.toString().lastIndexOf('\n', selectionStart - 1).let { if (it < 0) 0 else it + 1 }
@@ -346,9 +255,6 @@ class RichNoteEditor(context: Context) : EditText(context) {
 	}
 
 	fun checkItem() {
-		if (document.markdown) {
-			markdownBlock("- [ ] "); return
-		}
 		val value = text ?: return
 		val start = value.toString().lastIndexOf('\n', selectionStart - 1) + 1
 		when {
@@ -356,36 +262,6 @@ class RichNoteEditor(context: Context) : EditText(context) {
 			value.toString().startsWith("☑ ", start) -> value.replace(start, start + 1, "☐")
 			else -> value.insert(start, "☐ ")
 		}
-	}
-
-	private fun applyMarkdownSyntax(value: Spannable) {
-		syntaxSpans.forEach { value.removeSpan(it) }
-		syntaxSpans.clear()
-		if (!document.markdown || value.length > 100_000) return
-		val root = com.example.cleannotes.model.MarkdownText.parse(value.toString())
-		val offsets = mutableListOf(0)
-		value.forEachIndexed { index, char -> if (char == '\n') offsets.add(index + 1) }
-		fun visit(node: org.commonmark.node.Node) {
-			val style: Any? = when (node) {
-				is org.commonmark.node.StrongEmphasis, is org.commonmark.node.Heading -> StyleSpan(Typeface.BOLD)
-				is org.commonmark.node.Emphasis -> StyleSpan(Typeface.ITALIC)
-				is org.commonmark.ext.gfm.strikethrough.Strikethrough -> StrikethroughSpan()
-				is org.commonmark.node.Code, is org.commonmark.node.FencedCodeBlock -> TypefaceSpan("monospace")
-				else -> null
-			}
-			if (style != null && node.sourceSpans.isNotEmpty()) {
-				val first = node.sourceSpans.first()
-				val last = node.sourceSpans.last()
-				val start = offsets[first.lineIndex] + first.columnIndex
-				val end = offsets[last.lineIndex] + last.columnIndex + last.length
-				if (start < end && end <= value.length) {
-					value.setSpan(style, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-					syntaxSpans.add(style)
-				}
-			}
-			generateSequence(node.firstChild) { it.next }.forEach(::visit)
-		}
-		visit(root)
 	}
 
 	private fun applyParagraphSpacing(value: Spannable) {
@@ -416,10 +292,6 @@ class RichNoteEditor(context: Context) : EditText(context) {
 			fm.descent += gap
 			fm.bottom += gap
 		}
-	}
-
-	fun alignment(value: Int) {
-		commit(snapshot().copy(textAlignment = value.coerceIn(0, 2)))
 	}
 
 	fun paragraphSpacing(gap: Int) {
