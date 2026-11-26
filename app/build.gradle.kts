@@ -46,6 +46,10 @@ android {
 }
 
 dependencies {
+	implementation(libs.commonmark)
+	implementation(libs.commonmark.tables)
+	implementation(libs.commonmark.strike)
+	implementation(libs.commonmark.tasks)
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.core.splashscreen)
 	implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -596,7 +596,12 @@ fun NotebookScreen(
 }
 
 @Composable
-private fun SearchEntry(value: String, onChange: (String) -> Unit, onClick: (() -> Unit)? = null, focusRequest: Int = 0) {
+private fun SearchEntry(
+	value: String,
+	onChange: (String) -> Unit,
+	onClick: (() -> Unit)? = null,
+	focusRequest: Int = 0
+) {
 	val requester = remember { FocusRequester() }
 	val keyboard = LocalSoftwareKeyboardController.current
 	LaunchedEffect(focusRequest) {

@@ -71,7 +71,9 @@ fun NotebookFab(
 							modifier = Modifier.weight(1f).combinedClickable(
 								role = Role.Button,
 								onClick = { showMenu = false; onTabSelected(route) },
-								onDoubleClick = if (route == NotesTab.SEARCH) ({ showMenu = false; onSearchDirect() }) else null,
+								onDoubleClick = if (route == NotesTab.SEARCH) ({
+									showMenu = false; onSearchDirect()
+								}) else null,
 							),
 							shape = RoundedCornerShape(16.dp),
 							color = if (selectedTab == route) MaterialTheme.colorScheme.primaryContainer

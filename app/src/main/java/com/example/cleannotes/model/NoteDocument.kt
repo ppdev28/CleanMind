@@ -23,6 +23,7 @@ data class NoteDocument(
 	val reminderCompleted: Boolean = false,
 	val checklist: List<CheckItem> = emptyList(),
 	val createdAt: Long? = null,
+	val markdown: Boolean = false,
 ) {
 	fun completeReminder(now: Long): NoteDocument {
 		val next = reminder?.let { it.nextAfter(maxOf(now, it.at)) }
@@ -55,7 +56,7 @@ data class NoteDocument(
 			decode(content).let {
 				listOf(
 					it.subtitle,
-					it.text,
+					if (it.markdown) MarkdownText.plain(it.text) else it.text,
 					it.checklist.joinToString("\n") { item ->
 						(if (item.done) "☑ " else "☐ ") + item.text
 					},

@@ -269,6 +269,30 @@ class DesignUiTest {
 	}
 
 	@Test
+	fun markdownPreviewKeepsTheDocumentAndReturnsToEditing() {
+		val original = NoteDocument(
+			text = "# Ciencia\n\n**La luz** viaja por el vacío.\n\n- [ ] Medir",
+			markdown = true
+		)
+		var changes = 0
+		compose.setContent {
+			CleanMindTheme(darkTheme = true) {
+				EditNoteScreen(
+					EditNoteUiState(title = "Ciencia", content = original.encode()),
+					{ changes++ },
+					{},
+					{})
+			}
+		}
+		compose.onNodeWithText("Vista previa").performClick()
+		compose.onNodeWithContentDescription("Vista previa de Markdown").assertIsDisplayed()
+		screenshot("markdown-preview-dark")
+		compose.onNodeWithText("Editar Markdown").performClick()
+		compose.onNodeWithContentDescription("Cuerpo de la nota").assertIsDisplayed()
+		assertEquals(0, changes)
+	}
+
+	@Test
 	fun editorToolsRemainReadableWithLargeTextOnANarrowScreen() {
 		compose.setContent {
 			val density = LocalDensity.current

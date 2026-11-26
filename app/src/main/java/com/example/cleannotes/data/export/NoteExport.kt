@@ -29,7 +29,7 @@ object NoteExport {
 		listOf(
 			title,
 			document.subtitle,
-			document.text,
+			if (document.markdown) com.example.cleannotes.model.MarkdownText.plain(document.text) else document.text,
 			document.checklist.joinToString("\n") { (if (it.done) "☑ " else "☐ ") + it.text },
 		)
 			.filter { it.isNotBlank() }
@@ -135,7 +135,11 @@ object NoteExport {
 				}
 			body.setSpan(span, mark.start, mark.end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 		}
-		text(body, 12f, false)
+		text(
+			if (document.markdown) com.example.cleannotes.text.MarkdownRendering.render(document.text) else body,
+			12f,
+			false
+		)
 		if (document.checklist.isNotEmpty())
 			text(
 				document.checklist.joinToString("\n") { (if (it.done) "☑ " else "☐ ") + it.text },

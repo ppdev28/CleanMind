@@ -296,44 +296,31 @@ private fun AdvancedFormatting(document: NoteDocument, controller: RichEditorCon
 			style = MaterialTheme.typography.bodySmall,
 			color = MaterialTheme.colorScheme.onSurfaceVariant,
 		)
-		Row(Modifier.horizontalScroll(rememberScrollState())) {
-			IconButton(onClick = { editor?.format("strike") }) {
-				Icon(
-					MindIcons.StrikethroughS,
-					"Tachado",
+		FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+			(1..6).forEach { level ->
+				TextButton(onClick = { editor?.markdownBlock("#".repeat(level) + " ") }) { Text("H$level") }
+			}
+			TextButton(onClick = { editor?.format("strike") }) { Text("Tachado") }
+			TextButton(onClick = { editor?.markdownWrap("`") }) { Text("Código") }
+			TextButton(onClick = {
+				editor?.markdownWrap(
+					"\n```\n",
+					"\n```\n"
+				)
+			}) { Text("Bloque de código") }
+			TextButton(onClick = { editor?.markdownBlock("> ") }) { Text("Cita") }
+			TextButton(onClick = { editor?.markdownWrap("[", "](https://)") }) { Text("Enlace") }
+			TextButton(onClick = { editor?.markdownWrap("![", "](https://)") }) { Text("Imagen por URL") }
+			TextButton(onClick = { editor?.markdownInsert("\n\n---\n\n") }) { Text("Separador") }
+			TextButton(onClick = { editor?.markdownInsert("\n\n| Columna 1 | Columna 2 |\n| --- | --- |\n| Texto | Texto |\n\n") }) {
+				Text(
+					"Tabla"
 				)
 			}
-			IconButton(onClick = { editor?.format("align", 0) }) {
-				Icon(
-					MindIcons.FormatAlignLeft,
-					"Alinear a la izquierda",
-				)
-			}
-			IconButton(onClick = { editor?.format("align", 2) }) {
-				Icon(
-					MindIcons.FormatAlignCenter,
-					"Centrar",
-				)
-			}
-			IconButton(onClick = { editor?.format("align", 1) }) {
-				Icon(
-					MindIcons.FormatAlignRight,
-					"Alinear a la derecha",
-				)
-			}
-			IconButton(onClick = { editor?.format("indent", 48) }) {
-				Icon(
-					MindIcons.FormatIndentIncrease,
-					"Aumentar sangría",
-				)
-			}
-			IconButton(onClick = { editor?.format("indent", 0) }) {
-				Icon(
-					MindIcons.FormatIndentDecrease,
-					"Quitar sangría",
-				)
-			}
+			TextButton(onClick = { editor?.markdownBlock("indent") }) { Text("Sangrar") }
+			TextButton(onClick = { editor?.markdownBlock("outdent") }) { Text("Quitar sangría") }
 		}
+
 		SpacingOptions(
 			"Interlineado",
 			listOf(1f, 1.3f, 1.5f, 2f),

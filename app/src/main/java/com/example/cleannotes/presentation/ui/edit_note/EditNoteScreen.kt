@@ -41,7 +41,11 @@ fun EditNoteScreen(
 	quickCapture: Boolean = false,
 	active: Boolean = true,
 ) {
-	val document = remember(state.content) { NoteDocument.decode(state.content) }
+	val document = remember(state.content) {
+		com.example.cleannotes.model.MarkdownText.editable(
+			NoteDocument.decode(state.content)
+		)
+	}
 	val latestDocument by rememberUpdatedState(document)
 	val change: (NoteDocument) -> Unit = { onEvent(EditNoteEvent.EnteredContent(it.encode())) }
 	val controller =
@@ -51,6 +55,7 @@ fun EditNoteScreen(
 	var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
 	var imageMenu by rememberSaveable { mutableStateOf(false) }
 	var formatting by rememberSaveable { mutableStateOf(false) }
+	var markdownPreview by rememberSaveable { mutableStateOf(false) }
 	var share by rememberSaveable { mutableStateOf(false) }
 	var more by remember { mutableStateOf(false) }
 	var discard by remember { mutableStateOf(false) }
@@ -443,13 +448,22 @@ fun EditNoteScreen(
 						}
 					},
 				)
+				Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+					Text("Markdown", Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
+					TextButton(onClick = { markdownPreview = !markdownPreview }) {
+						Text(if (markdownPreview) "Editar Markdown" else "Vista previa")
+					}
+				}
+				if (markdownPreview) MarkdownPreview(document)
 				RichEditorContent(
 					document,
-					enabled,
+					enabled && !markdownPreview,
 					controller,
 					{ onEvent(EditNoteEvent.EnteredContent(it)) },
 					focus,
+					visible = !markdownPreview
 				)
+
 				document.checklist.forEach { item ->
 					key(item.id) {
 						Row(
