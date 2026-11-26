@@ -19,7 +19,7 @@ import com.example.cleannotes.presentation.ui.design.appSurface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigationBar(
+fun NotebookFab(
 	selectedTab: NotesTab,
 	onTabSelected: (NotesTab) -> Unit,
 	onCreate: (Boolean) -> Unit,
@@ -33,47 +33,12 @@ fun BottomNavigationBar(
 			Triple(NotesTab.REMINDERS, R.string.nav_reminders, MindIcons.Notifications),
 			Triple(NotesTab.SEARCH, R.string.search, MindIcons.Search),
 		)
-	Column(Modifier.fillMaxWidth()) {
-		HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-		NavigationBar(
-			containerColor = MaterialTheme.colorScheme.surfaceContainer,
-			tonalElevation = 0.dp,
-		) {
-			destinations.forEachIndexed { index, (route, label, icon) ->
-				if (index == 2)
-					FilledIconButton(
-						onClick = { showMenu = true },
-						modifier = Modifier.padding(horizontal = 4.dp).size(52.dp),
-						shape = RoundedCornerShape(18.dp),
-					) {
-						Icon(
-							MindIcons.Add,
-							stringResource(R.string.create),
-							modifier = Modifier.size(26.dp),
-						)
-					}
-				NavigationBarItem(
-					selected = selectedTab == route,
-					onClick = { onTabSelected(route) },
-					icon = { Icon(icon, null) },
-					label = {
-						Text(
-							stringResource(label),
-							maxLines = 1,
-							style = MaterialTheme.typography.labelSmall,
-						)
-					},
-					colors =
-						NavigationBarItemDefaults.colors(
-							selectedIconColor = MaterialTheme.colorScheme.primary,
-							selectedTextColor = MaterialTheme.colorScheme.primary,
-							indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-							unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-							unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-						),
-				)
-			}
-		}
+	FloatingActionButton(
+		onClick = { showMenu = true },
+		containerColor = MaterialTheme.colorScheme.primaryContainer,
+		contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+	) {
+		Icon(MindIcons.Add, stringResource(R.string.create))
 	}
 	if (showMenu)
 		AppBottomSheet(
@@ -86,7 +51,7 @@ fun BottomNavigationBar(
 			) {
 				Row(verticalAlignment = Alignment.CenterVertically) {
 					Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-						Text("Crear", style = MaterialTheme.typography.titleLarge)
+						Text("Tu libreta", style = MaterialTheme.typography.titleLarge)
 						Text(
 							"Un espacio para tus ideas y pendientes",
 							style = MaterialTheme.typography.bodyMedium,
@@ -94,6 +59,26 @@ fun BottomNavigationBar(
 						)
 					}
 					IconButton(onClick = { showMenu = false }) { Icon(MindIcons.Close, "Cerrar") }
+				}
+				Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+					destinations.forEach { (route, label, icon) ->
+						Surface(
+							onClick = { showMenu = false; onTabSelected(route) },
+							modifier = Modifier.weight(1f),
+							shape = RoundedCornerShape(16.dp),
+							color = if (selectedTab == route) MaterialTheme.colorScheme.primaryContainer
+							else MaterialTheme.colorScheme.surfaceContainer,
+						) {
+							Column(
+								Modifier.padding(vertical = 12.dp),
+								horizontalAlignment = Alignment.CenterHorizontally,
+								verticalArrangement = Arrangement.spacedBy(6.dp),
+							) {
+								Icon(icon, null)
+								Text(stringResource(label), style = MaterialTheme.typography.labelSmall)
+							}
+						}
+					}
 				}
 				CreationOption(
 					"Nueva nota",

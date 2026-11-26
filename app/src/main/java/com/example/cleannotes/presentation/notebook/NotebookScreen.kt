@@ -38,7 +38,7 @@ import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.creationTimestamp
 import com.example.cleannotes.presentation.ui.components.AgendaDayGroup
-import com.example.cleannotes.presentation.ui.components.BottomNavigationBar
+import com.example.cleannotes.presentation.ui.components.NotebookFab
 import com.example.cleannotes.presentation.ui.components.CustomTopBar
 import com.example.cleannotes.presentation.ui.components.DeleteNoteDialog
 import com.example.cleannotes.presentation.ui.design.*
@@ -239,7 +239,7 @@ fun NotebookScreen(
 	Scaffold(
 		modifier = Modifier.nestedScroll(topBarScroll.nestedScrollConnection),
 		containerColor = androidx.compose.ui.graphics.Color.Transparent,
-		contentWindowInsets = WindowInsets.statusBars,
+		contentWindowInsets = WindowInsets.safeDrawing,
 		snackbarHost = { DesignSnackbarHost(snackbar) },
 		topBar = {
 			Column {
@@ -261,8 +261,8 @@ fun NotebookScreen(
 				)
 			}
 		},
-		bottomBar = {
-			BottomNavigationBar(
+		floatingActionButton = {
+			NotebookFab(
 				state.selectedTab,
 				{
 					onQueryChange("")
@@ -319,7 +319,7 @@ fun NotebookScreen(
 											start = 24.dp,
 											end = 24.dp,
 											top = 8.dp,
-											bottom = 24.dp,
+											bottom = 96.dp,
 										),
 									verticalArrangement = Arrangement.spacedBy(16.dp),
 								) {
@@ -486,7 +486,7 @@ fun NotebookScreen(
 												start = 24.dp,
 												end = 24.dp,
 												top = 8.dp,
-												bottom = 24.dp,
+												bottom = 96.dp,
 											),
 										verticalArrangement = Arrangement.spacedBy(16.dp),
 										horizontalArrangement = Arrangement.spacedBy(16.dp),

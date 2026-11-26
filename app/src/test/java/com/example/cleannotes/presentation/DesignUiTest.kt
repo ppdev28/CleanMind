@@ -190,9 +190,9 @@ class DesignUiTest {
 			val header = compose.onAllNodesWithText(title).fetchSemanticsNodes()
 				.minBy { it.boundsInRoot.top }.boundsInRoot
 			val viewport = compose.onNode(verticalScroll).fetchSemanticsNode().boundsInRoot
-			val create = compose.onNodeWithContentDescription("Crear").fetchSemanticsNode().boundsInRoot
+
 			assertTrue("The list must start below the header", viewport.top >= header.bottom)
-			assertTrue("The list must end above the navigation controls", viewport.bottom <= create.top)
+
 		}
 		assertViewportBetweenBars()
 		fun scrollPosition() = compose.onNode(verticalScroll).fetchSemanticsNode()
@@ -219,6 +219,7 @@ class DesignUiTest {
 		assertEquals(0f, scrollPosition(), 0.001f)
 		compose.onNodeWithText("Clean Mind").assertIsDisplayed()
 		assertViewportBetweenBars()
+		compose.onNodeWithContentDescription("Crear").performClick()
 		compose.onAllNodesWithText("Notas").onLast().performClick()
 		assertViewportBetweenBars("Notas")
 		compose.onNode(verticalScroll).performTouchInput {
@@ -423,7 +424,7 @@ class DesignUiTest {
 	}
 
 	@Test
-	fun restoredBottomBarOffersBothCreationActions() {
+	fun floatingActionsOfferNavigationAndBothCreationActions() {
 		var reminder: Boolean? = null
 		screen(onCreate = { reminder = it })
 		compose.onNodeWithContentDescription("Crear").performClick()
