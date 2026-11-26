@@ -103,6 +103,26 @@ fun EditNoteScreen(
 				}
 			}
 	}
+	var removalJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+	fun removeItem(item: CheckItem, index: Int) {
+		change(latestDocument.copy(checklist = latestDocument.checklist.filterNot { it.id == item.id }))
+		removalJob?.cancel()
+		removalJob = scope.launch {
+			if (snackbar.showSnackbar(
+					"Casilla eliminada",
+					"Deshacer"
+				) == SnackbarResult.ActionPerformed
+			) {
+				val current = latestDocument
+				if (current.checklist.none { it.id == item.id }) {
+					val items =
+						current.checklist.toMutableList().apply { add(index.coerceAtMost(size), item) }
+					change(current.copy(checklist = items))
+				}
+			}
+		}
+	}
+
 	fun addItem() {
 		change(
 			document.copy(
@@ -425,7 +445,7 @@ fun EditNoteScreen(
 					{ onEvent(EditNoteEvent.EnteredContent(it)) },
 					focus,
 				)
-				document.checklist.forEach { item ->
+				document.checklist.forEachIndexed { index, item ->
 					key(item.id) {
 						Row(
 							Modifier.heightIn(min = 48.dp),
@@ -486,6 +506,9 @@ fun EditNoteScreen(
 									}
 								},
 							)
+							IconButton(onClick = { removeItem(item, index) }, enabled = enabled) {
+								Icon(MindIcons.Close, "Eliminar casilla ${index + 1}")
+							}
 						}
 					}
 				}

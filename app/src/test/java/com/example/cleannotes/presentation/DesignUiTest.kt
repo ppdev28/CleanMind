@@ -326,6 +326,47 @@ class DesignUiTest {
 	}
 
 	@Test
+	fun checklistRowsCanBeDeletedAndRestoredWithoutChangingTheBody() {
+		val original = NoteDocument(
+			text = "Cuerpo", subtitle = "Subtítulo", pinned = true, createdAt = 123L,
+			marks = listOf(com.example.cleannotes.model.TextMark(0, 6, "bold")),
+			checklist = listOf(
+				com.example.cleannotes.model.CheckItem("a", "Pendiente"),
+				com.example.cleannotes.model.CheckItem("b", "Hecha", true),
+				com.example.cleannotes.model.CheckItem("c")
+			)
+		)
+		var saved = original
+		compose.setContent {
+			var state by remember {
+				mutableStateOf(
+					EditNoteUiState(
+						title = "Lista",
+						content = original.encode()
+					)
+				)
+			}
+			CleanMindTheme(darkTheme = true) {
+				EditNoteScreen(state, { event ->
+					if (event is com.example.cleannotes.presentation.ui.edit_note.EditNoteEvent.EnteredContent) {
+						saved = NoteDocument.decode(event.value)
+						state = state.copy(content = event.value)
+					}
+				}, {}, {})
+			}
+		}
+		compose.onNodeWithContentDescription("Eliminar casilla 1").performClick()
+		assertEquals(listOf("b", "c"), saved.checklist.map { it.id })
+		assertEquals(original.copy(checklist = saved.checklist), saved)
+		compose.onNodeWithText("Casilla eliminada · Deshacer").performClick()
+		assertEquals(original, saved)
+		compose.onNodeWithContentDescription("Eliminar casilla 2").performClick()
+		compose.onNodeWithContentDescription("Eliminar casilla 2").performClick()
+		assertEquals(listOf(original.checklist.first()), saved.checklist)
+		assertEquals(original.copy(checklist = saved.checklist), saved)
+	}
+
+	@Test
 	fun editorToolsRemainReadableWithLargeTextOnANarrowScreen() {
 		compose.setContent {
 			val density = LocalDensity.current
