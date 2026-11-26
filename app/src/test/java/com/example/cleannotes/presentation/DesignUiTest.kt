@@ -163,6 +163,7 @@ class DesignUiTest {
 	}
 
 	@Test
+	@Config(qualifiers = "es-w360dp-h800dp-mdpi")
 	fun homeGridCanReturnToTheAgendaWithoutRevealingContent() {
 		screen()
 		val first = compose.onNodeWithText("Idea para el salón").fetchSemanticsNode().boundsInRoot

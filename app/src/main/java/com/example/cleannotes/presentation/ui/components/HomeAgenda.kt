@@ -66,7 +66,7 @@ fun HomeAgenda(
 	}
 	Crossfade(grid, animationSpec = tween(AppMotion.Short), label = "homeLayout") { gridMode ->
 		LazyVerticalGrid(
-			columns = GridCells.Adaptive(156.dp),
+			columns = GridCells.Adaptive(128.dp),
 			state = if (gridMode) gridState else agendaState,
 			contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 96.dp),
 			horizontalArrangement = Arrangement.spacedBy(12.dp),
