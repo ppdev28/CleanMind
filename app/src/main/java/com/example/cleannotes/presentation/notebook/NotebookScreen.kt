@@ -39,8 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
-import com.example.cleannotes.model.creationTimestamp
-import com.example.cleannotes.presentation.ui.components.AgendaDayGroup
+import com.example.cleannotes.presentation.ui.components.HomeAgenda
 import com.example.cleannotes.presentation.ui.components.NotebookFab
 import com.example.cleannotes.presentation.ui.components.CustomTopBar
 import com.example.cleannotes.presentation.ui.components.DeleteNoteDialog
@@ -90,6 +89,7 @@ fun NotebookScreen(
 	}
 	var filter by rememberSaveable { mutableStateOf("Todas") }
 	var grid by rememberSaveable { mutableStateOf(false) }
+	var homeGrid by rememberSaveable { mutableStateOf(true) }
 	var options by remember { mutableStateOf<Note?>(null) }
 	var deleting by remember { mutableStateOf<Note?>(null) }
 	var sharing by remember { mutableStateOf<Note?>(null) }
@@ -320,52 +320,19 @@ fun NotebookScreen(
 				else
 					tabStates.SaveableStateProvider(selectedTab) {
 						when {
-							selectedTab == NotesTab.HOME ->
-								LazyColumn(
-									contentPadding =
-										PaddingValues(
-											start = 24.dp,
-											end = 24.dp,
-											top = 8.dp,
-											bottom = 96.dp,
-										),
-									verticalArrangement = Arrangement.spacedBy(16.dp),
-								) {
-									item {
-										SearchEntry(
-											"",
-											{
-												onQueryChange(it)
-												onTabSelected(NotesTab.SEARCH)
-											},
-											onClick = { onTabSelected(NotesTab.SEARCH) },
-										)
-									}
-
-									val agendaNotes = active.filterNot { it.isReminder }
-									val days =
-										agendaNotes
-											.sortedWith(
-												compareByDescending<Note> { it.creationTimestamp() }
-													.thenByDescending { it.id }
-											)
-											.groupBy { DateUtils.dayKey(it.creationTimestamp()) }
-									items(days.entries.toList(), key = { "agenda-${it.key}" }) { (_, notesOfDay) ->
-										Column(Modifier.animateItem()) {
-											AgendaDayGroup(notesOfDay, onOpenNote) { options = it }
-										}
-									}
-									if (agendaNotes.isEmpty())
-										item {
-											EmptyDesignState(
-												"Un lugar para tus ideas",
-												"Todavía no hay notas. Guarda lo que quieras retomar.",
-												"Crear una nota",
-											) {
-												onQuickCreate()
-											}
-										}
-								}
+							selectedTab == NotesTab.HOME -> HomeAgenda(
+								notes = active.filterNot { it.isReminder },
+								grid = homeGrid,
+								onToggle = { homeGrid = !homeGrid },
+								onOpen = onOpenNote,
+								onOptions = { options = it },
+								onCreate = onQuickCreate,
+							) {
+								SearchEntry("", {
+									onQueryChange(it)
+									onTabSelected(NotesTab.SEARCH)
+								}, onClick = { onTabSelected(NotesTab.SEARCH) })
+							}
 
 							notesTab -> {
 								val listLayoutState = rememberLazyGridState()

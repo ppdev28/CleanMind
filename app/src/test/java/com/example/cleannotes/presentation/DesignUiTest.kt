@@ -151,6 +151,23 @@ class DesignUiTest {
 	}
 
 	@Test
+	fun homeGridCanReturnToTheAgendaWithoutRevealingContent() {
+		screen()
+		val first = compose.onNodeWithText("Idea para el salón").fetchSemanticsNode().boundsInRoot
+		val second = compose.onNodeWithText("Paseo del sábado").fetchSemanticsNode().boundsInRoot
+		assertEquals(first.top, second.top, 1f)
+		assertTrue(first.right < second.left)
+		compose.onNodeWithContentDescription("Ver en agenda").performClick()
+		val agendaFirst = compose.onNodeWithText("Idea para el salón").fetchSemanticsNode().boundsInRoot
+		val agendaSecond = compose.onNodeWithText("Paseo del sábado").fetchSemanticsNode().boundsInRoot
+		assertTrue(agendaSecond.top > agendaFirst.bottom)
+		compose.onNodeWithText("CONTENIDO PRIVADO").assertDoesNotExist()
+		screenshot("home-agenda-dark")
+		compose.onNodeWithContentDescription("Ver en cuadrícula").performClick()
+		compose.onNodeWithContentDescription("Ver en agenda").assertIsDisplayed()
+	}
+
+	@Test
 	fun searchCanFilterAndSwitchToGrid() {
 		screen(initial = NotesTab.SEARCH)
 		compose.onNodeWithContentDescription("Cambiar vista").performClick()
