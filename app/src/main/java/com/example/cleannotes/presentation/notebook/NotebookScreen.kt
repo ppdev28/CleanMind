@@ -671,7 +671,7 @@ private fun ReminderCollection(
 				start = 24.dp,
 				end = 24.dp,
 				top = 8.dp,
-				bottom = 24.dp
+				bottom = 96.dp
 			),
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 	) {
