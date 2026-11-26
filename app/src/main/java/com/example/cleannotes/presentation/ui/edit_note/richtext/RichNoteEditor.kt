@@ -106,7 +106,18 @@ class RichNoteEditor(context: Context) : EditText(context) {
 				.filter { mark -> mark.start <= start && mark.end >= end }
 				.map { if (it.kind == "size") "size:${it.value}" else it.kind }
 				.toSet()
-		onEditorStateChanged(undo.isNotEmpty(), redo.isNotEmpty(), formats)
+		val syntaxFormats =
+			if (document.markdown) text?.getSpans(start, end, Any::class.java).orEmpty().filter {
+				text!!.getSpanStart(it) <= start && text!!.getSpanEnd(it) >= end
+			}.mapNotNull {
+				when (it) {
+					is StyleSpan -> if (it.style == Typeface.BOLD) "bold" else "italic"
+					is UnderlineSpan -> "underline"
+					is StrikethroughSpan -> "strike"
+					else -> null
+				}
+			}.toSet() else emptySet()
+		onEditorStateChanged(undo.isNotEmpty(), redo.isNotEmpty(), formats + syntaxFormats)
 	}
 
 	fun bind(value: NoteDocument) {

@@ -1,347 +1,190 @@
 package com.example.cleannotes.presentation.ui.edit_note.richtext
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.design.MindIcons
-import com.example.cleannotes.presentation.ui.motion.AppMotion
 
+/** Frequent tools stay visible above the keyboard; the rest need one tap, without nested menus. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorBottomBar(
+fun MarkdownFormatBar(
 	document: NoteDocument,
 	controller: RichEditorController,
 	enabled: Boolean,
-	status: String,
-	statusError: Boolean,
-	onShare: () -> Unit,
-	initialFormatting: Boolean = false,
+	modifier: Modifier = Modifier,
 ) {
-	var formatting by rememberSaveable { mutableStateOf(initialFormatting) }
-	var sheet by rememberSaveable { mutableStateOf<String?>(null) }
-	var more by remember { mutableStateOf(false) }
+	var expanded by rememberSaveable { mutableStateOf(false) }
+	var linkDialog by rememberSaveable { mutableStateOf(false) }
+	var linkLabel by rememberSaveable { mutableStateOf("") }
+	var linkUrl by rememberSaveable { mutableStateOf("") }
 	val editor = controller.editor
-	val active = controller.activeFormats
-	Column(Modifier.navigationBarsPadding()) {
-		AnimatedContent(
-			formatting,
-			transitionSpec = { AppMotion.content() },
-			label = "editorTools",
-		) { showFormatting ->
-			if (showFormatting) {
-				Row(
-					Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
-					verticalAlignment = Alignment.CenterVertically,
-				) {
-					FormatButton(
-						"Título grande",
-						enabled,
-						"size:160" in active,
-						Modifier.weight(1f),
-						{ editor?.format("size", 160) },
-					) {
-						Text("H₁", fontSize = 19.sp)
-					}
-					FormatButton(
-						"Título pequeño",
-						enabled,
-						"size:125" in active,
-						Modifier.weight(1f),
-						{ editor?.format("size", 125) },
-					) {
-						Text("H₂", fontSize = 19.sp)
-					}
-					FormatButton(
-						"Texto normal",
-						enabled,
-						active.none { it.startsWith("size:") } || "size:100" in active,
-						Modifier.weight(1f),
-						{ editor?.format("size", 100) },
-					) {
-						Text("Aa", fontSize = 18.sp)
-					}
-					FormatButton(
-						"Negrita",
-						enabled,
-						"bold" in active,
-						Modifier.weight(1f),
-						{ editor?.format("bold") },
-					) {
-						Icon(MindIcons.FormatBold, null)
-					}
-					FormatButton(
-						"Cursiva",
-						enabled,
-						"italic" in active,
-						Modifier.weight(1f),
-						{ editor?.format("italic") },
-					) {
-						Icon(MindIcons.FormatItalic, null)
-					}
-					FormatButton(
-						"Subrayado",
-						enabled,
-						"underline" in active,
-						Modifier.weight(1f),
-						{ editor?.format("underline") },
-					) {
-						Icon(MindIcons.FormatUnderlined, null)
-					}
-					FormatButton(
-						"Borrar formato",
-						enabled,
-						false,
-						Modifier.weight(1f),
-						{ editor?.format("clear") },
-					) {
-						Icon(MindIcons.FormatClear, null)
-					}
-					IconButton(onClick = { formatting = false }, modifier = Modifier.weight(1f)) {
-						Icon(
-							MindIcons.Close,
-							"Cerrar formato",
-						)
-					}
-				}
-			} else {
-				Row(
-					Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
-					verticalAlignment = Alignment.CenterVertically,
-				) {
-					IconButton(
-						onClick = { sheet = "insert" },
-						enabled = enabled && !controller.importing,
-					) {
-						BottomActionIcon(MindIcons.AddBox, "Añadir a la nota")
-					}
-					IconButton(
-						onClick = { formatting = true },
-						enabled = enabled,
-					) {
-						BottomActionIcon(MindIcons.TextFormat, "Formato de texto")
-					}
-					Spacer(Modifier.weight(1f))
-					Box {
-						IconButton(
-							onClick = { more = true },
-							enabled = enabled,
-						) {
-							BottomActionIcon(MindIcons.MoreVert, "Más opciones")
-						}
-						DropdownMenu(expanded = more, onDismissRequest = { more = false }) {
-							if (status.isNotEmpty())
-								Text(
-									status,
-									Modifier.widthIn(max = 280.dp)
-										.padding(horizontal = 16.dp, vertical = 12.dp),
-									fontSize = 12.sp,
-									color =
-										if (statusError) MaterialTheme.colorScheme.error
-										else MaterialTheme.colorScheme.onSurfaceVariant,
-								)
-							DropdownMenuItem(
-								text = { Text("Enviar") },
-								leadingIcon = { Icon(MindIcons.Share, null) },
-								onClick = {
-									more = false
-									onShare()
-								},
-							)
-							DropdownMenuItem(
-								text = { Text("Formato y espaciado") },
-								leadingIcon = { Icon(MindIcons.FormatLineSpacing, null) },
-								onClick = {
-									more = false
-									sheet = "advanced"
-								},
-							)
-						}
-					}
-				}
-			}
+	Row(modifier) {
+		Row(Modifier.weight(1f).horizontalScroll(rememberScrollState())) {
+			FormatAction(
+				MindIcons.FormatBold,
+				"Negrita",
+				enabled,
+				"bold" in controller.activeFormats
+			) { editor?.format("bold") }
+			FormatAction(
+				MindIcons.FormatItalic,
+				"Cursiva",
+				enabled,
+				"italic" in controller.activeFormats
+			) { editor?.format("italic") }
+			FormatAction(
+				MindIcons.FormatUnderlined,
+				"Subrayado",
+				enabled,
+				"underline" in controller.activeFormats
+			) { editor?.format("underline") }
+			FormatAction(
+				MindIcons.FormatListBulleted,
+				"Lista con viñetas",
+				enabled
+			) { editor?.list("- ") }
+			FormatAction(
+				MindIcons.FormatListNumbered,
+				"Lista numerada",
+				enabled
+			) { editor?.list("number") }
+			FormatAction(MindIcons.CheckBox, "Lista de tareas Markdown", enabled) { editor?.checkItem() }
+			FormatAction(MindIcons.StrikethroughS, "Tachado", enabled) { editor?.format("strike") }
+		}
+		IconButton(onClick = { expanded = true }, enabled = enabled) {
+			Icon(
+				MindIcons.Tune,
+				"Más formato y espaciado"
+			)
 		}
 	}
-	if (sheet != null) {
-		AppBottomSheet(
-			onDismissRequest = { sheet = null },
-			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-		) {
-			when (sheet) {
-				"insert" ->
-					Column(Modifier.padding(bottom = 24.dp)) {
-						InsertAction(MindIcons.PhotoCamera, "Hacer foto") {
-							sheet = null
-							controller.takePhoto()
-						}
-						InsertAction(MindIcons.Image, "Añadir imagen") {
-							sheet = null
-							controller.chooseImage()
-						}
-						InsertAction(MindIcons.ContentPaste, "Pegar imagen") {
-							sheet = null
-							if (editor?.pasteImage() != true)
-								controller.error =
-									"Copia una imagen al portapapeles para pegarla aquí."
-						}
-						InsertAction(MindIcons.CheckBox, "Casillas de verificación") {
-							sheet = null
-							editor?.checkItem()
-						}
-						InsertAction(MindIcons.FormatListBulleted, "Lista con viñetas") {
-							sheet = null
-							editor?.list("• ")
-						}
-						InsertAction(MindIcons.FormatListNumbered, "Lista numerada") {
-							sheet = null
-							editor?.list("number")
-						}
-					}
-
-				"advanced" -> AdvancedFormatting(document, controller)
-			}
-		}
-	}
-}
-
-@Composable
-private fun BottomActionIcon(icon: ImageVector, label: String) {
-	Box(
-		Modifier.size(40.dp).background(MaterialTheme.colorScheme.secondaryContainer, CircleShape),
-		contentAlignment = Alignment.Center,
+	if (expanded) AppBottomSheet(
+		onDismissRequest = { expanded = false },
+		sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 	) {
-		Icon(icon, label, Modifier.size(22.dp))
+		Column(
+			Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp)
+				.padding(bottom = 24.dp),
+			verticalArrangement = Arrangement.spacedBy(12.dp),
+		) {
+			Text("Formato Markdown", style = MaterialTheme.typography.titleLarge)
+			Text(
+				"Se aplica al texto seleccionado o al párrafo actual.",
+				style = MaterialTheme.typography.bodySmall
+			)
+			Text("Encabezados", style = MaterialTheme.typography.labelLarge)
+			FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+				(1..6).forEach { level ->
+					AssistChip(
+						onClick = { editor?.markdownBlock("#".repeat(level) + " ") },
+						label = { Text("H$level") })
+				}
+				AssistChip(onClick = { editor?.markdownBlock("") }, label = { Text("Normal") })
+			}
+			Text("Insertar y organizar", style = MaterialTheme.typography.labelLarge)
+			FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+				listOf<Pair<String, () -> Unit>>(
+					"Código" to { editor?.markdownWrap("`") },
+					"Bloque de código" to { editor?.markdownWrap("\n```\n", "\n```\n") },
+					"Cita" to { editor?.markdownBlock("> ") },
+					"Enlace" to {
+						linkLabel = editor?.let { view ->
+							view.text?.substring(
+								minOf(view.selectionStart, view.selectionEnd).coerceAtLeast(0),
+								maxOf(view.selectionStart, view.selectionEnd).coerceAtLeast(0)
+							)
+						}.orEmpty()
+						linkUrl = ""
+						expanded = false
+						linkDialog = true
+					},
+					"Tabla" to { editor?.markdownInsert("\n\n| Columna 1 | Columna 2 |\n| --- | --- |\n| Texto | Texto |\n\n") },
+					"Separador" to { editor?.markdownInsert("\n\n---\n\n") },
+					"Sangrar" to { editor?.markdownBlock("indent") },
+					"Quitar sangría" to { editor?.markdownBlock("outdent") },
+					"Borrar formato" to { editor?.format("clear") },
+				).forEach { (label, action) -> AssistChip(onClick = action, label = { Text(label) }) }
+			}
+			SpacingOptions(
+				"Interlineado",
+				listOf(1f, 1.3f, 1.5f, 2f),
+				document.lineSpacing
+			) { editor?.spacing(it, document.extraLineSpacing) }
+			SpacingOptions(
+				"Espacio entre párrafos",
+				listOf(0, 8, 16, 24),
+				document.paragraphSpacing
+			) { editor?.paragraphSpacing(it) }
+			SpacingOptions(
+				"Espacio extra entre líneas",
+				listOf(0, 4, 8, 16),
+				document.extraLineSpacing
+			) { editor?.spacing(document.lineSpacing, it) }
+		}
 	}
+	if (linkDialog) {
+		val address = linkUrl.trim().let { if (it.contains(":")) it else "https://$it" }
+		val uri = android.net.Uri.parse(address)
+		val valid = linkUrl.isNotBlank() && ((uri.scheme in listOf(
+			"https",
+			"http"
+		) && !uri.host.isNullOrBlank()) || (uri.scheme == "mailto" && uri.schemeSpecificPart.contains("@")))
+		AlertDialog(
+			onDismissRequest = { linkDialog = false },
+			title = { Text("Insertar enlace") },
+			text = {
+				Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+					OutlinedTextField(
+						linkLabel,
+						{ linkLabel = it },
+						label = { Text("Texto del enlace") },
+						singleLine = true
+					)
+					OutlinedTextField(
+						linkUrl,
+						{ linkUrl = it },
+						label = { Text("Dirección") },
+						singleLine = true
+					)
+				}
+			},
+			confirmButton = {
+				TextButton(enabled = valid, onClick = {
+					val label = linkLabel.ifBlank { address }.replace("\\", "\\\\").replace("[", "\\[")
+						.replace("]", "\\]")
+					editor?.markdownInsert("[$label](${address.replace(")", "%29").replace(" ", "%20")})")
+					linkDialog = false
+				}) { Text("Insertar") }
+			},
+			dismissButton = { TextButton(onClick = { linkDialog = false }) { Text("Cancelar") } },
+		)
+	}
+
 }
 
 @Composable
-private fun FormatButton(
+private fun FormatAction(
+	icon: ImageVector,
 	label: String,
 	enabled: Boolean,
-	selected: Boolean,
-	modifier: Modifier,
-	onClick: () -> Unit,
-	content: @Composable () -> Unit,
+	selected: Boolean = false,
+	onClick: () -> Unit
 ) {
-	IconButton(
-		onClick = onClick,
-		enabled = enabled,
-		modifier =
-			modifier.semantics {
-				contentDescription = label
-				this.selected = selected
-			},
-	) {
-		Box(
-			Modifier.size(32.dp)
-				.background(
-					if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
-					RoundedCornerShape(4.dp),
-				),
-			contentAlignment = Alignment.Center,
-		) {
-			content()
-		}
-	}
-}
-
-@Composable
-private fun InsertAction(icon: ImageVector, label: String, onClick: () -> Unit) {
-	Surface(onClick = onClick, color = Color.Transparent) {
-		Row(
-			Modifier.fillMaxWidth()
-				.heightIn(min = 52.dp)
-				.padding(horizontal = 24.dp, vertical = 12.dp),
-			verticalAlignment = Alignment.CenterVertically,
-			horizontalArrangement = Arrangement.spacedBy(24.dp),
-		) {
-			Icon(icon, null, Modifier.size(24.dp))
-			Text(label, fontSize = 16.sp)
-		}
-	}
-}
-
-@Composable
-private fun AdvancedFormatting(document: NoteDocument, controller: RichEditorController) {
-	val editor = controller.editor
-	Column(
-		Modifier.fillMaxWidth()
-			.verticalScroll(rememberScrollState())
-			.padding(horizontal = 20.dp)
-			.padding(bottom = 32.dp),
-		verticalArrangement = Arrangement.spacedBy(8.dp),
-	) {
-		Text("Formato y espaciado", fontSize = 20.sp, fontWeight = FontWeight.Medium)
-		Text(
-			"Se aplica a la selección o al párrafo actual.",
-			style = MaterialTheme.typography.bodySmall,
-			color = MaterialTheme.colorScheme.onSurfaceVariant,
+	IconToggleButton(checked = selected, onCheckedChange = { onClick() }, enabled = enabled) {
+		Icon(
+			icon,
+			label
 		)
-		FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-			(1..6).forEach { level ->
-				TextButton(onClick = { editor?.markdownBlock("#".repeat(level) + " ") }) { Text("H$level") }
-			}
-			TextButton(onClick = { editor?.format("strike") }) { Text("Tachado") }
-			TextButton(onClick = { editor?.markdownWrap("`") }) { Text("Código") }
-			TextButton(onClick = {
-				editor?.markdownWrap(
-					"\n```\n",
-					"\n```\n"
-				)
-			}) { Text("Bloque de código") }
-			TextButton(onClick = { editor?.markdownBlock("> ") }) { Text("Cita") }
-			TextButton(onClick = { editor?.markdownWrap("[", "](https://)") }) { Text("Enlace") }
-			TextButton(onClick = { editor?.markdownWrap("![", "](https://)") }) { Text("Imagen por URL") }
-			TextButton(onClick = { editor?.markdownInsert("\n\n---\n\n") }) { Text("Separador") }
-			TextButton(onClick = { editor?.markdownInsert("\n\n| Columna 1 | Columna 2 |\n| --- | --- |\n| Texto | Texto |\n\n") }) {
-				Text(
-					"Tabla"
-				)
-			}
-			TextButton(onClick = { editor?.markdownBlock("indent") }) { Text("Sangrar") }
-			TextButton(onClick = { editor?.markdownBlock("outdent") }) { Text("Quitar sangría") }
-		}
-
-		SpacingOptions(
-			"Interlineado",
-			listOf(1f, 1.3f, 1.5f, 2f),
-			document.lineSpacing,
-		) {
-			editor?.spacing(it, document.extraLineSpacing)
-		}
-		SpacingOptions(
-			"Espacio entre párrafos",
-			listOf(0, 8, 16, 24),
-			document.paragraphSpacing,
-		) {
-			editor?.paragraphSpacing(it)
-		}
-		SpacingOptions(
-			"Espacio extra entre líneas",
-			listOf(0, 4, 8, 16),
-			document.extraLineSpacing,
-		) {
-			editor?.spacing(document.lineSpacing, it)
-		}
 	}
 }
 
@@ -350,14 +193,13 @@ private fun <T> SpacingOptions(label: String, values: List<T>, selected: T, onSe
 	Text(label, style = MaterialTheme.typography.labelLarge)
 	Row(
 		Modifier.horizontalScroll(rememberScrollState()),
-		horizontalArrangement = Arrangement.spacedBy(8.dp),
+		horizontalArrangement = Arrangement.spacedBy(8.dp)
 	) {
 		values.forEach { value ->
 			FilterChip(
 				selected = value == selected,
 				onClick = { onSelect(value) },
-				label = { Text(value.toString()) },
-			)
+				label = { Text(value.toString()) })
 		}
 	}
 }

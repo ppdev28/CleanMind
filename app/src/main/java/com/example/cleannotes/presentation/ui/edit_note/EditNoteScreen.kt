@@ -54,13 +54,13 @@ fun EditNoteScreen(
 	var focus by rememberSaveable { mutableStateOf(false) }
 	var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
 	var imageMenu by rememberSaveable { mutableStateOf(false) }
-	var formatting by rememberSaveable { mutableStateOf(false) }
 	var markdownPreview by rememberSaveable { mutableStateOf(false) }
 	var share by rememberSaveable { mutableStateOf(false) }
 	var more by remember { mutableStateOf(false) }
 	var discard by remember { mutableStateOf(false) }
 	val snackbar = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
+	val keyboard = androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
 	val context = androidx.compose.ui.platform.LocalContext.current
 	val notifications =
 		androidx.activity.compose.rememberLauncherForActivityResult(
@@ -152,23 +152,6 @@ fun EditNoteScreen(
 			},
 			onDismiss = { reminder = false },
 		)
-	if (formatting)
-		AppBottomSheet(
-			onDismissRequest = { formatting = false },
-		) {
-			EditorBottomBar(
-				document,
-				controller,
-				enabled,
-				status,
-				state.saveStatus == SaveStatus.ERROR,
-				{
-					formatting = false
-					share = true
-				},
-				initialFormatting = true,
-			)
-		}
 	if (imageMenu)
 		AppBottomSheet(
 			onDismissRequest = { imageMenu = false },
@@ -282,16 +265,12 @@ fun EditNoteScreen(
 							Modifier.fillMaxWidth().padding(horizontal = 16.dp),
 							verticalAlignment = Alignment.CenterVertically,
 						) {
-							TextButton(
-								onClick = { formatting = true },
-								enabled = enabled,
-								modifier = Modifier.weight(1f),
-							) {
-								Text(
-									"Aa · Selecciona texto para dar formato",
-									style = MaterialTheme.typography.bodySmall,
-								)
-							}
+							MarkdownFormatBar(
+								document,
+								controller,
+								enabled && !markdownPreview,
+								Modifier.weight(1f)
+							)
 							Box {
 								IconButton(onClick = { more = true }) {
 									Icon(MindIcons.MoreVert, "Más opciones")
@@ -450,7 +429,12 @@ fun EditNoteScreen(
 				)
 				Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 					Text("Markdown", Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
-					TextButton(onClick = { markdownPreview = !markdownPreview }) {
+					TextButton(onClick = {
+						markdownPreview = !markdownPreview
+						if (markdownPreview) {
+							controller.editor?.clearFocus(); keyboard?.hide()
+						}
+					}) {
 						Text(if (markdownPreview) "Editar Markdown" else "Vista previa")
 					}
 				}

@@ -304,6 +304,8 @@ class DesignUiTest {
 				}
 			}
 		}
+		compose.onNodeWithContentDescription("Negrita").assertIsDisplayed()
+		compose.onNodeWithContentDescription("Más formato y espaciado").assertIsDisplayed()
 		listOf("Lista", "Imagen", "Recordar").forEach { label ->
 			val layouts = mutableListOf<TextLayoutResult>()
 			compose.onNodeWithText(label).assertIsDisplayed().performSemanticsAction(
