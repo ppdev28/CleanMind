@@ -33,56 +33,45 @@ fun BottomNavigationBar(
 			Triple(NotesTab.REMINDERS, R.string.nav_reminders, MindIcons.Notifications),
 			Triple(NotesTab.SEARCH, R.string.search, MindIcons.Search),
 		)
-	Surface(
-		modifier =
-			Modifier.navigationBarsPadding()
-				.padding(start = 12.dp, end = 12.dp, top = 6.dp)
-				.appSurface(
-					RoundedCornerShape(28.dp),
-					prominent = true,
-				),
-		color = Color.Transparent,
-		shape = RoundedCornerShape(28.dp),
-	) {
-		Column {
-			Row(
-				Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 8.dp),
-				verticalAlignment = Alignment.CenterVertically,
-			) {
-				destinations.forEachIndexed { index, (route, label, icon) ->
-					if (index == 2)
-						FilledIconButton(
-							onClick = { showMenu = true },
-							modifier = Modifier.padding(horizontal = 4.dp).size(52.dp),
-							shape = RoundedCornerShape(18.dp),
-						) {
-							Icon(
-								MindIcons.Add,
-								stringResource(R.string.create),
-								modifier = Modifier.size(26.dp),
-							)
-						}
-					NavigationBarItem(
-						selected = selectedTab == route,
-						onClick = { onTabSelected(route) },
-						icon = { Icon(icon, null) },
-						label = {
-							Text(
-								stringResource(label),
-								maxLines = 1,
-								style = MaterialTheme.typography.labelSmall,
-							)
-						},
-						colors =
-							NavigationBarItemDefaults.colors(
-								selectedIconColor = MaterialTheme.colorScheme.primary,
-								selectedTextColor = MaterialTheme.colorScheme.primary,
-								indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-								unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-								unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-							),
-					)
-				}
+	Column(Modifier.fillMaxWidth()) {
+		HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+		NavigationBar(
+			containerColor = MaterialTheme.colorScheme.surfaceContainer,
+			tonalElevation = 0.dp,
+		) {
+			destinations.forEachIndexed { index, (route, label, icon) ->
+				if (index == 2)
+					FilledIconButton(
+						onClick = { showMenu = true },
+						modifier = Modifier.padding(horizontal = 4.dp).size(52.dp),
+						shape = RoundedCornerShape(18.dp),
+					) {
+						Icon(
+							MindIcons.Add,
+							stringResource(R.string.create),
+							modifier = Modifier.size(26.dp),
+						)
+					}
+				NavigationBarItem(
+					selected = selectedTab == route,
+					onClick = { onTabSelected(route) },
+					icon = { Icon(icon, null) },
+					label = {
+						Text(
+							stringResource(label),
+							maxLines = 1,
+							style = MaterialTheme.typography.labelSmall,
+						)
+					},
+					colors =
+						NavigationBarItemDefaults.colors(
+							selectedIconColor = MaterialTheme.colorScheme.primary,
+							selectedTextColor = MaterialTheme.colorScheme.primary,
+							indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+							unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+							unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+						),
+				)
 			}
 		}
 	}
