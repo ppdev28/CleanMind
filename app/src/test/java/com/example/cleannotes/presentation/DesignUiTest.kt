@@ -317,8 +317,11 @@ class DesignUiTest {
 		compose.onNodeWithContentDescription("Cuerpo de la nota").assertIsDisplayed()
 		compose.onNodeWithText("Markdown").assertDoesNotExist()
 		compose.onNodeWithText("Vista previa").assertDoesNotExist()
-		compose.onNodeWithText("Aa · Selecciona texto para dar formato").performClick()
-		compose.onNodeWithContentDescription("Negrita").assertExists()
+		compose.onNodeWithContentDescription("Negrita").assertIsDisplayed()
+		compose.onNodeWithContentDescription("Más formato y espaciado").performClick()
+		compose.onNodeWithText("Formato de texto").assertIsDisplayed()
+		compose.onNodeWithText("H6").assertExists()
+		screenshot("normal-format-panel-dark", dialog = true)
 		assertEquals(0, changes)
 	}
 
@@ -334,6 +337,8 @@ class DesignUiTest {
 				}
 			}
 		}
+		compose.onNodeWithContentDescription("Negrita").assertIsDisplayed()
+		compose.onNodeWithContentDescription("Más formato y espaciado").assertIsDisplayed()
 		listOf("Lista", "Imagen", "Recordar").forEach { label ->
 			val layouts = mutableListOf<TextLayoutResult>()
 			compose.onNodeWithText(label).assertIsDisplayed().performSemanticsAction(

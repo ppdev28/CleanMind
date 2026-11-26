@@ -52,7 +52,6 @@ fun EditNoteScreen(
 	var focus by rememberSaveable { mutableStateOf(false) }
 	var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
 	var imageMenu by rememberSaveable { mutableStateOf(false) }
-	var formatting by rememberSaveable { mutableStateOf(false) }
 	var share by rememberSaveable { mutableStateOf(false) }
 	var more by remember { mutableStateOf(false) }
 	var discard by remember { mutableStateOf(false) }
@@ -149,23 +148,6 @@ fun EditNoteScreen(
 			},
 			onDismiss = { reminder = false },
 		)
-	if (formatting)
-		AppBottomSheet(
-			onDismissRequest = { formatting = false },
-		) {
-			EditorBottomBar(
-				document,
-				controller,
-				enabled,
-				status,
-				state.saveStatus == SaveStatus.ERROR,
-				{
-					formatting = false
-					share = true
-				},
-				initialFormatting = true,
-			)
-		}
 	if (imageMenu)
 		AppBottomSheet(
 			onDismissRequest = { imageMenu = false },
@@ -279,16 +261,7 @@ fun EditNoteScreen(
 							Modifier.fillMaxWidth().padding(horizontal = 16.dp),
 							verticalAlignment = Alignment.CenterVertically,
 						) {
-							TextButton(
-								onClick = { formatting = true },
-								enabled = enabled,
-								modifier = Modifier.weight(1f),
-							) {
-								Text(
-									"Aa · Selecciona texto para dar formato",
-									style = MaterialTheme.typography.bodySmall,
-								)
-							}
+							RichFormatBar(document, controller, enabled, Modifier.weight(1f))
 							Box {
 								IconButton(onClick = { more = true }) {
 									Icon(MindIcons.MoreVert, "Más opciones")
