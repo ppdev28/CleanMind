@@ -194,7 +194,7 @@ class DesignUiTest {
 	fun doubleTappingSearchOpensTheFieldReadyToType() {
 		screen()
 		compose.onNodeWithContentDescription("Crear").performClick()
-		compose.onNodeWithText("Buscar").performTouchInput { doubleClick() }
+		compose.onNodeWithContentDescription("Buscar").performTouchInput { doubleClick() }
 		compose.onNode(hasSetTextAction()).assertIsFocused().performTextInput("Lámpara")
 		compose.onNodeWithText("Idea para el salón").assertExists()
 		compose.onNodeWithText("Paseo del sábado").assertDoesNotExist()
@@ -260,7 +260,7 @@ class DesignUiTest {
 		compose.onNodeWithText("Clean Mind").assertIsDisplayed()
 		assertViewportBetweenBars()
 		compose.onNodeWithContentDescription("Crear").performClick()
-		compose.onAllNodesWithText("Notas").onLast().performClick()
+		compose.onNodeWithContentDescription("Notas").performClick()
 		assertViewportBetweenBars("Notas")
 		compose.onNode(verticalScroll).performTouchInput {
 			swipe(Offset(centerX, height * 0.65f), Offset(centerX, height * 0.25f))
@@ -534,21 +534,33 @@ class DesignUiTest {
 	}
 
 	@Test
-	fun fabActionsExpandAboveTheSameButtonAndBackClosesThem() {
+	@Config(qualifiers = "es-w320dp-h740dp-mdpi")
+	fun fabActionsFormTwoRadialArcsWithoutOverlapping() {
 		screen()
 		val original = compose.onNodeWithContentDescription("Crear").fetchSemanticsNode().boundsInRoot
 		compose.onNodeWithContentDescription("Crear").performClick()
-		listOf("Inicio", "Notas", "Recordar", "Buscar", "Nueva nota", "Nuevo recordatorio").forEach {
-			compose.onNodeWithText(it).assertIsDisplayed()
+		val labels = listOf("Inicio", "Notas", "Recordar", "Buscar", "Nueva nota", "Nuevo recordatorio")
+		val bounds = labels.map {
+			compose.onNodeWithContentDescription(it).assertIsDisplayed().fetchSemanticsNode().boundsInRoot
 		}
 		compose.onAllNodes(isDialog()).assertCountEquals(0)
 		val close =
 			compose.onNodeWithContentDescription("Cerrar acciones").fetchSemanticsNode().boundsInRoot
 		assertEquals(original, close)
-		val last = compose.onNodeWithText("Nuevo recordatorio").fetchSemanticsNode().boundsInRoot
-		assertTrue(last.bottom < close.top)
+		bounds.forEachIndexed { index, rect ->
+			bounds.drop(index + 1).forEach { other ->
+				assertFalse(
+					"Radial hit targets must not overlap",
+					rect.overlaps(other)
+				)
+			}
+		}
+		val radii = bounds.map { (it.center - close.center).getDistance() }.sorted()
+		radii.take(3).forEach { assertEquals(108f, it, 1f) }
+		radii.drop(3).forEach { assertEquals(216f, it, 1f) }
+		screenshot("fab-radial-compact-dark")
 		compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
-		compose.onNodeWithText("Nuevo recordatorio").assertDoesNotExist()
+		compose.onNodeWithContentDescription("Nuevo recordatorio").assertDoesNotExist()
 		compose.onNodeWithContentDescription("Crear").assertIsDisplayed()
 	}
 
@@ -557,11 +569,11 @@ class DesignUiTest {
 		var reminder: Boolean? = null
 		screen(onCreate = { reminder = it })
 		compose.onNodeWithContentDescription("Crear").performClick()
-		screenshot("fab-expanded-dark")
-		compose.onNodeWithText("Nuevo recordatorio").performClick()
+		screenshot("fab-radial-dark")
+		compose.onNodeWithContentDescription("Nuevo recordatorio").performClick()
 		assertEquals(true, reminder)
 		compose.onNodeWithContentDescription("Crear").performClick()
-		compose.onNodeWithText("Nueva nota").performClick()
+		compose.onNodeWithContentDescription("Nueva nota").performClick()
 		assertEquals(false, reminder)
 	}
 
