@@ -130,6 +130,18 @@ class DesignUiTest {
 					view.height,
 					android.graphics.Bitmap.Config.ARGB_8888,
 				)
+
+			// A software Canvas must replay Compose's cached layers as well as native children.
+			fun invalidateLayers(node: android.view.View) {
+				node.javaClass.methods.firstOrNull { it.name == "invalidateDescendants" && it.parameterCount == 0 }
+					?.invoke(node)
+				if (node is android.view.ViewGroup) for (i in 0 until node.childCount) invalidateLayers(
+					node.getChildAt(
+						i
+					)
+				)
+			}
+			invalidateLayers(view)
 			view.draw(android.graphics.Canvas(bitmap))
 			java.io.File("/tmp/cleanmind-ui-$name.png").outputStream().use {
 				bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
