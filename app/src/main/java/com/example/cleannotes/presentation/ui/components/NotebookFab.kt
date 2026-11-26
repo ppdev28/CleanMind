@@ -2,8 +2,6 @@ package com.example.cleannotes.presentation.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
