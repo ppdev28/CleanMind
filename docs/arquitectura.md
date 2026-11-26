@@ -164,7 +164,7 @@ La revisión arquitectónica del 23 de noviembre de 2026 utilizó estas fuentes 
 
 ## Editor enriquecido
 
-El cuerpo del editor integra `RichNoteEditor`, un EditText nativo dentro de Compose para mantener selección y menú de copiar/pegar. `NoteDocument` es el formato serializable sin dependencia de Android; los documentos antiguos conservan sus rangos y el editor actual utiliza texto fuente Markdown. `RichEditorContent` integra el campo nativo; `RichEditorController` conserva exclusivamente estado de UI (selección, historial disponible y resultados de galería/cámara). `MarkdownFormatBar` presenta herramientas visibles y un panel de formato y espaciado; `NoteImageStrip` presenta los adjuntos. El documento sigue siendo propiedad del ViewModel y todas las modificaciones viajan por `EnteredContent`. `NoteImages` encapsula la copia y normalización de los archivos en el almacenamiento privado. La nota resultante continúa pasando por el evento de contenido y el autoguardado del ViewModel.
+El cuerpo del editor integra `RichNoteEditor`, un EditText nativo dentro de Compose para mantener selección y menú de copiar/pegar. `NoteDocument` es el formato serializable sin dependencia de Android; los spans nativos se convierten a rangos de formato al editar. `RichEditorContent` integra el campo nativo; `RichEditorController` conserva exclusivamente estado de UI (selección, historial disponible y resultados de galería/cámara). `EditorBottomBar` presenta las herramientas de formato, inserción y espaciado; `NoteImageStrip` presenta los adjuntos. El documento sigue siendo propiedad del ViewModel y todas las modificaciones viajan por `EnteredContent`. `NoteImages` encapsula la copia y normalización de los archivos en el almacenamiento privado. La nota resultante continúa pasando por el evento de contenido y el autoguardado del ViewModel.
 
 
 ## Avisos y exportaciones
@@ -184,10 +184,10 @@ Las carpetas usan la misma capa de datos, con `FolderEntity` y una clave externa
 `AppSurfaces.kt` centraliza las superficies tonales Material 3 y las hojas inferiores. El fondo se dibuja uniformemente desde el tema; ya no se captura ni se desenfoca mediante Haze. Las carpetas y las notas comparten una cuadrícula perezosa con spans distintos, y lista/cuadrícula usan contenedores separados durante el fundido. La colección científica se inicializa desde una implementación exclusiva de debug; el código release no añade ejemplos.
 
 
-## Markdown
+## Compatibilidad con documentos Markdown anteriores
 
-`MarkdownText` centraliza el parser CommonMark y las extensiones de tablas, tachado y tareas. Se fija commonmark-java 0.32.0, compatible con el mínimo API 24 de la app, según sus [notas de versión](https://github.com/commonmark/commonmark-java/releases/tag/v0.32.0) y [documentación](https://github.com/commonmark/commonmark-java).
+La pantalla vuelve al editor normal con `RichNoteEditor` y `EditorToolbar`. `RichDocumentCompatibility.editable` proyecta los documentos que ya estaban guardados en Markdown a texto normal y rangos de estilo. Mantiene imágenes, casillas y metadatos y conserva las direcciones de enlaces en el texto. Abrirlos no provoca una escritura; la primera edición del contenido guarda el formato normal.
 
-`MarkdownEditing` aplica transformaciones puras sobre texto y selección. `RichNoteEditor` mantiene IME, portapapeles nativo, resaltado e historial; `MarkdownRendering`, compartido por vista previa y PDF, produce spans nativos. No hay WebView ni ejecución de HTML. Los enlaces admiten HTTP, HTTPS y correo; los adjuntos continúan en almacenamiento privado. El editor nativo sigue compuesto al alternar la vista previa para conservar selección e historial.
+`MarkdownText` y `MarkdownRendering` permanecen únicamente como lectores para búsqueda, exportación y compatibilidad. No hay edición de sintaxis, vista previa ni comandos Markdown en la interfaz. Se retiró `MarkdownEditing`. El esquema Room continúa en versión 4.
 
-El booleano `NoteDocument.markdown`, con valor anterior `false`, se serializa dentro del contenido y no cambia el esquema Room 4. `MarkdownText.editable` proyecta los documentos antiguos sin persistir cambios al abrirlos. Búsqueda, TXT y copias de carpeta utilizan una representación legible; el PDF conserva los formatos soportados.
+`NotebookFab` despliega acciones sobre el propio botón, en la misma composición y sin `ModalBottomSheet`. Su altura disponible limita el despliegue y las acciones pueden desplazarse. Volver cierra el menú antes de navegar. `HomeAgenda` utiliza celdas adaptables de 128 dp para que la cuadrícula tenga dos columnas a 320–360 dp, además de conservar estados independientes y separadores por creación.

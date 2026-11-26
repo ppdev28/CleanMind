@@ -7,7 +7,7 @@ Referencia: [Clean Mind, archivo de Figma](https://www.figma.com/design/qokv6yTT
 ## Implementación
 
 - Inicio con búsqueda y cuadrícula adaptable, con opción de agenda vertical: separador horizontal y fecha completa, sin círculos ni etiquetas laterales y todas las notas creadas en ese día. No se limita a diez notas.
-- Cabecera opaca con ocultación al bajar y reapertura al llegar al inicio. Un FAB abre la navegación y la creación; doble toque en la lupa enfoca la búsqueda. Se mantienen colores y tipografía del estilo actual.
+- Cabecera opaca con ocultación al bajar y reapertura al llegar al inicio. Un FAB despliega la navegación y la creación desde el propio botón; doble toque en la lupa enfoca la búsqueda. Se mantienen colores y tipografía del estilo actual.
 - Filtros Todas, Fijadas, Con imágenes y Archivadas; vistas de lista y cuadrícula.
 - Tarjetas de título, subtítulo y metadatos. Se mantiene la petición anterior de ocultar el cuerpo en Home: las vistas previas de la referencia reciben el subtítulo independiente, no una extracción del contenido.
 - Editor con guardado visible, fijado, archivo, deshacer archivo, captura de listas/imágenes y hoja de recordatorio. Las herramientas de formato, compartir y exportar permanecen disponibles.
@@ -81,3 +81,8 @@ La cabecera principal se ajusta después a `exitUntilCollapsed`: se oculta al de
 ## Cambios de la nota «To Dos»
 
 Se implementaron en orden numérico: limpieza de pantallas/recursos sin uso, FAB con los destinos y creación anteriores, búsqueda directa con doble toque, editor Markdown con vista previa, formato frecuente visible y cuadrícula de Inicio. La cuadrícula mantiene los separadores por creación y el modo agenda. Estos cambios posteriores a Figma son intencionados.
+
+
+## Corrección tras revisar «To Dos»
+
+Se restaura el editor normal y su formato visual. La compatibilidad de lectura conserva las notas guardadas en Markdown, sin mantener su editor de sintaxis. El FAB despliega seis acciones ancladas encima del botón y Volver cierra el despliegue. La celda mínima de Home pasa de 156 a 128 dp: en los 360 dp del realme la vista de cuadrícula muestra dos columnas y el modo agenda una, manteniendo las fechas de creación.

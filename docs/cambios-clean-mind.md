@@ -38,3 +38,8 @@ Se adopta la alternativa Material 3 solicitada para sustituir el cristal anterio
 ## 26 de noviembre · Nota «To Dos»
 
 Los seis puntos se implementaron por orden numérico y con commits por funcionalidad: retirada de pantallas/recursos sin uso; navegación y creación mediante FAB; búsqueda enfocada al pulsar dos veces la lupa; fuente Markdown con vista previa y exportación compatible; herramientas de formato visibles y panel único; cuadrícula de Inicio con alternativa de agenda. Se conservan las fechas de creación, la privacidad de las tarjetas y el scroll de cabecera hasta el inicio. La revisión termina con 80 pruebas locales, compilaciones debug/release y lint correctos. No se actualizó el realme al perderse la conexión ADB después de leer la nota.
+
+
+## Corrección posterior: editor y acciones flotantes
+
+Se restaura el editor normal anterior, manteniendo lectura de notas guardadas en Markdown sin reescribirlas al abrir. El FAB despliega sus seis acciones encima del mismo botón, con cierre desde × o Volver. La cuadrícula de Home baja su celda mínima de 156 a 128 dp para mostrar dos columnas en el realme de 360 dp; conserva el modo agenda de una columna. Las pruebas locales quedan en 79 casos y pasan las compilaciones debug/release y lint de ambas variantes.

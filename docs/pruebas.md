@@ -44,12 +44,12 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | `DestinationTest` | 1 | Serialización y deserialización de destinos con argumentos tipados. |
 | `DateUtilsTest` | 2 | Agrupación de fechas de años distintos y detección de hoy/ayer. |
 | `RichEditorTest` | 12 | Compatibilidad con texto antiguo, serialización, reapertura con negrita, deshacer/rehacer, limpieza parcial, listas, casillas, espaciado, color con selección conservada y estado de la barra y continuación/salida de listas con Intro, subtítulos y conservación de metadatos al deshacer y disponibilidad del campo nativo para accesibilidad. |
-| `MarkdownEditorTest` | 7 | Proyección sin escritura de documentos antiguos, CommonMark con tablas/tareas/código y estilos anidados, enlaces y HTML literal, continuación/salida de listas, selección, deshacer con metadatos y texto legible para buscar/compartir. |
+| `MarkdownCompatibilityTest` | 5 | Documentos normales sin cambios, lectura de documentos Markdown como texto con formato conservando metadatos y destinos de enlaces, estilos/tablas/tareas anteriores, HTML literal y texto legible para buscar/compartir. |
 | `ExampleUnitTest` | 1 | Prueba aritmética de ejemplo del proyecto; no valida funcionalidad de Clean Mind. |
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
-| `DesignUiTest` | 18 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras. |
+| `DesignUiTest` | 19 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras. |
 
-Total actual: **80 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
+Total actual: **79 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
 Las pruebas de ViewModel usan `kotlinx-coroutines-test` para controlar la ejecución y el tiempo virtual. `FakeNoteRepository` permite simular lentitud, errores y cambios observables.
 
@@ -189,3 +189,14 @@ La regresión de scroll sigue comprobando ocultación al bajar y reapertura solo
 El realme estuvo conectado al leer «To Dos» mediante una copia privada de la base. Después dejó de aparecer tanto en `adb devices` como en el descubrimiento mDNS. No se instaló ni se probó físicamente esta revisión, ni se modificó la nota original. Las imágenes actualizadas de `docs/ui-preview/` son capturas sintéticas de Robolectric, con datos de prueba.
 
 Resultado final: **80 pruebas locales superadas**, sin fallos, errores ni omisiones. `assembleDebug`, `assembleRelease`, `lintDebug` y `lintRelease` correctos. El formateador de Android Studio revisó 98 archivos. Se corrigió el helper de capturas JVM para invalidar las capas cacheadas de Compose antes de dibujar en Canvas; esto evita documentar capturas incompletas y no cambia el código de la app.
+
+
+## Correcciones: editor normal, FAB anclado y cuadrícula
+
+El editor vuelve al formato visual anterior. Se mantiene lectura de documentos Markdown existentes y se comprueba que abrirlos no altera el contenido almacenado. La prueba de UI verifica la ausencia de controles Markdown y la disponibilidad del formato normal.
+
+El FAB presenta sus seis acciones en la propia pantalla. La regresión comprueba que aparecen encima del botón, que este conserva su posición, que no hay un diálogo y que Volver cierra el menú. Se conservan las dos acciones de creación y la búsqueda con doble toque.
+
+La regresión de Home usa ahora un ancho de 360 dp, el ancho lógico del realme (1080 px y 480 dpi), y verifica con coordenadas la distribución en dos columnas y el cambio real a una columna. El tamaño anterior de celda de 156 dp solo permitía una columna en ese dispositivo; pasa a 128 dp.
+
+Resultado: **79 pruebas locales superadas**, sin fallos ni omisiones; compilaciones debug/release y lint de ambas variantes correctos. Se instaló el APK en el realme RMX3370 mediante USB y se verificaron la cuadrícula (tarjetas de 450 px) frente a agenda (936 px), el despliegue anclado al FAB, su cierre con Volver, la creación de un borrador vacío con editor normal, la apertura del formato visual y el foco de búsqueda con doble toque. El borrador se cerró sin contenido. La comparación de las 12 notas y la carpeta antes y después confirmó que todos sus campos permanecen idénticos. Las capturas del repositorio siguen siendo sintéticas; las capturas privadas del teléfono no se publican.

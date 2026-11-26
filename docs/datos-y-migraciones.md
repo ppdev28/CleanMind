@@ -153,3 +153,6 @@ El nombre visible y el proyecto Gradle pasan a Clean Mind. Se mantienen el paque
 ## Documentos Markdown · 26 de noviembre de 2026
 
 El contenido incorpora `markdown: Boolean = false` y `textAlignment: Int = 0` como campos opcionales del documento JSON. Room continúa en versión 4. Los lectores siguen aceptando documentos anteriores y texto sin marcador. La apertura proyecta el texto antiguo para editarlo, sin ejecutar una escritura. El primer cambio conserva casillas, imágenes, subtítulo, creación, fijado, archivo y recordatorio, y guarda la fuente Markdown. El interlineado y la alineación global son metadatos de presentación; TXT utiliza texto legible y no constituye una copia restaurable de estos ajustes.
+
+
+La corrección posterior retira el editor Markdown. Los campos `markdown` y `textAlignment` se conservan para leer notas ya almacenadas. `RichDocumentCompatibility` transforma solo la presentación y no actualiza Room al abrirlas; una edición posterior de su contenido utiliza texto y rangos normales. Las casillas y los adjuntos mantienen sus identificadores.
