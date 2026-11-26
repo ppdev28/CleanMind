@@ -33,3 +33,8 @@ La revisión de cristal, cuadrícula y colección científica está en [Cristal]
 ## Material 3 · 25 de noviembre
 
 Se adopta la alternativa Material 3 solicitada para sustituir el cristal anterior. Fondo negro uniforme en oscuro, texto más contrastado, contenedores tonales, cabecera transparente con desplazamiento y protección del reloj, hojas inferiores continuas hasta el área de navegación y fecha de agenda de 16 sp en seminegrita. Haze deja de ser una dependencia. Compilación y lint de ambas variantes y 69 pruebas locales correctas; revisión visual en realme con tema claro y oscuro.
+
+
+## 26 de noviembre · Nota «To Dos»
+
+Los seis puntos se implementaron por orden numérico y con commits por funcionalidad: retirada de pantallas/recursos sin uso; navegación y creación mediante FAB; búsqueda enfocada al pulsar dos veces la lupa; fuente Markdown con vista previa y exportación compatible; herramientas de formato visibles y panel único; cuadrícula de Inicio con alternativa de agenda. Se conservan las fechas de creación, la privacidad de las tarjetas y el scroll de cabecera hasta el inicio. La revisión termina con 80 pruebas locales, compilaciones debug/release y lint correctos. No se actualizó el realme al perderse la conexión ADB después de leer la nota.

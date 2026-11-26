@@ -6,10 +6,10 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 
 ## Funciones
 
-- Crear, editar y eliminar notas con formato, listas, imágenes y deshacer/rehacer.
+- Crear, editar y eliminar notas con Markdown, vista previa, listas, tablas, imágenes y deshacer/rehacer.
 - Guardar automáticamente mientras escribes y mostrar el estado de guardado.
 - Consultar la actividad por fecha o cambiar a una cuadrícula adaptable.
-- Buscar por título y contenido.
+- Navegar y crear desde un FAB; doble toque en la lupa para buscar directamente por título y contenido.
 - Organizar notas en [carpetas](docs/carpetas.md) en cuadrícula, con creación, renombrado y movimiento.
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.

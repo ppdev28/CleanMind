@@ -14,7 +14,7 @@ Los cambios de comportamiento deben quedar reflejados en las pruebas pertinentes
 | Una regla de edición | `EditNoteUiState`, `EditNoteViewModel`, eventos, pantalla y pruebas del editor. |
 | Una nueva preferencia | Contrato y repositorio de preferencias, modelo, `SettingsViewModel`, UI y prueba de persistencia. |
 | Un destino independiente | `Destination`, enlaces de `NotesApp`, pantalla y prueba de serialización. |
-| Una vista del mismo cuaderno | Estado de `NotesViewModel`, pestañas, `NotebookScreen` y barra inferior. |
+| Una vista del mismo cuaderno | Estado de `NotesViewModel`, pestañas, `NotebookScreen`, `HomeAgenda` y `NotebookFab`. |
 | Colores o tipografía | `presentation/ui/theme/` y revisión de contraste y tamaños. |
 | Texto visible | `app/src/main/res/values/strings.xml` y guía de uso si afecta al recorrido. |
 
@@ -65,3 +65,5 @@ El workflow manual actual genera artefactos; no publica en una tienda. No hay un
 [Índice de documentación](README.md).
 
 La colección de ciencia está en `design/content/science-notes.json`. Solo debug la incorpora una vez; release usa un inicializador vacío. Mantén la importación aditiva y sus pruebas de idempotencia antes de cambiar los ejemplos. Consulta [Ciencia breve](ciencia-breve.md).
+
+Se retiraron las pantallas antiguas sin rutas activas, componentes duplicados, fuentes SF Pro/Lexend sin referencias y 57 textos sin uso. Las previsualizaciones utilizan el cuaderno real. No recuperar esos componentes para cambios nuevos.

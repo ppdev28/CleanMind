@@ -164,7 +164,7 @@ La revisión arquitectónica del 23 de noviembre de 2026 utilizó estas fuentes 
 
 ## Editor enriquecido
 
-El cuerpo del editor integra `RichNoteEditor`, un EditText nativo dentro de Compose para mantener selección y menú de copiar/pegar. `NoteDocument` es el formato serializable sin dependencia de Android; los spans nativos se convierten a rangos al editar. `RichEditorContent` integra el campo nativo; `RichEditorController` conserva exclusivamente estado de UI (selección, historial disponible y resultados de galería/cámara). `EditorToolbar` presenta la barra inferior y las hojas de inserción y espaciado; `NoteImageStrip` presenta los adjuntos. El documento sigue siendo propiedad del ViewModel y todas las modificaciones viajan por `EnteredContent`. `NoteImages` encapsula la copia y normalización de los archivos en el almacenamiento privado. La nota resultante continúa pasando por el evento de contenido y el autoguardado del ViewModel.
+El cuerpo del editor integra `RichNoteEditor`, un EditText nativo dentro de Compose para mantener selección y menú de copiar/pegar. `NoteDocument` es el formato serializable sin dependencia de Android; los documentos antiguos conservan sus rangos y el editor actual utiliza texto fuente Markdown. `RichEditorContent` integra el campo nativo; `RichEditorController` conserva exclusivamente estado de UI (selección, historial disponible y resultados de galería/cámara). `MarkdownFormatBar` presenta herramientas visibles y un panel de formato y espaciado; `NoteImageStrip` presenta los adjuntos. El documento sigue siendo propiedad del ViewModel y todas las modificaciones viajan por `EnteredContent`. `NoteImages` encapsula la copia y normalización de los archivos en el almacenamiento privado. La nota resultante continúa pasando por el evento de contenido y el autoguardado del ViewModel.
 
 
 ## Avisos y exportaciones
@@ -173,7 +173,7 @@ El cuerpo del editor integra `RichNoteEditor`, un EditText nativo dentro de Comp
 
 `NoteExport` encapsula TXT UTF-8, PDF A4 con saltos de página e imágenes, archivos compartidos en caché y escritura mediante DocumentsContract. El permiso persistente SAF limita el acceso a la carpeta elegida; no se solicitan permisos generales de almacenamiento. `ExportMenu` realiza IO en background. Room sigue siendo la fuente de verdad; las copias TXT no restauran formatos ni adjuntos.
 
-La agenda de Inicio se presenta con `AgendaDayGroup`, agrupando por `Note.creationTimestamp()`. El repositorio conserva la creación dentro del documento independientemente del timestamp de edición. `CustomTopBar` y `BottomNavigationBar` vuelven a ser las barras activas de la libreta. Ajustes expone de nuevo apariencia y almacenamiento directamente.
+La agenda de Inicio se presenta con `HomeAgenda`, agrupando por `Note.creationTimestamp()`. El repositorio conserva la creación dentro del documento independientemente del timestamp de edición. `CustomTopBar` conserva `exitUntilCollapsed` y `NotebookFab` concentra la navegación y creación. `HomeAgenda` mantiene estados independientes para la cuadrícula y la agenda vertical. Ajustes expone de nuevo apariencia y almacenamiento directamente.
 
 ## Recordatorios como tareas
 
@@ -182,3 +182,12 @@ La agenda de Inicio se presenta con `AgendaDayGroup`, agrupando por `Note.creati
 Las carpetas usan la misma capa de datos, con `FolderEntity` y una clave externa de nota. Su operación expone carga, error y revisión de persistencia; las hojas solo confirman al completarse la escritura. `AppMotion` centraliza las transiciones y el contenedor guardable de pestañas conserva el scroll durante el cambio de vista. Consulta [Carpetas](carpetas.md) y [Movimiento](movimiento.md).
 
 `AppSurfaces.kt` centraliza las superficies tonales Material 3 y las hojas inferiores. El fondo se dibuja uniformemente desde el tema; ya no se captura ni se desenfoca mediante Haze. Las carpetas y las notas comparten una cuadrícula perezosa con spans distintos, y lista/cuadrícula usan contenedores separados durante el fundido. La colección científica se inicializa desde una implementación exclusiva de debug; el código release no añade ejemplos.
+
+
+## Markdown
+
+`MarkdownText` centraliza el parser CommonMark y las extensiones de tablas, tachado y tareas. Se fija commonmark-java 0.32.0, compatible con el mínimo API 24 de la app, según sus [notas de versión](https://github.com/commonmark/commonmark-java/releases/tag/v0.32.0) y [documentación](https://github.com/commonmark/commonmark-java).
+
+`MarkdownEditing` aplica transformaciones puras sobre texto y selección. `RichNoteEditor` mantiene IME, portapapeles nativo, resaltado e historial; `MarkdownRendering`, compartido por vista previa y PDF, produce spans nativos. No hay WebView ni ejecución de HTML. Los enlaces admiten HTTP, HTTPS y correo; los adjuntos continúan en almacenamiento privado. El editor nativo sigue compuesto al alternar la vista previa para conservar selección e historial.
+
+El booleano `NoteDocument.markdown`, con valor anterior `false`, se serializa dentro del contenido y no cambia el esquema Room 4. `MarkdownText.editable` proyecta los documentos antiguos sin persistir cambios al abrirlos. Búsqueda, TXT y copias de carpeta utilizan una representación legible; el PDF conserva los formatos soportados.

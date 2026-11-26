@@ -34,7 +34,7 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 
 | Clase | Casos | Comportamiento comprobado |
 | --- | --- | --- |
-| `EditNoteViewModelTest` | 12 | Autoguardados sobre la misma fila, salida inmediata, escritura lenta, fallos y reintento, guardado explícito de recordatorios, salida repetida, reversión del texto, título vacío, borrador restaurado, texto literal `Remember` y fallo de carga; creación de una nota en la carpeta seleccionada. |
+| `EditNoteViewModelTest` | 13 | Autoguardados sobre la misma fila, salida inmediata, escritura lenta, fallos y reintento, guardado explícito de recordatorios, salida repetida, reversión del texto, título vacío, borrador restaurado, texto literal `Remember` y fallo de carga; creación de una nota en la carpeta seleccionada. |
 | `NotesViewModelTest` | 9 | Filtros y búsqueda, reintento de carga, error de eliminación, detención de observación sin suscriptores y restauración de consulta/pestaña/carpeta, creación de carpetas y fallo/reintento de movimientos. |
 | `SettingsViewModelTest` | 1 | Conservación del tema persistido cuando falla una escritura y recuperación al reintentar. |
 | `NoteStorageTest` | 4 | Migración 2→4 con SQLite y operaciones de repositorio con IDs estables y orden de consulta. |
@@ -44,11 +44,12 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | `DestinationTest` | 1 | Serialización y deserialización de destinos con argumentos tipados. |
 | `DateUtilsTest` | 2 | Agrupación de fechas de años distintos y detección de hoy/ayer. |
 | `RichEditorTest` | 12 | Compatibilidad con texto antiguo, serialización, reapertura con negrita, deshacer/rehacer, limpieza parcial, listas, casillas, espaciado, color con selección conservada y estado de la barra y continuación/salida de listas con Intro, subtítulos y conservación de metadatos al deshacer y disponibilidad del campo nativo para accesibilidad. |
+| `MarkdownEditorTest` | 7 | Proyección sin escritura de documentos antiguos, CommonMark con tablas/tareas/código y estilos anidados, enlaces y HTML literal, continuación/salida de listas, selección, deshacer con metadatos y texto legible para buscar/compartir. |
 | `ExampleUnitTest` | 1 | Prueba aritmética de ejemplo del proyecto; no valida funcionalidad de Clean Mind. |
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
-| `DesignUiTest` | 15 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras. |
+| `DesignUiTest` | 18 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras. |
 
-Total actual: **69 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
+Total actual: **80 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
 Las pruebas de ViewModel usan `kotlinx-coroutines-test` para controlar la ejecución y el tiempo virtual. `FakeNoteRepository` permite simular lentitud, errores y cambios observables.
 
@@ -67,9 +68,9 @@ Las carpetas `build/` contienen salidas generadas. No forman parte de la documen
 
 ## Estado conocido
 
-La última ejecución local de verificación de código terminó con compilación debug correcta, lint sin errores y 69 pruebas locales superadas, sin fallos ni casos omitidos. Lint conserva avisos sobre versiones de dependencias y recursos.
+La validación de la revisión de «To Dos» se documenta al final de esta página. Lint conserva avisos sobre versiones de dependencias y recursos.
 
-La comprobación de formato de Android Studio terminó con 101 archivos revisados y conformes al estilo compartido.
+La comprobación de formato de Android Studio usa el estilo compartido; la revisión nueva abarca 98 archivos.
 
 ## Validación en Xiaomi · 24 de noviembre de 2026
 
@@ -177,3 +178,14 @@ La cabecera de las pestañas del cuaderno usa ahora `exitUntilCollapsed`, conser
 La regresión de UI comprueba una agenda larga: cabecera visible al empezar, oculta tras descender, todavía oculta al invertir brevemente el desplazamiento con posición mayor que cero y visible de nuevo con la posición de scroll a cero. También comprueba el colapso en la cuadrícula y que Crear permanece visible. Esta revisión sustituye la cabecera siempre fija del apartado anterior.
 
 Resultado: compilaciones debug/release, lint de ambas variantes y las 69 pruebas locales correctas. Se instaló el APK debug en el realme mediante ADB inalámbrico. No se completó la comprobación manual de scroll al encontrarse el editor con una nota abierta; no se registra como prueba física superada.
+
+
+## Nota «To Dos» · 26 de noviembre de 2026
+
+Se comprobaron los seis puntos en orden: retirada de pantallas y recursos sin referencias; FAB con creación y navegación; doble toque en Buscar con campo enfocado; Markdown y vista previa; formato visible y panel único; cuadrícula de Inicio con vuelta a agenda y separadores por creación.
+
+La regresión de scroll sigue comprobando ocultación al bajar y reapertura solo al llegar al inicio. Las pruebas nuevas comprueban el foco directo de búsqueda, la distribución real en dos columnas y su cambio a agenda, la ausencia de contenido privado en tarjetas y la alternancia de vista previa sin cambios de documento. Se mantienen las pruebas de editor nativo, almacenamiento, recordatorios y exportación.
+
+El realme estuvo conectado al leer «To Dos» mediante una copia privada de la base. Después dejó de aparecer tanto en `adb devices` como en el descubrimiento mDNS. No se instaló ni se probó físicamente esta revisión, ni se modificó la nota original. Las imágenes actualizadas de `docs/ui-preview/` son capturas sintéticas de Robolectric, con datos de prueba.
+
+Resultado final: **80 pruebas locales superadas**, sin fallos, errores ni omisiones. `assembleDebug`, `assembleRelease`, `lintDebug` y `lintRelease` correctos. El formateador de Android Studio revisó 98 archivos. Se corrigió el helper de capturas JVM para invalidar las capas cacheadas de Compose antes de dibujar en Canvas; esto evita documentar capturas incompletas y no cambia el código de la app.

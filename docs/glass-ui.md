@@ -10,7 +10,7 @@ Las cabeceras conservan el fondo opaco del tema para impedir superposiciones. En
 
 El contenido del cuaderno aplica el padding medido por `Scaffold` y consume esos insets antes de componer listas, cuadrículas y recordatorios. Ese espacio se adapta a la altura visible de la cabecera y mantiene el viewport fuera de las barras. La franja de estado continúa protegida por el color del tema. La fecha de cada grupo conserva su semántica de encabezado y utiliza 16 sp y peso seminegrita.
 
-La barra inferior es un `NavigationBar` Material 3 acoplado al borde, sin márgenes exteriores, esquinas de tarjeta ni elevación flotante. Su superficie ocupa todo el ancho y también el área de navegación del sistema. Se conserva la acción central Crear.
+La navegación se concentra ahora en `NotebookFab`: un botón flotante Material 3 abre la hoja con destinos y creación. No hay barra inferior en la libreta. Las listas reservan 96 dp al final para mantener las últimas tarjetas fuera del botón; el editor conserva sus herramientas inferiores.
 
 Todas las hojas inferiores de la app pasan por `AppBottomSheet`. El propio `ModalBottomSheet` pinta su contenedor, incluida la separación de navegación del sistema. Así no queda una franja transparente que deje ver la barra de la app por debajo. Se conserva el manejo de insets de Material 3 y se desactiva el scrim adicional de contraste de navegación en la ventana de la hoja desde API 29.
 

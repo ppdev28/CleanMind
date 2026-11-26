@@ -148,3 +148,8 @@ La rama Figma añade campos opcionales `pinned`, `archived`, `reminderCompleted`
 ## Compatibilidad del cambio de marca
 
 El nombre visible y el proyecto Gradle pasan a Clean Mind. Se mantienen el paquete/applicationId `com.example.cleannotes`, el nombre de la base y los directorios privados para actualizar la instalación anterior. Los documentos nuevos usan el prefijo `CleanMind:document:1`; el lector sigue aceptando el prefijo histórico `CleanNotes:document:1` y el texto plano. Cambiar el nombre no requiere borrar datos ni migrar el esquema Room.
+
+
+## Documentos Markdown · 26 de noviembre de 2026
+
+El contenido incorpora `markdown: Boolean = false` y `textAlignment: Int = 0` como campos opcionales del documento JSON. Room continúa en versión 4. Los lectores siguen aceptando documentos anteriores y texto sin marcador. La apertura proyecta el texto antiguo para editarlo, sin ejecutar una escritura. El primer cambio conserva casillas, imágenes, subtítulo, creación, fijado, archivo y recordatorio, y guarda la fuente Markdown. El interlineado y la alineación global son metadatos de presentación; TXT utiliza texto legible y no constituye una copia restaurable de estos ajustes.

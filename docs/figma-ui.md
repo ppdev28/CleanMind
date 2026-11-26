@@ -6,8 +6,8 @@ Referencia: [Clean Mind, archivo de Figma](https://www.figma.com/design/qokv6yTT
 
 ## Implementación
 
-- Inicio con búsqueda, captura rápida y agenda vertical: separador horizontal y fecha completa, sin círculos ni etiquetas laterales y todas las notas creadas en ese día. No se limita a diez notas.
-- Barras anteriores recuperadas: título de Clean Mind y mayor separación superior; Inicio, Notas, «+» central, Recordar y Buscar en la barra inferior. Se mantienen colores y tipografía del estilo actual.
+- Inicio con búsqueda y cuadrícula adaptable, con opción de agenda vertical: separador horizontal y fecha completa, sin círculos ni etiquetas laterales y todas las notas creadas en ese día. No se limita a diez notas.
+- Cabecera opaca con ocultación al bajar y reapertura al llegar al inicio. Un FAB abre la navegación y la creación; doble toque en la lupa enfoca la búsqueda. Se mantienen colores y tipografía del estilo actual.
 - Filtros Todas, Fijadas, Con imágenes y Archivadas; vistas de lista y cuadrícula.
 - Tarjetas de título, subtítulo y metadatos. Se mantiene la petición anterior de ocultar el cuerpo en Home: las vistas previas de la referencia reciben el subtítulo independiente, no una extracción del contenido.
 - Editor con guardado visible, fijado, archivo, deshacer archivo, captura de listas/imágenes y hoja de recordatorio. Las herramientas de formato, compartir y exportar permanecen disponibles.
@@ -58,7 +58,7 @@ Una notificación puede pertenecer a una nota normal o a un recordatorio explíc
 
 `DesignUiTest` utiliza Compose y Robolectric con gráficos nativos, sin teléfono ni emulador. Comprueba ocultación del cuerpo, pulsación larga, búsqueda/cuadrícula, entrada/salida de concentración, completar sin eliminar, ajustes y selección de fecha/hora. Las capturas se generan en `/tmp/cleanmind-ui-*.png`; una selección está en [ui-preview](ui-preview/).
 
-La suite consta de 69 pruebas locales y dos pruebas instrumentadas. Además de los flujos comprobados anteriormente en Xiaomi, en el realme RMX3370 se verificaron cristal acelerado, carpetas, edición, imágenes de galería/cámara, portapapeles nativo, notificación en segundo plano y escritura SAF de TXT/PDF y copias automáticas. Consulta [Pruebas](pruebas.md) para el alcance y los casos pendientes.
+El recuento actualizado de la suite está en [Pruebas](pruebas.md). Además de los flujos comprobados anteriormente en Xiaomi, en el realme RMX3370 se verificaron cristal acelerado, carpetas, edición, imágenes de galería/cámara, portapapeles nativo, notificación en segundo plano y escritura SAF de TXT/PDF y copias automáticas. Consulta [Pruebas](pruebas.md) para el alcance y los casos pendientes.
 
 
 ## Ajustes solicitados el 24 de noviembre
@@ -76,3 +76,8 @@ Las carpetas en cuadrícula son un cambio posterior pedido por el usuario. El 25
 El 26 de noviembre se fijan las cabeceras y se hacen opacas para impedir superposiciones con el texto. La barra inferior pasa a estar acoplada al borde, con ancho completo. La distribución del contenido respeta el espacio reservado para ambas barras.
 
 La cabecera principal se ajusta después a `exitUntilCollapsed`: se oculta al descender y reaparece al alcanzar el inicio, manteniendo el fondo opaco y la separación del contenido para evitar textos superpuestos.
+
+
+## Cambios de la nota «To Dos»
+
+Se implementaron en orden numérico: limpieza de pantallas/recursos sin uso, FAB con los destinos y creación anteriores, búsqueda directa con doble toque, editor Markdown con vista previa, formato frecuente visible y cuadrícula de Inicio. La cuadrícula mantiene los separadores por creación y el modo agenda. Estos cambios posteriores a Figma son intencionados.

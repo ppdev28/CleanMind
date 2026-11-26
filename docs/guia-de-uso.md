@@ -6,18 +6,18 @@ Clean Mind permite guardar ideas y apuntes personales en Android. No necesitas u
 
 | Zona | Qué muestra |
 | --- | --- |
-| Inicio | Fecha, contadores de notas y recordatorios y actividad reciente. |
+| Inicio | Cuadrícula de notas agrupadas por fecha de creación, con opción de agenda vertical. |
 | Notas | Notas normales, sin incluir recordatorios. |
 | Recordar | Acceso a la colección de recordatorios. Su pantalla se titula «Recordatorios». |
 | Buscar | Resultados por título o contenido. |
 | Editor | Título, subtítulo opcional, cuerpo de la nota, estado de guardado y acciones. |
 | Ajustes | Selección de apariencia e información sobre almacenamiento y recordatorios. |
 
-La barra inferior da acceso a Inicio, Notas, Recordar y Buscar. El **+** central permite crear una nota o un recordatorio; **¿Qué quieres guardar?** abre la captura rápida. La barra superior muestra Clean Mind o el nombre de la sección, con más separación. El engranaje abre Ajustes. La hoja del **+** presenta dos acciones grandes con su descripción.
+El botón flotante **+** abre **Tu libreta**: Inicio, Notas, Recordar, Buscar, Nueva nota y Nuevo recordatorio. Un doble toque en la lupa abre Buscar con el campo enfocado para escribir. La cabecera se oculta al bajar y reaparece al llegar al inicio; el engranaje abre Ajustes.
 
 ## Crear una nota
 
-1. Pulsa **+** en la barra inferior.
+1. Pulsa el botón flotante **+**.
 2. Elige **Nueva nota**.
 3. Escribe un título opcional; si lo dejas vacío, la app utiliza una primera línea legible al guardar.
 4. Añade un subtítulo opcional y el texto de la nota.
@@ -25,7 +25,7 @@ La barra inferior da acceso a Inicio, Notas, Recordar y Buscar. El **+** central
 
 También puedes crear la primera nota desde el botón del estado vacío.
 
-El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelves con cambios válidos pendientes, intenta guardarlos antes de cerrar. El botón **A** de la barra inferior abre el formato del texto seleccionado o del párrafo actual.
+El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelves con cambios válidos pendientes, intenta guardarlos antes de cerrar. La fila de formato permanece visible sobre el teclado; el botón de ajustes de formato abre las opciones adicionales.
 
 ## Entender el guardado
 
@@ -49,10 +49,7 @@ Mantén pulsada una tarjeta para abrir las opciones **Compartir nota** (texto o 
 
 Toca una tarjeta para abrir su contenido. Los cambios se guardan en la misma nota, manteniendo su identificador. Las colecciones conservan la fecha de última escritura para su orden habitual. La agenda de Inicio utiliza la fecha de creación independiente.
 
-En Notas puedes alternar entre:
-
-- **Lista:** elementos agrupados por día.
-- **Cuadrícula:** tarjetas distribuidas según el ancho disponible.
+Inicio se abre en cuadrícula. **Ver en agenda** cambia a una columna; **Ver en cuadrícula** recupera las tarjetas adaptables. Ambas conservan las fechas de creación y los separadores. En Notas y Buscar, **Cambiar vista** alterna lista y cuadrícula.
 
 La elección de vista pertenece al estado de cada pestaña. No hay un ajuste global de vista persistido en las preferencias.
 
@@ -124,28 +121,29 @@ Las notas se guardan localmente y se pueden consultar sin conexión. La aplicaci
 
 El manifiesto permite copias de seguridad del sistema. Por tanto, «sin sincronización propia» no equivale a garantizar que Android nunca respalde los datos. Consulta [Datos y migraciones](datos-y-migraciones.md) para conocer la configuración implementada.
 
-Se han probado creación, edición básica, agenda, formularios, compartir y notificaciones en un Xiaomi con API 36. Cámara, pegado de imágenes, lectores de pantalla y otros tamaños de dispositivo siguen pendientes; consulta [Pruebas](pruebas.md).
+El historial de pruebas físicas está en [Pruebas](pruebas.md). La revisión nueva de FAB, Markdown y cuadrícula está validada localmente; el realme se desconectó antes de instalar esta versión.
 
 [Índice de documentación](README.md).
 
 ## Formato y fotografías
 
-Pulsa **A** en la barra inferior para mostrar la fila **H₁, H₂, Aa, negrita, cursiva, subrayado y borrar formato**. La **×** cierra esa fila. Las opciones de tachado, alineación, sangría y espaciado están en **⋮ → Formato y espaciado**. Selecciona una palabra o un fragmento antes de cambiarlo. Sin selección, el formato se aplica al párrafo actual cuando contiene texto.
+El cuerpo se edita como Markdown, con resaltado de sintaxis y **Vista previa** para leer el resultado. **Editar Markdown** vuelve al texto sin modificarlo ni borrar el historial de la sesión. La barra muestra directamente negrita, cursiva, subrayado y listas; deslízala horizontalmente para acceder a los demás botones. **Más formato y espaciado** abre un único panel con:
 
-- Negrita, cursiva, subrayado y tachado. Los colores siguen el tema de la app.
-- Tamaños de título, subtítulo y texto normal.
-- Alineación izquierda, centro o derecha y sangría.
-- Listas con viñetas o numeradas sobre las líneas seleccionadas.
-- **Casilla**: añade una casilla al párrafo del cursor; vuelve a pulsar para marcarla o desmarcarla.
-- Interlineado de 1 a 2, espacio adicional entre líneas y separación entre párrafos. Estos ajustes de espaciado afectan a toda la nota.
-- **Sin formato** elimina las marcas del fragmento seleccionado; no restablece los ajustes globales de espaciado.
-- **Deshacer/Rehacer** funciona durante la sesión del editor; el historial no se guarda al cerrar.
+- Encabezados H1–H6 y texto normal.
+- Negrita, cursiva, subrayado mediante `<u>`, tachado y borrado del formato seleccionado.
+- Listas con viñetas, numeradas y tareas `- [ ]` / `- [x]`; también se conserva la lista de casillas independiente de las notas antiguas.
+- Código en línea, bloques de código, citas, enlaces con texto y dirección, tablas y separadores.
+- Sangría, alineación global de la nota, interlineado, espacio adicional entre líneas y separación entre párrafos.
 
-En **+**, **Añadir imagen** abre el selector y **Hacer foto** permite tomar una fotografía con una aplicación de cámara instalada. **Pegar imagen** y el menú nativo de pegado aceptan imágenes que el portapapeles exponga mediante una URI accesible. No descargan enlaces web como imágenes.
+Puedes escribir la sintaxis directamente. Intro continúa viñetas, números, tareas o citas; un elemento vacío termina la lista. Las tareas nuevas continúan sin marcar. Dentro de bloques de código no se continúan listas. **Deshacer/Rehacer** está en **⋮** y funciona durante la sesión.
+
+Abrir una nota antigua no la reescribe: se presenta una proyección compatible con Markdown que conserva texto, estilos básicos, casillas, adjuntos y metadatos. El documento pasa a Markdown cuando realizas una modificación. Las alineaciones por fragmento antiguas no tienen un equivalente portátil en Markdown; puedes aplicar una alineación global desde el panel.
+
+**Imagen** abre las opciones para elegir una foto, capturarla o pegarla desde una URI accesible del portapapeles. Los enlaces de imágenes remotas escritos en Markdown se muestran como referencias; no se descargan imágenes de Internet. Los adjuntos locales siguen visibles e incluidos en el PDF.
 
 Las imágenes se copian como JPEG privados de la app, con reducción de resolución y corrección de orientación EXIF. Aparecen después del texto y las casillas y pueden quitarse o moverse hacia arriba desde su menú **⋮**. Quitar un adjunto de una nota no borra la fotografía original de la galería. Los archivos privados que queden sin referencia todavía no tienen limpieza automática.
 
-No hay OCR, escaneo de documentos, tablas, dibujo, justificación ni posicionamiento de imágenes entre palabras. Las listas son texto editable: Intro continúa las viñetas, casillas o el siguiente número. Intro sobre un elemento vacío termina la lista. Pegar varios párrafos conserva el texto pegado.
+No hay OCR, escaneo de documentos, dibujo, justificación ni posicionamiento de los adjuntos entre palabras. Las tablas se representan como texto monoespaciado. Pegar varios párrafos conserva el texto pegado.
 
 La referencia visual de esta rama es el archivo Figma. Consulta [UI de Figma](figma-ui.md) para las pantallas, recursos, funciones y límites de comparación.
 
