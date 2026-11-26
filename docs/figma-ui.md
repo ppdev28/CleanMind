@@ -72,3 +72,5 @@ La revisión posterior simplifica los recordatorios independientes en tareas con
 Las carpetas, el arranque monocromo y las transiciones se incorporan por las nuevas peticiones del usuario y amplían la referencia original. Consulta [Carpetas](carpetas.md) y [Movimiento y arranque](movimiento.md).
 
 Las carpetas en cuadrícula son un cambio posterior pedido por el usuario. El 25 de noviembre, el acabado de cristal se sustituyó por la alternativa Material 3: fondo negro uniforme en oscuro, contraste alto, cabecera transparente con scroll y hojas continuas hasta el área de navegación. Notas ya no incorpora una búsqueda local; la búsqueda global continúa en su pestaña.
+
+El 26 de noviembre se fijan las cabeceras y se hacen opacas para impedir superposiciones con el texto. La barra inferior pasa a estar acoplada al borde, con ancho completo. La distribución del contenido respeta el espacio reservado para ambas barras.

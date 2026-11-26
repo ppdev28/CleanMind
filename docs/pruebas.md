@@ -46,7 +46,7 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | `RichEditorTest` | 12 | Compatibilidad con texto antiguo, serialización, reapertura con negrita, deshacer/rehacer, limpieza parcial, listas, casillas, espaciado, color con selección conservada y estado de la barra y continuación/salida de listas con Intro, subtítulos y conservación de metadatos al deshacer y disponibilidad del campo nativo para accesibilidad. |
 | `ExampleUnitTest` | 1 | Prueba aritmética de ejemplo del proyecto; no valida funcionalidad de Clean Mind. |
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
-| `DesignUiTest` | 15 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación/reaparición de la cabecera con scroll y acceso a Crear mientras está oculta. |
+| `DesignUiTest` | 15 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; cabecera fija y viewport de agenda/cuadrícula delimitado entre ambas barras al desplazar. |
 
 Total actual: **69 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
@@ -161,3 +161,11 @@ En el realme RMX3370, API 33, se revisaron el fondo negro uniforme, el contraste
 Se abrieron y cerraron las hojas de creación, carpetas, formato e imágenes. Su contenedor se prolonga hasta el borde inferior, cubriendo el área de navegación en lugar de dejar ver la barra de la app. Se comprobó también el tema claro y se restauró la preferencia previa Oscuro. Esta revisión física utiliza navegación por gestos; no se cambió la configuración de navegación del teléfono.
 
 La comparación final conservó idénticos los 11 registros de notas y recordatorios y la carpeta que había al comenzar esta revisión. Las capturas de `ui-preview/` se regeneraron con datos sintéticos; las capturas del dispositivo y sus copias de datos se conservan solo como material privado local.
+
+## Barras fijas · 26 de noviembre de 2026
+
+La barra inferior se cambia a `NavigationBar` Material 3 de ancho completo, acoplada al borde y con insets de sistema propios. Las cabeceras del cuaderno, pantallas con Volver y editor usan un fondo opaco del tema. Se retira `enterAlways` y el contenido del cuaderno reserva el espacio de ambas barras mediante el padding de `Scaffold`, sin duplicarlo dentro de las listas.
+
+La regresión de cabecera comprueba ahora que el título permanece visible al desplazar en ambos sentidos, que Crear sigue accesible y que los límites de los viewports de agenda y cuadrícula no invaden las barras. Esta revisión sustituye el comportamiento de ocultación descrito para el día 25. No había ningún teléfono conectado por ADB; se verifica localmente y no se afirma una nueva instalación o prueba física.
+
+Resultado local: compilaciones debug y release, lint de ambas variantes y las 69 pruebas correctas, sin fallos ni omisiones. Se regeneraron las capturas sintéticas con las barras fijas.
