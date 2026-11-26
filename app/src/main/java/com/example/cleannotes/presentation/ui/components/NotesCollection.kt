@@ -1,6 +1,7 @@
 package com.example.cleannotes.presentation.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -13,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -113,7 +113,7 @@ fun ViewToggle(isListView: Boolean, onClick: () -> Unit) {
 fun ScreenTopBar(title: String, onBack: () -> Unit, actions: @Composable RowScope.() -> Unit = {}) {
 	TopAppBar(
 		modifier =
-			Modifier.statusBarsPadding()
+			Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).statusBarsPadding()
 				.padding(horizontal = 16.dp, vertical = 8.dp),
 		windowInsets = WindowInsets(0.dp),
 		title = { Text(title, style = MaterialTheme.typography.titleLarge) },
@@ -127,8 +127,8 @@ fun ScreenTopBar(title: String, onBack: () -> Unit, actions: @Composable RowScop
 		},
 		actions = actions,
 		colors = TopAppBarDefaults.topAppBarColors(
-			containerColor = Color.Transparent,
-			scrolledContainerColor = Color.Transparent
+			containerColor = MaterialTheme.colorScheme.background,
+			scrolledContainerColor = MaterialTheme.colorScheme.background,
 		),
 	)
 }

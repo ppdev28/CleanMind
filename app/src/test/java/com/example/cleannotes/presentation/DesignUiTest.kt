@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.text.TextLayoutResult
@@ -166,31 +167,52 @@ class DesignUiTest {
 	}
 
 	@Test
-	fun transparentHeaderHidesAndReturnsWithTheAgendaScroll() {
+	fun fixedBarsKeepTheAgendaViewportOutsideTheirBoundsWhileScrolling() {
+		var tab by mutableStateOf(NotesTab.HOME)
+		val verticalScroll =
+			hasScrollAction() and SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange)
 		compose.setContent {
 			CleanMindTheme(darkTheme = true) {
 				NotebookScreen(
 					NotesUiState(
+						selectedTab = tab,
 						allNotes = List(18) { index ->
 							sample.first().copy(id = index + 1, title = "Idea $index")
 						},
 						isLoading = false,
 					),
-					{}, {}, {}, {}, {}, {}, {}, {},
+					{ tab = it }, {}, {}, {}, {}, {}, {}, {},
 				)
 			}
 		}
 		compose.onNodeWithText("Clean Mind").assertIsDisplayed()
-		compose.onNode(hasScrollAction()).performTouchInput {
+		fun assertViewportBetweenBars(title: String = "Clean Mind") {
+			val header = compose.onAllNodesWithText(title).fetchSemanticsNodes()
+				.minBy { it.boundsInRoot.top }.boundsInRoot
+			val viewport = compose.onNode(verticalScroll).fetchSemanticsNode().boundsInRoot
+			val create = compose.onNodeWithContentDescription("Crear").fetchSemanticsNode().boundsInRoot
+			assertTrue("The list must start below the header", viewport.top >= header.bottom)
+			assertTrue("The list must end above the navigation controls", viewport.bottom <= create.top)
+		}
+		assertViewportBetweenBars()
+		compose.onNode(verticalScroll).performTouchInput {
 			swipe(Offset(centerX, height * 0.65f), Offset(centerX, height * 0.25f))
 		}
 		screenshot("agenda-scroll-dark")
-		compose.onNodeWithText("Clean Mind").assertIsNotDisplayed()
+		compose.onNodeWithText("Clean Mind").assertIsDisplayed()
+		assertViewportBetweenBars()
 		compose.onNodeWithContentDescription("Crear").assertIsDisplayed()
-		compose.onNode(hasScrollAction()).performTouchInput {
+		compose.onNode(verticalScroll).performTouchInput {
 			swipe(Offset(centerX, height * 0.35f), Offset(centerX, height * 0.75f))
 		}
 		compose.onNodeWithText("Clean Mind").assertIsDisplayed()
+		assertViewportBetweenBars()
+		compose.onAllNodesWithText("Notas").onLast().performClick()
+		assertViewportBetweenBars("Notas")
+		compose.onNode(verticalScroll).performTouchInput {
+			swipe(Offset(centerX, height * 0.65f), Offset(centerX, height * 0.25f))
+		}
+		assertViewportBetweenBars("Notas")
 	}
 
 	@Test

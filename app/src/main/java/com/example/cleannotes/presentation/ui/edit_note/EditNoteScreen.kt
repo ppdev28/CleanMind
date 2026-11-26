@@ -3,6 +3,7 @@ package com.example.cleannotes.presentation.ui.edit_note
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -202,6 +203,7 @@ fun EditNoteScreen(
 		topBar = {
 			Row(
 				Modifier.fillMaxWidth()
+					.background(MaterialTheme.colorScheme.background)
 					.statusBarsPadding()
 					.padding(horizontal = 16.dp)
 					.padding(top = 8.dp),
