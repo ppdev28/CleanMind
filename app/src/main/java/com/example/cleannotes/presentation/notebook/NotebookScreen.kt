@@ -128,7 +128,7 @@ fun NotebookScreen(
 	val tabStates = rememberSaveableStateHolder()
 	val scope = rememberCoroutineScope()
 	var pendingArchive by remember { mutableStateOf<Pair<Note, Boolean>?>(null) }
-	val active = state.allNotes.filterNot { NoteDocument.decode(it.content).archived }
+	val activeNotes = state.allNotes.filterNot { NoteDocument.decode(it.content).archived }
 	val notes = state.allNotes.filterNot { it.isReminder }
 	fun archive(note: Note) {
 		val archived = NoteDocument.decode(note.content).archived
@@ -273,6 +273,7 @@ fun NotebookScreen(
 					onTabSelected(it)
 				},
 				onCreate,
+				active = active,
 				onSearchDirect = {
 					onTabSelected(NotesTab.SEARCH)
 					searchFocusRequest++
@@ -321,7 +322,7 @@ fun NotebookScreen(
 					tabStates.SaveableStateProvider(selectedTab) {
 						when {
 							selectedTab == NotesTab.HOME -> HomeAgenda(
-								notes = active.filterNot { it.isReminder },
+								notes = activeNotes.filterNot { it.isReminder },
 								grid = homeGrid,
 								onToggle = { homeGrid = !homeGrid },
 								onOpen = onOpenNote,
@@ -548,7 +549,7 @@ fun NotebookScreen(
 
 							else ->
 								ReminderCollection(
-									active,
+									activeNotes,
 									onOpenNote,
 									onCreate,
 									onUpdateNote,

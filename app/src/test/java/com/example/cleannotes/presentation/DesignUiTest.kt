@@ -487,11 +487,30 @@ class DesignUiTest {
 	}
 
 	@Test
+	fun fabActionsExpandAboveTheSameButtonAndBackClosesThem() {
+		screen()
+		val original = compose.onNodeWithContentDescription("Crear").fetchSemanticsNode().boundsInRoot
+		compose.onNodeWithContentDescription("Crear").performClick()
+		listOf("Inicio", "Notas", "Recordar", "Buscar", "Nueva nota", "Nuevo recordatorio").forEach {
+			compose.onNodeWithText(it).assertIsDisplayed()
+		}
+		compose.onAllNodes(isDialog()).assertCountEquals(0)
+		val close =
+			compose.onNodeWithContentDescription("Cerrar acciones").fetchSemanticsNode().boundsInRoot
+		assertEquals(original, close)
+		val last = compose.onNodeWithText("Nuevo recordatorio").fetchSemanticsNode().boundsInRoot
+		assertTrue(last.bottom < close.top)
+		compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+		compose.onNodeWithText("Nuevo recordatorio").assertDoesNotExist()
+		compose.onNodeWithContentDescription("Crear").assertIsDisplayed()
+	}
+
+	@Test
 	fun floatingActionsOfferNavigationAndBothCreationActions() {
 		var reminder: Boolean? = null
 		screen(onCreate = { reminder = it })
 		compose.onNodeWithContentDescription("Crear").performClick()
-		screenshot("create-sheet-dark", dialog = true)
+		screenshot("fab-expanded-dark")
 		compose.onNodeWithText("Nuevo recordatorio").performClick()
 		assertEquals(true, reminder)
 		compose.onNodeWithContentDescription("Crear").performClick()
