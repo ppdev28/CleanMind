@@ -1,6 +1,10 @@
 package com.example.cleannotes.presentation.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,6 +28,7 @@ fun NotebookFab(
 	onTabSelected: (NotesTab) -> Unit,
 	onCreate: (Boolean) -> Unit,
 	folderName: String? = null,
+	onSearchDirect: () -> Unit = {},
 ) {
 	var showMenu by rememberSaveable { mutableStateOf(false) }
 	val destinations =
@@ -63,8 +68,11 @@ fun NotebookFab(
 				Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
 					destinations.forEach { (route, label, icon) ->
 						Surface(
-							onClick = { showMenu = false; onTabSelected(route) },
-							modifier = Modifier.weight(1f),
+							modifier = Modifier.weight(1f).combinedClickable(
+								role = Role.Button,
+								onClick = { showMenu = false; onTabSelected(route) },
+								onDoubleClick = if (route == NotesTab.SEARCH) ({ showMenu = false; onSearchDirect() }) else null,
+							),
 							shape = RoundedCornerShape(16.dp),
 							color = if (selectedTab == route) MaterialTheme.colorScheme.primaryContainer
 							else MaterialTheme.colorScheme.surfaceContainer,

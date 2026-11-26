@@ -161,6 +161,16 @@ class DesignUiTest {
 	}
 
 	@Test
+	fun doubleTappingSearchOpensTheFieldReadyToType() {
+		screen()
+		compose.onNodeWithContentDescription("Crear").performClick()
+		compose.onNodeWithText("Buscar").performTouchInput { doubleClick() }
+		compose.onNode(hasSetTextAction()).assertIsFocused().performTextInput("Lámpara")
+		compose.onNodeWithText("Idea para el salón").assertExists()
+		compose.onNodeWithText("Paseo del sábado").assertDoesNotExist()
+	}
+
+	@Test
 	fun lightHomeUsesTheSameLayout() {
 		screen(dark = false)
 		screenshot("home-light")

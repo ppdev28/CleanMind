@@ -29,6 +29,9 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -74,10 +77,11 @@ fun NotebookScreen(
 	onClearFolderError: () -> Unit = {},
 	active: Boolean = true,
 ) {
+	var searchFocusRequest by rememberSaveable { mutableIntStateOf(0) }
 	val topBarScroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
 		canScroll = { active && !state.isLoading }
 	)
-	LaunchedEffect(state.selectedTab) {
+	LaunchedEffect(state.selectedTab, searchFocusRequest) {
 		topBarScroll.state.heightOffset = 0f
 		topBarScroll.state.contentOffset = 0f
 	}
@@ -269,6 +273,10 @@ fun NotebookScreen(
 					onTabSelected(it)
 				},
 				onCreate,
+				onSearchDirect = {
+					onTabSelected(NotesTab.SEARCH)
+					searchFocusRequest++
+				},
 				folderName =
 					if (state.selectedTab == NotesTab.NOTES)
 						state.folders.firstOrNull { it.id == state.selectedFolderId }?.name
@@ -362,6 +370,12 @@ fun NotebookScreen(
 							notesTab -> {
 								val listLayoutState = rememberLazyGridState()
 								val gridLayoutState = rememberLazyGridState()
+								LaunchedEffect(searchFocusRequest) {
+									if (selectedTab == NotesTab.SEARCH && searchFocusRequest > 0) {
+										listLayoutState.scrollToItem(0)
+										gridLayoutState.scrollToItem(0)
+									}
+								}
 								val filtered =
 									(if (selectedTab == NotesTab.SEARCH) state.allNotes else notes)
 										.filter { note ->
@@ -394,7 +408,7 @@ fun NotebookScreen(
 								val header: @Composable () -> Unit = {
 									Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 										if (selectedTab == NotesTab.SEARCH)
-											SearchEntry(state.query, onQueryChange)
+											SearchEntry(state.query, onQueryChange, focusRequest = searchFocusRequest)
 										Row(
 											Modifier.fillMaxWidth()
 												.horizontalScroll(rememberScrollState())
@@ -582,7 +596,15 @@ fun NotebookScreen(
 }
 
 @Composable
-private fun SearchEntry(value: String, onChange: (String) -> Unit, onClick: (() -> Unit)? = null) {
+private fun SearchEntry(value: String, onChange: (String) -> Unit, onClick: (() -> Unit)? = null, focusRequest: Int = 0) {
+	val requester = remember { FocusRequester() }
+	val keyboard = LocalSoftwareKeyboardController.current
+	LaunchedEffect(focusRequest) {
+		if (onClick == null && focusRequest > 0) {
+			requester.requestFocus()
+			keyboard?.show()
+		}
+	}
 	Surface(
 		shape = RoundedCornerShape(14.dp),
 		modifier = Modifier.appSurface(RoundedCornerShape(14.dp)),
@@ -603,7 +625,7 @@ private fun SearchEntry(value: String, onChange: (String) -> Unit, onClick: (() 
 				BasicTextField(
 					value,
 					onChange,
-					modifier = Modifier.weight(1f),
+					modifier = Modifier.weight(1f).focusRequester(requester),
 					singleLine = true,
 					textStyle =
 						MaterialTheme.typography.bodyMedium.copy(
