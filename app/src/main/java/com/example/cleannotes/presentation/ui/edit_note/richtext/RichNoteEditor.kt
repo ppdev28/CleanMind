@@ -158,6 +158,11 @@ class RichNoteEditor(context: Context) : EditText(context) {
 		setText(value)
 		setSelection(cursor, selectionEndBeforeRender)
 		setLineSpacing(document.extraLineSpacing.toFloat(), document.lineSpacing)
+		textAlignment = when (document.textAlignment) {
+			2 -> TEXT_ALIGNMENT_CENTER
+			1 -> TEXT_ALIGNMENT_VIEW_END
+			else -> TEXT_ALIGNMENT_VIEW_START
+		}
 		changing = false
 		notifyEditorState()
 	}
@@ -224,8 +229,12 @@ class RichNoteEditor(context: Context) : EditText(context) {
 
 				"indent" -> markdownBlock(if (amount > 0) "indent" else "outdent")
 				"clear" -> {
-					val a = minOf(selectionStart, selectionEnd).coerceAtLeast(0)
-					val b = maxOf(selectionStart, selectionEnd).coerceAtLeast(a)
+					var a = minOf(selectionStart, selectionEnd).coerceAtLeast(0)
+					var b = maxOf(selectionStart, selectionEnd).coerceAtLeast(a)
+					if (a == b) {
+						a = document.text.lastIndexOf('\n', a - 1) + 1
+						b = document.text.indexOf('\n', b).let { if (it < 0) document.text.length else it }
+					}
 					val plain = com.example.cleannotes.model.MarkdownText.plain(document.text.substring(a, b))
 					applyMarkdownEdit(
 						MarkdownEditing.Edit(
@@ -407,6 +416,10 @@ class RichNoteEditor(context: Context) : EditText(context) {
 			fm.descent += gap
 			fm.bottom += gap
 		}
+	}
+
+	fun alignment(value: Int) {
+		commit(snapshot().copy(textAlignment = value.coerceIn(0, 2)))
 	}
 
 	fun paragraphSpacing(gap: Int) {

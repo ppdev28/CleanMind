@@ -24,6 +24,7 @@ data class NoteDocument(
 	val checklist: List<CheckItem> = emptyList(),
 	val createdAt: Long? = null,
 	val markdown: Boolean = false,
+	val textAlignment: Int = 0,
 ) {
 	fun completeReminder(now: Long): NoteDocument {
 		val next = reminder?.let { it.nextAfter(maxOf(now, it.at)) }

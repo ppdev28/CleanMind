@@ -115,6 +115,27 @@ fun MarkdownFormatBar(
 					"Borrar formato" to { editor?.format("clear") },
 				).forEach { (label, action) -> AssistChip(onClick = action, label = { Text(label) }) }
 			}
+			Text("Alineación de la nota", style = MaterialTheme.typography.labelLarge)
+			Row {
+				FormatAction(
+					MindIcons.FormatAlignLeft,
+					"Alinear a la izquierda",
+					enabled,
+					document.textAlignment == 0
+				) { editor?.alignment(0) }
+				FormatAction(
+					MindIcons.FormatAlignCenter,
+					"Centrar",
+					enabled,
+					document.textAlignment == 2
+				) { editor?.alignment(2) }
+				FormatAction(
+					MindIcons.FormatAlignRight,
+					"Alinear a la derecha",
+					enabled,
+					document.textAlignment == 1
+				) { editor?.alignment(1) }
+			}
 			SpacingOptions(
 				"Interlineado",
 				listOf(1f, 1.3f, 1.5f, 2f),

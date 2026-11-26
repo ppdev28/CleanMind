@@ -138,7 +138,8 @@ constructor(
 		val fallback =
 			listOf(
 				document.subtitle,
-				document.text.lineSequence().firstOrNull().orEmpty(),
+				(if (document.markdown) com.example.cleannotes.model.MarkdownText.plain(document.text) else document.text)
+					.lineSequence().firstOrNull { it.isNotBlank() }.orEmpty(),
 				document.checklist.firstOrNull()?.text.orEmpty(),
 			)
 				.firstOrNull { it.isNotBlank() }

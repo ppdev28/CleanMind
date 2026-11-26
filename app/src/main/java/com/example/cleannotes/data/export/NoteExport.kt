@@ -87,7 +87,12 @@ object NoteExport {
 			y = 48f
 		}
 
-		fun text(value: CharSequence, size: Float, bold: Boolean) {
+		fun text(
+			value: CharSequence,
+			size: Float,
+			bold: Boolean,
+			alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
+		) {
 			val paint =
 				TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
 					color = Color.BLACK
@@ -101,7 +106,7 @@ object NoteExport {
 				}
 			val layout =
 				StaticLayout.Builder.obtain(value, 0, value.length, paint, 499)
-					.setAlignment(Layout.Alignment.ALIGN_NORMAL)
+					.setAlignment(alignment)
 					.setLineSpacing(3f, 1f)
 					.setIncludePad(false)
 					.build()
@@ -136,9 +141,13 @@ object NoteExport {
 			body.setSpan(span, mark.start, mark.end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 		}
 		text(
-			if (document.markdown) com.example.cleannotes.text.MarkdownRendering.render(document.text) else body,
+			if (document.markdown) com.example.cleannotes.text.MarkdownRendering.render(
+				document.text,
+				document.paragraphSpacing
+			) else body,
 			12f,
-			false
+			false,
+			Layout.Alignment.values()[document.textAlignment.coerceIn(0, 2)],
 		)
 		if (document.checklist.isNotEmpty())
 			text(

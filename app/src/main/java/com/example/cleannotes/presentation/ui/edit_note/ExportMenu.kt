@@ -236,7 +236,7 @@ private fun ExportSheetContent(
 						)
 					if (document.text.isNotBlank())
 						Text(
-							document.text,
+							if (document.markdown) com.example.cleannotes.model.MarkdownText.plain(document.text) else document.text,
 							style = MaterialTheme.typography.bodySmall,
 							color = MaterialTheme.colorScheme.onSurfaceVariant,
 							maxLines = 2,

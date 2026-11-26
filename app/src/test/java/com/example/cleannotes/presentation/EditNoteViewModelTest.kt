@@ -142,6 +142,21 @@ class EditNoteViewModelTest {
 		}
 
 	@Test
+	fun markdownFallbackTitleDoesNotExposeSourceMarkers() = runTest(dispatcher) {
+		val editor = editor()
+		editor.onEvent(
+			EditNoteEvent.EnteredContent(
+				com.example.cleannotes.model.NoteDocument(
+					text = "# Ciencia\n\n**La luz**",
+					markdown = true
+				).encode()
+			)
+		)
+		advanceUntilIdle()
+		assertEquals("Ciencia", repository.notes.values.single().title)
+	}
+
+	@Test
 	fun optionalTitleUsesBodyAsFallbackWithoutLosingContent() =
 		runTest(dispatcher) {
 			val editor = editor()

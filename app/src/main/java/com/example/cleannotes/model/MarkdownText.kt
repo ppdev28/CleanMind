@@ -65,13 +65,14 @@ object MarkdownText {
 				tags.forEach { append("<$it>") }
 				append(
 					document.text.substring(start, end)
-						.replace(Regex("([\\\\`*_{}\\[\\]()#+.!>|~-])"), "\\\\$1")
+						.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+						.replace(Regex("([\\\\`*_\\[\\]~])"), "\\\\$1")
 				)
 				tags.asReversed().forEach { append("</$it>") }
 			}
-		}.replace(Regex("(?m)^• "), "- ")
+		}.replace(Regex("(?m)^(#{1,6})(?= )"), "\\\\$1")
+			.replace(Regex("(?m)^• "), "- ")
 			.replace(Regex("(?m)^☐ "), "- [ ] ").replace(Regex("(?m)^☑ "), "- [x] ")
-			.replace(Regex("(?m)^(\\s*\\d+)\\\\\\. "), "$1. ")
 		return document.copy(text = converted, marks = emptyList(), markdown = true)
 	}
 }

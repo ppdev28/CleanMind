@@ -12,7 +12,7 @@ import org.commonmark.node.*
 
 /** Native spans also feed PDF export. Raw HTML is never executed, and images stay offline. */
 object MarkdownRendering {
-	fun render(source: String): Spanned {
+	fun render(source: String, paragraphGap: Int = 0): Spanned {
 		val out = SpannableStringBuilder()
 		val html = ArrayDeque<Pair<String, Int>>()
 		fun span(value: Any, start: Int, end: Int = out.length) {
@@ -154,7 +154,25 @@ object MarkdownRendering {
 		}
 		visit(MarkdownText.parse(source))
 		while (out.isNotEmpty() && out.last() == '\n') out.delete(out.length - 1, out.length)
+		if (paragraphGap > 0) out.toString().forEachIndexed { index, char ->
+			if (char == '\n' && index > 0 && out[index - 1] == '\n')
+				out.setSpan(ParagraphGap(paragraphGap), index, index + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+		}
 		return out
+	}
+
+	private class ParagraphGap(private val gap: Int) : LineHeightSpan {
+		override fun chooseHeight(
+			text: CharSequence,
+			start: Int,
+			end: Int,
+			spanstartv: Int,
+			v: Int,
+			fm: android.graphics.Paint.FontMetricsInt
+		) {
+			fm.descent += gap
+			fm.bottom += gap
+		}
 	}
 
 	private fun MarkdownText.plainCell(node: Node): String = buildString {

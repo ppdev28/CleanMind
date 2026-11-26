@@ -39,6 +39,17 @@ class MarkdownEditorTest {
 		assertEquals(converted, MarkdownText.editable(converted))
 		assertEquals("Hola mundo", MarkdownText.plain(converted.text))
 		assertTrue(MarkdownText.plain("`<u>`").contains("<u>"))
+		val punctuation =
+			MarkdownText.editable(NoteDocument(text = "¡Hola! Ciencia (breve). &amp; <u>literal</u>"))
+		assertTrue(punctuation.text.contains("Ciencia (breve)."))
+		assertEquals(
+			"# literal",
+			MarkdownText.plain(MarkdownText.editable(NoteDocument(text = "# literal")).text)
+		)
+		assertEquals(
+			"¡Hola! Ciencia (breve). &amp; <u>literal</u>",
+			MarkdownText.plain(punctuation.text)
+		)
 	}
 
 	@Test
@@ -111,6 +122,11 @@ class MarkdownEditorTest {
 		assertEquals(listOf("a.jpg"), saved.images)
 		assertEquals(100L, saved.reminder?.at)
 		editor.redoEdit()
+		assertEquals("**átomo**", saved.text)
+		editor.alignment(2)
+		assertEquals(2, saved.textAlignment)
+		editor.undoEdit()
+		assertEquals(0, saved.textAlignment)
 		assertEquals("**átomo**", saved.text)
 	}
 
