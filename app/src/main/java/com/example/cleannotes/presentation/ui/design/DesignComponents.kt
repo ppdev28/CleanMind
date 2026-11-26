@@ -49,30 +49,6 @@ fun DesignIconButton(
 }
 
 @Composable
-fun DesignHeader(title: String, onSettings: () -> Unit, date: Boolean = true) {
-	val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
-	val dateText =
-		java.text
-			.SimpleDateFormat(
-				if (locale.language == "es") "EEEE, d 'de' MMMM" else "EEEE, d MMMM",
-				locale,
-			)
-			.format(java.util.Date())
-	Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-		Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-			Text(title, style = MaterialTheme.typography.headlineLarge)
-			if (date)
-				Text(
-					dateText.replaceFirstChar { it.titlecase() },
-					style = MaterialTheme.typography.bodySmall,
-					color = MaterialTheme.colorScheme.onSurfaceVariant,
-				)
-		}
-		DesignIconButton(MindIcons.Settings, "Ajustes", onClick = onSettings)
-	}
-}
-
-@Composable
 fun DesignRow(
 	title: String,
 	icon: ImageVector,

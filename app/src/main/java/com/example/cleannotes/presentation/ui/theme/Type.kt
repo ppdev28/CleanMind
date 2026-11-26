@@ -17,9 +17,6 @@ val Inter =
 		Font(R.font.inter_bold, FontWeight.Bold),
 	)
 
-// Kept as aliases for existing integrations; all app text now uses the Figma family.
-val SfPro = Inter
-val LexendDeca = Inter
 val Typography =
 	Typography(
 		headlineLarge =

@@ -27,29 +27,6 @@ private fun HomeLightPreview() = HomePreview(dark = false)
 private fun HomeDarkPreview() = HomePreview(dark = true)
 
 @Preview(
-	name = "Cuadrícula · pantalla pequeña",
-	widthDp = 320,
-	heightDp = 740,
-	locale = "es",
-	showBackground = true,
-)
-@Composable
-private fun HomeGridPreview() {
-	CleanMindTheme {
-		com.example.cleannotes.presentation.ui.components.NotesCollection(
-			notes =
-				listOf(
-					Note(1, "Una idea", "Un espacio para escribir.", System.currentTimeMillis())
-				),
-			isListView = false,
-			showContent = false,
-			onClick = {},
-			onLongClick = {},
-		)
-	}
-}
-
-@Preview(
 	name = "Inicio vacío · texto grande",
 	widthDp = 360,
 	heightDp = 800,

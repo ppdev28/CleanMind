@@ -582,9 +582,6 @@ fun NotebookScreen(
 }
 
 @Composable
-private fun SectionLabel(value: String) = Text(value, style = MaterialTheme.typography.titleMedium)
-
-@Composable
 private fun SearchEntry(value: String, onChange: (String) -> Unit, onClick: (() -> Unit)? = null) {
 	Surface(
 		shape = RoundedCornerShape(14.dp),
