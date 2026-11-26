@@ -167,7 +167,7 @@ class DesignUiTest {
 	}
 
 	@Test
-	fun fixedBarsKeepTheAgendaViewportOutsideTheirBoundsWhileScrolling() {
+	fun headerReturnsOnlyAtTheTopAndKeepsContentOutsideTheBars() {
 		var tab by mutableStateOf(NotesTab.HOME)
 		val verticalScroll =
 			hasScrollAction() and SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange)
@@ -195,16 +195,28 @@ class DesignUiTest {
 			assertTrue("The list must end above the navigation controls", viewport.bottom <= create.top)
 		}
 		assertViewportBetweenBars()
-		compose.onNode(verticalScroll).performTouchInput {
-			swipe(Offset(centerX, height * 0.65f), Offset(centerX, height * 0.25f))
+		fun scrollPosition() = compose.onNode(verticalScroll).fetchSemanticsNode()
+			.config[SemanticsProperties.VerticalScrollAxisRange].value()
+		repeat(3) {
+			compose.onNode(verticalScroll).performTouchInput {
+				swipe(Offset(centerX, height * 0.65f), Offset(centerX, height * 0.25f), 500)
+			}
 		}
 		screenshot("agenda-scroll-dark")
-		compose.onNodeWithText("Clean Mind").assertIsDisplayed()
-		assertViewportBetweenBars()
+		compose.onNodeWithText("Clean Mind").assertIsNotDisplayed()
+		assertTrue(scrollPosition() > 0f)
 		compose.onNodeWithContentDescription("Crear").assertIsDisplayed()
 		compose.onNode(verticalScroll).performTouchInput {
-			swipe(Offset(centerX, height * 0.35f), Offset(centerX, height * 0.75f))
+			swipe(Offset(centerX, height * 0.4f), Offset(centerX, height * 0.5f), 500)
 		}
+		assertTrue("A short upward return must stay away from the start", scrollPosition() > 0f)
+		compose.onNodeWithText("Clean Mind").assertIsNotDisplayed()
+		repeat(8) {
+			compose.onNode(verticalScroll).performTouchInput {
+				swipe(Offset(centerX, height * 0.25f), Offset(centerX, height * 0.75f), 500)
+			}
+		}
+		assertEquals(0f, scrollPosition(), 0.001f)
 		compose.onNodeWithText("Clean Mind").assertIsDisplayed()
 		assertViewportBetweenBars()
 		compose.onAllNodesWithText("Notas").onLast().performClick()
@@ -212,7 +224,8 @@ class DesignUiTest {
 		compose.onNode(verticalScroll).performTouchInput {
 			swipe(Offset(centerX, height * 0.65f), Offset(centerX, height * 0.25f))
 		}
-		assertViewportBetweenBars("Notas")
+		compose.onAllNodesWithText("Notas").onFirst().assertIsNotDisplayed()
+		compose.onNodeWithContentDescription("Crear").assertIsDisplayed()
 	}
 
 	@Test

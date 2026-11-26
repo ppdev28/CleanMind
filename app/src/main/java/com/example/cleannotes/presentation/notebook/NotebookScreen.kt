@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -73,6 +74,13 @@ fun NotebookScreen(
 	onClearFolderError: () -> Unit = {},
 	active: Boolean = true,
 ) {
+	val topBarScroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+		canScroll = { active && !state.isLoading }
+	)
+	LaunchedEffect(state.selectedTab) {
+		topBarScroll.state.heightOffset = 0f
+		topBarScroll.state.contentOffset = 0f
+	}
 	BackHandler(enabled = active && state.selectedTab != NotesTab.HOME) {
 		onTabSelected(NotesTab.HOME)
 	}
@@ -229,6 +237,7 @@ fun NotebookScreen(
 		}
 	}
 	Scaffold(
+		modifier = Modifier.nestedScroll(topBarScroll.nestedScrollConnection),
 		containerColor = androidx.compose.ui.graphics.Color.Transparent,
 		contentWindowInsets = WindowInsets.statusBars,
 		snackbarHost = { DesignSnackbarHost(snackbar) },
@@ -240,6 +249,7 @@ fun NotebookScreen(
 				)
 				CustomTopBar(
 					onSettings,
+					scrollBehavior = topBarScroll,
 					windowInsets = WindowInsets(0.dp),
 					title =
 						when (state.selectedTab) {

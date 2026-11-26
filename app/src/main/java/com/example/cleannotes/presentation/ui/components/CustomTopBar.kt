@@ -16,12 +16,14 @@ fun CustomTopBar(
 	onSettings: () -> Unit,
 	title: String? = null,
 	windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+	scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
 	TopAppBar(
 		modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
 			.padding(horizontal = 12.dp),
 		expandedHeight = 72.dp,
 		windowInsets = windowInsets,
+		scrollBehavior = scrollBehavior,
 		colors = TopAppBarDefaults.topAppBarColors(
 			containerColor = MaterialTheme.colorScheme.background,
 			scrolledContainerColor = MaterialTheme.colorScheme.background,
