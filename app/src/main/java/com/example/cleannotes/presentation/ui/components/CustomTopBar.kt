@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.presentation.ui.design.MindIcons
@@ -27,8 +28,8 @@ fun CustomTopBar(
 ) {
 	TopAppBar(
 		modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
-			.padding(horizontal = 12.dp),
-		expandedHeight = 72.dp,
+			.padding(horizontal = 4.dp),
+		expandedHeight = 64.dp,
 		windowInsets = windowInsets,
 		scrollBehavior = scrollBehavior,
 		colors = TopAppBarDefaults.topAppBarColors(
@@ -38,35 +39,36 @@ fun CustomTopBar(
 			actionIconContentColor = MaterialTheme.colorScheme.onSurface,
 		),
 		title = {
-			Row(
-				Modifier.padding(start = 12.dp),
-				verticalAlignment = Alignment.CenterVertically,
-				horizontalArrangement = Arrangement.spacedBy(8.dp)
+			Text(
+				title ?: stringResource(R.string.app_name),
+				style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Normal),
+				maxLines = 1,
+				overflow = TextOverflow.Ellipsis
+			)
+		},
+		navigationIcon = {
+			if (title == null) Box(
+				Modifier.size(48.dp),
+				contentAlignment = Alignment.Center,
 			) {
-				if (title == null) Icon(
+				Icon(
 					painterResource(R.drawable.ic_launcher_foreground),
 					null,
-					Modifier.size(32.dp).scale(1.5f),
+					Modifier.size(24.dp).scale(1.5f),
 					tint = MaterialTheme.colorScheme.onSurface
-				)
-				Text(
-					title ?: stringResource(R.string.app_name),
-					style = MaterialTheme.typography.titleLarge,
-					maxLines = 1,
-					overflow = TextOverflow.Ellipsis
 				)
 			}
 		},
 		actions = {
 			onToggleLayout?.let { toggle ->
-				IconButton(onClick = toggle) {
+				IconButton(onClick = toggle, modifier = Modifier.size(48.dp)) {
 					Icon(
 						if (gridLayout) MindIcons.ViewList else MindIcons.GridView,
 						layoutLabel
 					)
 				}
 			}
-			IconButton(onClick = onSettings) {
+			IconButton(onClick = onSettings, modifier = Modifier.size(48.dp)) {
 				Icon(MindIcons.Settings, stringResource(R.string.settings))
 			}
 		},

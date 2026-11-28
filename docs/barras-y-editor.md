@@ -9,6 +9,7 @@ La revisión simplifica el cuaderno y utiliza la [navegación flexible de Materi
 - Nuevo recordatorio está en la hoja Crear y en el **+** de la cabecera de Recordar, también cuando hay avisos en la colección.
 - La Home conserva fechas y agrupación por creación, sin barra de búsqueda ni título «Tu agenda». El cambio entre cuadrícula y agenda está junto a Ajustes. En Notas y Buscar, el mismo lugar cambia lista/cuadrícula.
 - La pluma de `ic_launcher_foreground`, el mismo dibujo del icono de la app, acompaña a Clean Mind. El resto conserva Material Symbols con peso 500.
+- La barra superior sigue la referencia visual: fondo plano, altura de 64 dp, título de peso normal y botones de 48 dp. La pluma ocupa el espacio inicial de la cabecera de Inicio; las pantallas secundarias usan ese espacio para Volver.
 - La cabecera mantiene su comportamiento de ocultarse al descender y reaparecer al llegar al inicio. Scaffold reserva el espacio de ambas barras.
 
 La pulsación larga selecciona directamente una nota o recordatorio, sin hoja intermedia. Un toque añade o retira otros elementos. Con una sola nota seleccionada, Más acciones de selección permite compartir, mover y fijar; eliminar usa el mismo diálogo y operación transaccional para uno o varios elementos.

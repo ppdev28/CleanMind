@@ -6,6 +6,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.presentation.ui.design.MindIcons
@@ -16,11 +18,19 @@ fun ScreenTopBar(title: String, onBack: () -> Unit, actions: @Composable RowScop
 	TopAppBar(
 		modifier =
 			Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).statusBarsPadding()
-				.padding(horizontal = 16.dp, vertical = 8.dp),
+				.padding(horizontal = 4.dp),
+		expandedHeight = 64.dp,
 		windowInsets = WindowInsets(0.dp),
-		title = { Text(title, style = MaterialTheme.typography.titleLarge) },
+		title = {
+			Text(
+				title,
+				style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Normal),
+				maxLines = 1,
+				overflow = TextOverflow.Ellipsis,
+			)
+		},
 		navigationIcon = {
-			IconButton(onClick = onBack) {
+			IconButton(onClick = onBack, modifier = Modifier.size(48.dp)) {
 				Icon(
 					MindIcons.ArrowBack,
 					stringResource(R.string.back),
