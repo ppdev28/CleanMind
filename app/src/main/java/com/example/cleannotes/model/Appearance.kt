@@ -26,7 +26,7 @@ data class Appearance(
 
 	companion object {
 		val presets = listOf(
-			ThemePalette("default", "Original"), ThemePalette("steel", "Azul acero", 0xFF3E7194),
+			ThemePalette("default", "Original"), ThemePalette("gray", "Gris", 0xFF606060), ThemePalette("steel", "Azul acero", 0xFF3E7194),
 			ThemePalette("forest", "Bosque", 0xFF36705A), ThemePalette("lavender", "Lavanda", 0xFF76568E)
 		)
 	}

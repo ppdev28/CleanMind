@@ -128,7 +128,9 @@ private val DarkColors =
 	)
 
 internal fun themedColors(dark: Boolean, appearance: Appearance): ColorScheme {
-	val base = if (dark) DarkColors else LightColors
+	val base = if (dark && appearance.selected.id == "gray") DarkColors.copy(
+		background = Gray950, surfaceContainerLowest = Gray950
+	) else if (dark) DarkColors else LightColors
 	val raw = appearance.selected.accent?.toInt() ?: return base
 	val hsl = FloatArray(3); ColorUtils.colorToHSL(raw, hsl)
 	var primary = raw

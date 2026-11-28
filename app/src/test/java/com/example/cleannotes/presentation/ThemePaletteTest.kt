@@ -15,6 +15,22 @@ import org.robolectric.annotation.Config
 @Config(sdk = [35], application = Application::class)
 class ThemePaletteTest {
 	@Test
+	fun grayPaletteUsesNeutralRolesInBothAppearances() {
+		for (dark in listOf(false, true)) {
+			val colors = themedColors(dark, Appearance("gray"))
+			listOf(colors.primary, colors.onPrimary, colors.primaryContainer, colors.secondary,
+				colors.tertiary, colors.tertiaryContainer, colors.background, colors.surface,
+				colors.inversePrimary, colors.primaryFixed, colors.tertiaryFixed).forEach {
+				assertEquals(it.red, it.green, 0.001f)
+				assertEquals(it.green, it.blue, 0.001f)
+			}
+			assertTrue(ColorUtils.calculateContrast(colors.primary.toArgb(), colors.surface.toArgb()) >= 4.5)
+			assertTrue(ColorUtils.calculateContrast(colors.onPrimary.toArgb(), colors.primary.toArgb()) >= 4.5)
+		}
+		assertNotEquals(themedColors(true, Appearance()).background, themedColors(true, Appearance("gray")).background)
+	}
+
+	@Test
 	fun customAccentsRemainReadableInBothAppearances() {
 		for (dark in listOf(false, true)) for (seed in listOf(
 			0xFFFFFFFFL,
