@@ -219,3 +219,11 @@ Se han comprobado `testDebugUnitTest`, `assembleDebug`, `lintDebug` y la compila
 `EncryptedAiSettingsTest` se ha ejecutado correctamente en un emulador Android API 35, con Android Keystore real: configuración cifrada, lectura desde otra instancia, IV diferente al volver a guardar, error explícito ante corrupción y borrado/recuperación. Utiliza un directorio de prueba aislado, sin alterar la configuración de uso de la app.
 
 No se ha llamado a una API externa con credenciales reales. La prueba desde **Ajustes → Inteligencia artificial → Probar conexión** permite validar la cuenta y el modelo configurados. El contrato, los límites y los comandos están en [IA](ia.md).
+
+## Prueba de la rama de IA en Xiaomi
+
+Se compiló `feat/ai-integration` y se instaló su APK debug en el Xiaomi Redmi Note 8 Pro conectado, Android API 36, sin desinstalar ni borrar datos. Pasaron las **26 pruebas locales específicas de IA**, lint debug y la prueba instrumentada `EncryptedAiSettingsTest` sobre el Android Keystore real. Esta última usa un archivo temporal independiente, verifica persistencia cifrada, IV nuevo, detección de corrupción y borrado, y retira sus datos al terminar.
+
+Se abrió Ajustes en la sección de IA y se comprobó el campo enmascarado. La comparación tras la actualización conservó todos los campos de las **10 notas y 2 carpetas originales**. No se enviaron notas ni credenciales reales a un proveedor durante estas comprobaciones. La prueba con una cuenta real requiere introducir la configuración del proveedor.
+
+Esta rama parte de `7a4b43a`, anterior a las revisiones posteriores de navegación, temas y barra de formato; su interfaz refleja esa base.
