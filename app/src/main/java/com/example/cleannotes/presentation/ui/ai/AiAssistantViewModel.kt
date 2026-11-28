@@ -17,6 +17,7 @@ data class AiAssistantUiState(
 	val loading: Boolean = false,
 	val configured: Boolean = false,
 	val provider: String = "",
+	val usesChatGpt: Boolean = false,
 	val action: AiAction = AiAction.SUMMARIZE,
 	val instruction: String = "",
 	val generating: Boolean = false,
@@ -27,7 +28,7 @@ data class AiAssistantUiState(
 @HiltViewModel
 class AiAssistantViewModel
 @Inject
-constructor(private val settings: AiSettingsRepository, private val gateway: AiGateway) :
+constructor(private val settings: AiSettingsRepository, private val gateway: AiGateway, private val chatGpt: ChatGptAccess? = null) :
 	ViewModel() {
 	private val _state = MutableStateFlow(AiAssistantUiState())
 	val state = _state.asStateFlow()
@@ -43,6 +44,16 @@ constructor(private val settings: AiSettingsRepository, private val gateway: AiG
 		job =
 			viewModelScope.launch {
 				try {
+					val connection = chatGpt?.state()
+					if (connection?.activeClientId != null) {
+						val account = connection.activeAccount
+						_state.update { it.copy(usesChatGpt = true, provider = "api.openai.com · tu plan de ChatGPT",
+							configured = account?.tokens?.permitsInference == true && account.model.isNotBlank()) }
+						if (account?.tokens == null) throw AiException(AiError.SESSION_EXPIRED)
+						if (!account.tokens.permitsInference) throw AiException(AiError.CONSENT)
+						if (account.model.isBlank()) throw AiException(AiError.NO_MODELS)
+						return@launch
+					}
 					val loaded = settings.load()
 					if (loaded.apiKey.isNotBlank()) {
 						loaded.validate()
@@ -72,7 +83,8 @@ constructor(private val settings: AiSettingsRepository, private val gateway: AiG
 	}
 
 	fun generate(note: AiNoteSnapshot) {
-		val config = configuration ?: return
+		val config = configuration
+		if (config == null && !state.value.usesChatGpt) return
 		if (!state.value.visible || state.value.loading || state.value.generating) return
 		val request = AiRequest(
 			note,
@@ -85,7 +97,7 @@ constructor(private val settings: AiSettingsRepository, private val gateway: AiG
 			viewModelScope.launch {
 				try {
 					request.validate()
-					val text = gateway.complete(config, request)
+					val text = if (state.value.usesChatGpt) chatGpt!!.complete(request) else gateway.complete(config!!, request)
 					_state.update { it.copy(suggestion = AiSuggestion(note, text)) }
 				} catch (e: CancellationException) {
 					throw e

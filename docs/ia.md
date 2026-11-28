@@ -2,7 +2,11 @@
 
 La rama `feat/ai-integration` parte de `feat/figma-complete-ui` e incorpora un recorrido completo: configurar la API, probarla, generar una propuesta a partir de una nota, revisarla y añadirla mediante el guardado normal.
 
-## Configuración y uso
+## Usar una cuenta de ChatGPT
+
+También puedes conectar tu cuenta desde **Ajustes → Usar mi cuenta de ChatGPT → Continuar con ChatGPT** y elegir Google en el navegador oficial de OpenAI. Este recorrido usa el plan autorizado y Responses API, sin copiar una clave. La elección de fuente es explícita y no hay cambio automático a facturación de API. Consulta [Cuenta de ChatGPT](chatgpt.md) para el acceso, los permisos, los modelos y los límites.
+
+## Configuración y uso con clave de API
 
 1. Abre **Ajustes → Inteligencia artificial**.
 2. Introduce la URL base HTTPS de una API compatible con Chat Completions, el modelo y tu clave. Los valores iniciales son `https://api.openai.com/v1` y `gpt-4.1-mini`; el modelo debe estar disponible para tu cuenta.

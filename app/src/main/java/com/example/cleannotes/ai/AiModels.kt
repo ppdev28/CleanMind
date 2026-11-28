@@ -91,6 +91,12 @@ data class AiRequest(val note: AiNoteSnapshot, val action: AiAction, val instruc
 data class AiSuggestion(val note: AiNoteSnapshot, val text: String)
 
 enum class AiError(val message: String) {
+	SIGN_IN("No se pudo verificar el acceso a ChatGPT. Vuelve a iniciar sesión."),
+	CONSENT("No has autorizado el uso de tu plan de ChatGPT. Puedes volver a conectar la cuenta desde Ajustes."),
+	SESSION_EXPIRED("La sesión de ChatGPT ha caducado o se ha revocado. Vuelve a iniciar sesión desde Ajustes."),
+	CHATGPT_LIMIT("Has alcanzado un límite de uso de ChatGPT. Revisa el uso de tu plan y los límites de esta app."),
+	CHATGPT_UNAVAILABLE("Tu cuenta, espacio de trabajo o región no permite este acceso con ChatGPT. Revisa la disponibilidad y los permisos de la integración."),
+	NO_MODELS("La cuenta no ofrece modelos disponibles. Revisa los permisos de tu plan y vuelve a cargar los modelos."),
 	CONFIGURATION("Revisa la URL HTTPS, el modelo y la clave de API en Ajustes."),
 	STORAGE(
 		"No se pudo leer o guardar la configuración de IA. Reintenta o elimina la configuración y vuelve a introducirla."
@@ -113,7 +119,9 @@ enum class AiError(val message: String) {
 	),
 }
 
-class AiException(val reason: AiError) : Exception(reason.message)
+data class AiDiagnostic(val status: Int, val code: String?, val requestId: String?, val bodyShape: String)
+
+class AiException(val reason: AiError, val diagnostic: AiDiagnostic? = null) : Exception(reason.message)
 
 fun Throwable.aiMessage(): String =
 	(this as? AiException)?.reason?.message ?: AiError.SERVER.message

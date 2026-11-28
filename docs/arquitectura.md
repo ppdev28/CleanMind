@@ -199,3 +199,8 @@ La pantalla vuelve al editor normal con `RichNoteEditor` y `EditorToolbar`. `Ric
 `ai/` contiene los contratos `AiSettingsRepository` y `AiGateway`, los snapshots de nota y las validaciones. `data/ai/` implementa cifrado Android Keystore y peticiones HTTPS cancelables con OkHttp. `AiModule` conecta ambas implementaciones con Hilt. Los ViewModels de configuración y asistente exponen estado por separado del tema y del borrador del editor; la clave no se guarda en estado restaurable.
 
 `NotesApp` conecta la hoja de IA con el editor. La generación no modifica la nota: entrega una propuesta asociada al título/documento originales. `EditNoteViewModel.applyAiSuggestion` verifica ese snapshot, añade texto conservando el documento y pasa por el evento y autoguardado existentes. Consulta [IA](ia.md) para el contrato de API, privacidad y límites.
+
+
+## Acceso con cuenta de ChatGPT
+
+`ChatGptAccess` separa el acceso con plan de la API con clave. `ChatGptAccountService` coordina registros, sesión activa, renovación serializada, revocación y peticiones. `ChatGptApi` aplica el contrato de Responses con SSE y verifica la identidad mediante JWKS/Nimbus; `LoopbackCallback` limita el retorno de OAuth a la interfaz local. `ChatGptSettingsViewModel` proyecta la cuenta y los modelos sin exponer credenciales a Compose. El asistente selecciona la fuente indicada por el usuario y no cambia de facturación al recibir errores. Consulta [Cuenta de ChatGPT](chatgpt.md).

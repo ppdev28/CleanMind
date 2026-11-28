@@ -130,3 +130,5 @@ El script aísla la configuración del formateador para poder usarlo con Android
 ## Integración opcional de IA
 
 La configuración de URL, modelo y clave se introduce en **Ajustes → Inteligencia artificial**; no hay secretos de IA en Gradle, recursos o `BuildConfig`. El cliente usa OkHttp, y las pruebas HTTPS locales emplean MockWebServer y `okhttp-tls`, todos fijados en el catálogo de versiones. Consulta [IA](ia.md) para el contrato compatible y los comandos de verificación, incluida la prueba de Android Keystore en dispositivo/emulador.
+
+El acceso opcional con cuenta de ChatGPT usa Nimbus JOSE + JWT para verificar ID tokens y el mismo cliente OkHttp para OAuth y Responses. No requiere un cliente Google Cloud ni secretos OAuth embebidos: Google se elige en el navegador de OpenAI y el cliente se registra mediante el flujo público para proyectos locales compatibles. Consulta [Cuenta de ChatGPT](chatgpt.md) antes de distribuirlo como servicio comercial.

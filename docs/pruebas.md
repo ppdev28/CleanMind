@@ -219,3 +219,13 @@ Se han comprobado `testDebugUnitTest`, `assembleDebug`, `lintDebug` y la compila
 `EncryptedAiSettingsTest` se ha ejecutado correctamente en un emulador Android API 35, con Android Keystore real: configuración cifrada, lectura desde otra instancia, IV diferente al volver a guardar, error explícito ante corrupción y borrado/recuperación. Utiliza un directorio de prueba aislado, sin alterar la configuración de uso de la app.
 
 No se ha llamado a una API externa con credenciales reales. La prueba desde **Ajustes → Inteligencia artificial → Probar conexión** permite validar la cuenta y el modelo configurados. El contrato, los límites y los comandos están en [IA](ia.md).
+
+## Acceso con ChatGPT y Google (28 de noviembre de 2026)
+
+La rama incorpora el acceso oficial con ChatGPT para usar el plan autorizado, con Google como opción dentro del navegador de OpenAI. La suite completa pasa con **133 pruebas JVM/Robolectric**, 27 adicionales respecto al acceso con clave. `assembleDebug`, `lintDebug` y `assembleDebugAndroidTest` finalizan correctamente; lint mantiene avisos, incluidos consejos de estilo KTX en la nueva UI, sin errores.
+
+Las pruebas nuevas cubren PKCE S256, estado/nonce, firma y claims OIDC, registro dinámico, retorno real por loopback, modelo disponible por cuenta, contrato de Responses con streaming, rechazo de respuestas parciales, renovación concurrente, permisos de identidad separados del uso del plan, registro retenido tras un intercambio fallido, cierre de sesión y ausencia de cambio automático a facturación de API. Los dobles de identidad se firman con claves de prueba y la red HTTPS utiliza MockWebServer con certificado local.
+
+Las **dos pruebas instrumentadas** de `EncryptedAiSettingsTest` pasan en el emulador Android API 35: compatibilidad y cifrado de la configuración de API, y persistencia/rotación/borrado de los tokens de ChatGPT en un archivo aislado. Se ha arrancado el APK y abierto Ajustes en ese emulador sin errores de ejecución.
+
+No se ha completado el acceso con una cuenta real de Google/ChatGPT ni se han consumido peticiones del plan de una cuenta real. Esa validación requiere que su titular elija la cuenta y autorice la integración en OpenAI. Consulta [Cuenta de ChatGPT](chatgpt.md).

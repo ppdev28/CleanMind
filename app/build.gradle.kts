@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+	implementation(libs.nimbus.jose.jwt)
 	implementation(libs.okhttp)
 	testImplementation(libs.okhttp.mockwebserver)
 	testImplementation(libs.okhttp.tls)
