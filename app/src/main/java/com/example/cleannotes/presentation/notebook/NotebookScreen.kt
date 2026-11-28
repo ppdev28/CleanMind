@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.components.HomeAgenda
-import com.example.cleannotes.presentation.ui.components.NotebookFab
+import com.example.cleannotes.presentation.ui.components.NotebookBottomBar
 import com.example.cleannotes.presentation.ui.components.CustomTopBar
 import com.example.cleannotes.presentation.ui.components.DeleteNoteDialog
 import com.example.cleannotes.presentation.ui.design.*
@@ -262,6 +262,15 @@ fun NotebookScreen(
 					onSettings,
 					scrollBehavior = topBarScroll,
 					windowInsets = WindowInsets(0.dp),
+					onToggleLayout = when (state.selectedTab) {
+						NotesTab.HOME -> ({ homeGrid = !homeGrid })
+						NotesTab.NOTES, NotesTab.SEARCH -> ({ grid = !grid })
+						NotesTab.REMINDERS -> null
+					},
+					gridLayout = if (state.selectedTab == NotesTab.HOME) homeGrid else grid,
+					layoutLabel = if (state.selectedTab == NotesTab.HOME) {
+						if (homeGrid) "Ver en agenda" else "Ver en cuadrícula"
+					} else "Cambiar vista",
 					title =
 						when (state.selectedTab) {
 							NotesTab.HOME -> null
@@ -279,27 +288,20 @@ fun NotebookScreen(
 					onDelete = { onClearDeletionError(); confirmSelectionDelete = true })
 			}
 		},
-		floatingActionButton = {
-			if (!selecting) NotebookFab(
-				state.selectedTab,
-				{
-					onQueryChange("")
-					onTabSelected(it)
+		bottomBar = {
+			if (WindowInsets.ime.getBottom(androidx.compose.ui.platform.LocalDensity.current) == 0) NotebookBottomBar(
+				selectedTab = state.selectedTab,
+				onTabSelected = { tab ->
+					onQueryChange(""); onTabSelected(tab)
+					if (tab == NotesTab.SEARCH) searchFocusRequest++
 				},
-				onCreate,
-				active = active,
-				onSearchDirect = {
-					onTabSelected(NotesTab.SEARCH)
-					searchFocusRequest++
-				},
-				folderName =
-					if (state.selectedTab == NotesTab.NOTES)
-						state.folders.firstOrNull { it.id == state.selectedFolderId }?.name
-					else null,
+				onCreateNote = { onCreate(false) },
+				enabled = !selecting && active && !state.deletion.busy,
+				folderName = if (state.selectedTab == NotesTab.NOTES) state.folders.firstOrNull { it.id == state.selectedFolderId }?.name else null,
 			)
 		},
 	) { padding ->
-		Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
+		Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding()) {
 			if (state.error != null)
 				Row(
 					Modifier.padding(horizontal = 24.dp),
@@ -338,17 +340,11 @@ fun NotebookScreen(
 							selectedTab == NotesTab.HOME -> HomeAgenda(
 								notes = notes,
 								grid = homeGrid,
-								onToggle = { homeGrid = !homeGrid },
 								onOpen = ::openOrSelect,
 								onOptions = { if (selecting) toggleSelection(it) else options = it },
 								onCreate = onQuickCreate,
 								selectedIds = selectedIds.toSet(),
-							) {
-								SearchEntry("", {
-									onQueryChange(it)
-									onTabSelected(NotesTab.SEARCH)
-								}, onClick = { onTabSelected(NotesTab.SEARCH) })
-							}
+							)
 
 							notesTab -> {
 								val listLayoutState = rememberLazyGridState()
@@ -433,12 +429,7 @@ fun NotebookScreen(
 												style = MaterialTheme.typography.bodyMedium,
 												color = MaterialTheme.colorScheme.onSurfaceVariant,
 											)
-											DesignIconButton(
-												if (grid) MindIcons.List else MindIcons.GridView,
-												"Cambiar vista",
-											) {
-												grid = !grid
-											}
+
 										}
 									}
 								}
@@ -455,7 +446,7 @@ fun NotebookScreen(
 												start = 24.dp,
 												end = 24.dp,
 												top = 8.dp,
-												bottom = 96.dp,
+												bottom = 24.dp,
 											),
 										verticalArrangement = Arrangement.spacedBy(16.dp),
 										horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -660,18 +651,25 @@ private fun ReminderCollection(
 				start = 24.dp,
 				end = 24.dp,
 				top = 8.dp,
-				bottom = 96.dp
+				bottom = 24.dp
 			),
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 	) {
 		item {
-			Text(
-				"Tus pendientes, en orden.",
-				style = MaterialTheme.typography.bodyMedium,
-				color = MaterialTheme.colorScheme.onSurfaceVariant,
-				modifier = Modifier.padding(bottom = 16.dp),
-			)
+			Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+				Text(
+					"Tus pendientes, en orden.",
+					Modifier.weight(1f),
+					style = MaterialTheme.typography.bodyMedium,
+					color = MaterialTheme.colorScheme.onSurfaceVariant
+				)
+				FilledTonalIconButton(
+					onClick = { onCreate(true) },
+					enabled = !selecting
+				) { Icon(MindIcons.Add, "Nuevo recordatorio") }
+			}
 		}
+
 		val groups = reminders.groupBy {
 			NoteDocument.decode(it.content).reminder?.at?.let(DateUtils::dayKey) ?: "Sin fecha"
 		}

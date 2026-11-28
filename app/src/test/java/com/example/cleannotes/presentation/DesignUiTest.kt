@@ -230,6 +230,11 @@ class DesignUiTest {
 		val second = compose.onNodeWithText("Paseo del sábado").fetchSemanticsNode().boundsInRoot
 		assertEquals(first.top, second.top, 1f)
 		assertTrue(first.right < second.left)
+		val toggle =
+			compose.onNodeWithContentDescription("Ver en agenda").fetchSemanticsNode().boundsInRoot
+		val settings = compose.onNodeWithContentDescription("Ajustes").fetchSemanticsNode().boundsInRoot
+		assertEquals(settings.top, toggle.top, 1f)
+		assertTrue(toggle.right <= settings.left)
 		compose.onNodeWithContentDescription("Ver en agenda").performClick()
 		val agendaFirst = compose.onNodeWithText("Idea para el salón").fetchSemanticsNode().boundsInRoot
 		val agendaSecond = compose.onNodeWithText("Paseo del sábado").fetchSemanticsNode().boundsInRoot
@@ -251,10 +256,9 @@ class DesignUiTest {
 	}
 
 	@Test
-	fun doubleTappingSearchOpensTheFieldReadyToType() {
+	fun bottomSearchOpensTheFieldReadyToType() {
 		screen()
-		compose.onNodeWithContentDescription("Crear").performClick()
-		compose.onNodeWithContentDescription("Buscar").performTouchInput { doubleClick() }
+		compose.onNodeWithContentDescription("Buscar").performClick()
 		compose.onNode(hasSetTextAction()).assertIsFocused().performTextInput("Lámpara")
 		compose.onNodeWithText("Idea para el salón").assertExists()
 		compose.onNodeWithText("Paseo del sábado").assertDoesNotExist()
@@ -292,6 +296,9 @@ class DesignUiTest {
 			val viewport = compose.onNode(verticalScroll).fetchSemanticsNode().boundsInRoot
 
 			assertTrue("The list must start below the header", viewport.top >= header.bottom)
+			val bottomBar =
+				compose.onNodeWithContentDescription("Inicio").fetchSemanticsNode().boundsInRoot
+			assertTrue("The list must end above navigation", viewport.bottom <= bottomBar.top)
 
 		}
 		assertViewportBetweenBars()
@@ -305,7 +312,7 @@ class DesignUiTest {
 		screenshot("agenda-scroll-dark")
 		compose.onNodeWithText("Clean Mind").assertIsNotDisplayed()
 		assertTrue(scrollPosition() > 0f)
-		compose.onNodeWithContentDescription("Crear").assertIsDisplayed()
+		compose.onNodeWithContentDescription("Nueva nota").assertIsDisplayed()
 		compose.onNode(verticalScroll).performTouchInput {
 			swipe(Offset(centerX, height * 0.4f), Offset(centerX, height * 0.5f), 500)
 		}
@@ -319,14 +326,13 @@ class DesignUiTest {
 		assertEquals(0f, scrollPosition(), 0.001f)
 		compose.onNodeWithText("Clean Mind").assertIsDisplayed()
 		assertViewportBetweenBars()
-		compose.onNodeWithContentDescription("Crear").performClick()
 		compose.onNodeWithContentDescription("Notas").performClick()
 		assertViewportBetweenBars("Notas")
 		compose.onNode(verticalScroll).performTouchInput {
 			swipe(Offset(centerX, height * 0.65f), Offset(centerX, height * 0.25f))
 		}
 		compose.onAllNodesWithText("Notas").onFirst().assertIsNotDisplayed()
-		compose.onNodeWithContentDescription("Crear").assertIsDisplayed()
+		compose.onNodeWithContentDescription("Nueva nota").assertIsDisplayed()
 	}
 
 	@Test
@@ -621,46 +627,53 @@ class DesignUiTest {
 
 	@Test
 	@Config(qualifiers = "es-w320dp-h740dp-mdpi")
-	fun fabActionsFormTwoRadialArcsWithoutOverlapping() {
-		screen()
-		val original = compose.onNodeWithContentDescription("Crear").fetchSemanticsNode().boundsInRoot
-		compose.onNodeWithContentDescription("Crear").performClick()
-		val labels = listOf("Inicio", "Notas", "Recordar", "Buscar", "Nueva nota", "Nuevo recordatorio")
+	fun bottomNavigationFitsFiveActionsWithoutOverlapping() {
+		compose.setContent {
+			val density = LocalDensity.current
+			CompositionLocalProvider(LocalDensity provides Density(density.density, 1.35f)) {
+				CleanMindTheme(darkTheme = true) {
+					com.example.cleannotes.presentation.ui.components.NotebookBottomBar(
+						NotesTab.HOME,
+						{},
+						{})
+				}
+			}
+		}
+		val labels = listOf("Inicio", "Notas", "Nueva nota", "Recordar", "Buscar")
 		val bounds = labels.map {
 			compose.onNodeWithContentDescription(it).assertIsDisplayed().fetchSemanticsNode().boundsInRoot
 		}
-		compose.onAllNodes(isDialog()).assertCountEquals(0)
-		val close =
-			compose.onNodeWithContentDescription("Cerrar acciones").fetchSemanticsNode().boundsInRoot
-		assertEquals(original, close)
 		bounds.forEachIndexed { index, rect ->
-			bounds.drop(index + 1).forEach { other ->
-				assertFalse(
-					"Radial hit targets must not overlap",
-					rect.overlaps(other)
-				)
-			}
+			assertTrue(rect.width >= 48f && rect.height >= 48f)
+			bounds.drop(index + 1)
+				.forEach { assertFalse("Navigation hit targets must not overlap", rect.overlaps(it)) }
 		}
-		val radii = bounds.map { (it.center - close.center).getDistance() }.sorted()
-		radii.take(3).forEach { assertEquals(108f, it, 1f) }
-		radii.drop(3).forEach { assertEquals(216f, it, 1f) }
-		screenshot("fab-radial-compact-dark")
-		compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
-		compose.onNodeWithContentDescription("Nuevo recordatorio").assertDoesNotExist()
-		compose.onNodeWithContentDescription("Crear").assertIsDisplayed()
+		labels.forEach { label ->
+			val layouts = mutableListOf<TextLayoutResult>()
+			compose.onNodeWithText(label)
+				.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+			assertEquals(
+				label.length,
+				layouts.single().getLineEnd(layouts.single().lineCount - 1, visibleEnd = true)
+			)
+		}
+		compose.onAllNodes(isDialog()).assertCountEquals(0)
+		screenshot("bottom-bar-compact-dark")
 	}
 
 	@Test
-	fun floatingActionsOfferNavigationAndBothCreationActions() {
+	fun bottomNavigationOpensNotesAndContextualReminderCreation() {
 		var reminder: Boolean? = null
 		screen(onCreate = { reminder = it })
-		compose.onNodeWithContentDescription("Crear").performClick()
-		screenshot("fab-radial-dark")
-		compose.onNodeWithContentDescription("Nuevo recordatorio").performClick()
-		assertEquals(true, reminder)
-		compose.onNodeWithContentDescription("Crear").performClick()
 		compose.onNodeWithContentDescription("Nueva nota").performClick()
 		assertEquals(false, reminder)
+		compose.onNodeWithContentDescription("Recordar").performClick()
+		compose.onNodeWithContentDescription("Nuevo recordatorio").performClick()
+		assertEquals(true, reminder)
+		compose.onNodeWithContentDescription("Inicio").performClick()
+		compose.onNode(hasSetTextAction()).assertDoesNotExist()
+		compose.onNodeWithText("Buscar en tus notas").assertDoesNotExist()
+		screenshot("bottom-navigation-dark")
 	}
 
 	@Test

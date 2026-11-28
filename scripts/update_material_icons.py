@@ -16,6 +16,7 @@ from fontTools.pens.transformPen import TransformPen
 
 ROOT = Path(__file__).resolve().parents[1]
 CLASSIC = {
+    "FountainPen": "stylus_fountain_pen",
     "Mic": "mic",
     "AttachFile": "attach_file",
     "Link": "link",

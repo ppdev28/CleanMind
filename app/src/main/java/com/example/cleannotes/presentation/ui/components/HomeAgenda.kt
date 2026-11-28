@@ -52,12 +52,10 @@ private fun AgendaDateDivider(at: Long) {
 fun HomeAgenda(
 	notes: List<Note>,
 	grid: Boolean,
-	onToggle: () -> Unit,
 	onOpen: (Note) -> Unit,
 	onOptions: (Note) -> Unit,
 	onCreate: () -> Unit,
 	selectedIds: Set<Int> = emptySet(),
-	search: @Composable () -> Unit,
 ) {
 	val gridState = rememberLazyGridState()
 	val agendaState = rememberLazyGridState()
@@ -69,19 +67,16 @@ fun HomeAgenda(
 		LazyVerticalGrid(
 			columns = GridCells.Adaptive(128.dp),
 			state = if (gridMode) gridState else agendaState,
-			contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 96.dp),
+			contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 24.dp),
 			horizontalArrangement = Arrangement.spacedBy(12.dp),
 			verticalArrangement = Arrangement.spacedBy(12.dp),
 		) {
-			item(key = "search", span = { GridItemSpan(maxLineSpan) }) { search() }
-			item(key = "layout", span = { GridItemSpan(maxLineSpan) }) {
-				Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-					Text("Tu agenda", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-					DesignIconButton(
-						if (gridMode) MindIcons.ViewList else MindIcons.GridView,
-						if (gridMode) "Ver en agenda" else "Ver en cuadrícula", onClick = onToggle
-					)
-				}
+			item(key = "agenda-title", span = { GridItemSpan(maxLineSpan) }) {
+				Text(
+					"Tu agenda",
+					style = MaterialTheme.typography.titleMedium,
+					modifier = Modifier.padding(vertical = 8.dp)
+				)
 			}
 			days.forEach { (day, notesOfDay) ->
 				item(key = "day-$day", span = { GridItemSpan(maxLineSpan) }) {
