@@ -21,7 +21,7 @@ El botón flotante **+** despliega seis acciones en dos arcos radiales: Inicio, 
 2. Elige **Nueva nota**.
 3. Escribe un título opcional; si lo dejas vacío, la app utiliza una primera línea legible al guardar.
 4. Añade un subtítulo opcional y el texto de la nota.
-5. Comprueba el estado de guardado en **⋮** o pulsa la flecha de volver, que guarda y cierra el editor.
+5. Comprueba el estado de guardado en la cabecera o pulsa la flecha de volver, que guarda y cierra el editor.
 
 También puedes crear la primera nota desde el botón del estado vacío.
 
@@ -31,11 +31,11 @@ El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelv
 
 | Mensaje | Significado |
 | --- | --- |
-| Cambios sin guardar | El editor todavía no ha confirmado la persistencia del borrador. En una nota nueva vacía la barra no muestra ningún estado. |
+| Borrador | La versión actual aún no ha confirmado el guardado; una nota nueva vacía permanece como borrador. |
 | Guardando… | Hay una escritura en curso. |
-| Guardado en el dispositivo | La última versión del texto está guardada. |
-| Borrador | La versión actual aún no ha confirmado el guardado. |
-| No se ha podido guardar | El intento ha fallado; el editor conserva el borrador durante la sesión. |
+| Guardado | La última versión del texto está guardada en el dispositivo. |
+| No se pudo guardar | El intento ha fallado; el editor conserva el borrador durante la sesión. |
+| No se pudo abrir | Ha fallado la carga de la nota; vuelve al cuaderno y reintenta. |
 
 Si intentas salir tras un error de guardado, puedes seguir escribiendo o descartar los cambios pendientes. Descartar no elimina una versión que ya se hubiera guardado automáticamente.
 
@@ -45,7 +45,7 @@ No uses el borrador temporal como sustituto del guardado: antes de cerrar o forz
 
 En Inicio las tarjetas se agrupan por día de creación, con un separador horizontal y la fecha completa. No hay círculos ni etiquetas de día independientes. Muestran título, subtítulo si se ha escrito y conteo de imágenes; no muestran el cuerpo. La fecha de cada grupo no cambia al editar una nota. Las notas antiguas utilizan su fecha ya almacenada como referencia porque no hay un historial de creación. Las notas antiguas no obtienen un subtítulo a partir del contenido: puedes escribirlo en el editor.
 
-Mantén pulsada una tarjeta para abrir las opciones **Compartir nota** (texto o PDF) y **Eliminar**. Eliminar sigue solicitando confirmación. La pulsación normal abre la nota. Estas opciones también están disponibles desde **⋯** en las colecciones.
+Mantén pulsada una tarjeta para abrir las opciones **Compartir nota** (texto o PDF) y **Eliminar**. Eliminar sigue solicitando confirmación. La pulsación normal abre la nota. El menú también ofrece **Seleccionar** para iniciar una selección múltiple.
 
 Toca una tarjeta para abrir su contenido. Los cambios se guardan en la misma nota, manteniendo su identificador. Las colecciones conservan la fecha de última escritura para su orden habitual. La agenda de Inicio utiliza la fecha de creación independiente.
 
@@ -61,7 +61,7 @@ La elección de vista pertenece al estado de cada pestaña. No hay un ajuste glo
 4. Añade un detalle opcional y pulsa **Guardar recordatorio**.
 5. Consúltalo desde **Recordar**.
 
-Los recordatorios independientes usan un formulario de tarea, sin herramientas de formato, fotografías ni archivo de notas. Se guardan al pulsar el botón; si vuelves con cambios pendientes, la app pide confirmar si quieres descartarlos. La lista muestra una casilla para completar, el título y la hora. El reloj permite posponer y la pulsación larga permite eliminar. No aparecen como tarjetas en la agenda de Inicio.
+Los recordatorios independientes usan un formulario de tarea, sin herramientas de formato, fotografías ni archivo de notas. Se guardan al pulsar el botón; si vuelves con cambios pendientes, la app pide confirmar si quieres descartarlos. La lista muestra una casilla para completar, el título y la hora. El reloj permite posponer y la pulsación larga abre las opciones, incluida selección y eliminación. No aparecen como tarjetas en la agenda de Inicio.
 
 **Repetición y opciones de aviso** permite configurar el mensaje, repetición (una vez o cada 1–365 minutos, horas, días, semanas o meses), sonido, vibración, prioridad y minutos de posposición. Puedes elegir el tono desde **Personalizar tono en Android**; Android controla los canales y puede silenciarlos.
 
@@ -89,13 +89,13 @@ El botón de borrar vacía la consulta. Si no hay resultados, prueba con un frag
 
 ## Eliminar
 
-Abre el menú de tres puntos de una tarjeta y elige eliminar. También puedes mantener pulsada la tarjeta. Confirma la acción en el diálogo.
+Mantén pulsada una tarjeta o un recordatorio y elige **Eliminar**. Para borrar varios, elige **Seleccionar** y toca los demás elementos. La barra muestra el total y ofrece **Seleccionar visibles**, **Eliminar seleccionados** y cancelar. El filtro actual limita qué añade Seleccionar visibles. Confirma **Eliminar selección** en el diálogo; cancelar no borra nada. Un error mantiene la selección para reintentar y los controles se bloquean mientras se completa la operación. Borrar recordatorios cancela sus notificaciones programadas.
 
 La eliminación es permanente en la base de datos de la app: no hay papelera ni función de deshacer. Si falla, se muestra un mensaje y la nota sigue disponible para volver a intentarlo.
 
 ## Compartir
 
-En el editor, con un título escrito, pulsa el icono de compartir. Android permite elegir la aplicación receptora.
+En el editor, abre **Más opciones → Compartir**. Android permite elegir la aplicación receptora.
 
 La hoja **Comparte tu nota** muestra una vista previa y permite elegir **Texto** o **PDF**. La acción principal cambia a **Compartir texto** o **Compartir PDF**. Texto envía directamente título, subtítulo y cuerpo, sin adjuntos, para pegarlo fácilmente en otras aplicaciones. PDF envía el documento con formatos básicos, páginas e imágenes, concediendo acceso temporal al archivo.
 
@@ -111,7 +111,7 @@ En Ajustes puedes elegir:
 - **Claro:** fuerza el tema claro.
 - **Oscuro:** fuerza el tema oscuro.
 
-La rama de Figma utiliza la paleta neutra del diseño: superficies oscuras y acciones claras, con una adaptación equivalente para el tema claro. Los diálogos de fecha y hora también siguen la apariencia elegida.
+En **Temas** puedes elegir Original, Gris, Azul acero, Bosque o Lavanda. **Crear tema** permite guardar un nombre y un color de acento (seis dígitos HEX), editarlo o eliminarlo. Los colores de las acciones se adaptan al modo claro u oscuro para conservar contraste con el fondo. Gris usa controles monocromos y un fondo grafito en oscuro; los errores conservan su color semántico. Eliminar un tema activo recupera Original. Los diálogos de fecha y hora también siguen la apariencia elegida.
 
 La selección se aplica al guardarse y se conserva en DataStore. No hay un botón adicional para confirmar los ajustes. Si aparece un error de escritura, vuelve a seleccionar el tema; **Reintentar** vuelve a consultar las preferencias.
 
@@ -127,19 +127,19 @@ El historial de pruebas físicas está en [Pruebas](pruebas.md). Consulta la rev
 
 ## Formato y fotografías
 
-La fila de formato permanece visible sobre el teclado. Muestra negrita, cursiva, subrayado y listas; deslízala horizontalmente para acceder a las demás herramientas. **Más formato y espaciado** abre un único panel con tamaños H1–H6 y Normal, estilos, listas, alineación, sangría e interlineado y espacios. Los ajustes de espaciado afectan a toda la nota. Se mantiene el editor visual normal, con selección de texto y sin escribir sintaxis Markdown.
+La fila de formato permanece visible sobre el teclado. Mientras escribes se ocultan los tres accesos grandes de inserción; **Más opciones** conserva Añadir casilla, Imágenes y archivos y Recordatorio. Abrir el panel completo retira el teclado para mostrar sus controles sin perder la selección. Muestra negrita, cursiva, subrayado y listas; deslízala horizontalmente para acceder a las demás herramientas. **Más formato y espaciado** abre un único panel con tamaños H1–H6 y Normal, estilos, listas, alineación, sangría e interlineado y espacios. Los ajustes de espaciado afectan a toda la nota. Se mantiene el editor visual normal, con selección de texto y sin escribir sintaxis Markdown.
 
 Cada casilla de la lista tiene una **×** a la derecha para eliminarla, esté vacía, escrita o marcada. El aviso **Casilla eliminada · Deshacer** permite recuperarla con su contenido, estado y posición. La eliminación no cambia el cuerpo ni el resto de la lista.
 
 **Imagen** ofrece elegir una fotografía, hacerla con una cámara instalada o pegar una imagen que el portapapeles exponga mediante una URI accesible.
 
-Las imágenes se copian como JPEG privados de la app, con reducción de resolución y corrección de orientación EXIF. Aparecen después del texto y las casillas y pueden quitarse o moverse hacia arriba desde su menú **⋮**. Quitar un adjunto de una nota no borra la fotografía original de la galería. Los archivos privados que queden sin referencia todavía no tienen limpieza automática.
+Toca una imagen para verla completa y **Cerrar imagen** para volver a la nota. Las imágenes se copian como JPEG privados de la app, con reducción de resolución y corrección de orientación EXIF. Aparecen después del texto y las casillas y pueden quitarse o moverse hacia arriba desde su menú **⋮**. Quitar un adjunto de una nota no borra la fotografía original de la galería. Los archivos privados que queden sin referencia todavía no tienen limpieza automática.
 
 No hay OCR, escaneo de documentos, tablas, dibujo, justificación ni posicionamiento de imágenes entre palabras. Las listas son texto editable: Intro continúa las viñetas, casillas o el siguiente número. Intro sobre un elemento vacío termina la lista. Pegar varios párrafos conserva el texto pegado.
 
 La referencia visual de esta rama es el archivo Figma. Consulta [UI de Figma](figma-ui.md) para las pantallas, recursos, funciones y límites de comparación.
 
-El estado de guardado se consulta en **⋮**; los errores también aparecen en un aviso. Las vistas previas de `EditNotePreviews.kt` permiten revisar claro, oscuro y texto grande desde Android Studio sin instalar la app.
+El estado de guardado se consulta en la cabecera; los errores también aparecen en un aviso. Las vistas previas de `EditNotePreviews.kt` permiten revisar claro, oscuro y texto grande desde Android Studio sin instalar la app.
 
 
 Las notas que se hubieran guardado en Markdown se abren en el editor normal con texto y formato básico, sin mostrar código Markdown. Los destinos de enlaces se conservan visibles en el texto. Abrirlas no escribe cambios; una edición posterior guarda el documento normal, conservando adjuntos, casillas y metadatos.
@@ -151,3 +151,11 @@ La pulsación larga abre Compartir, Fijar a mano, Archivar y Eliminar. Las notas
 En el editor, **Concentrarme** oculta las herramientas. La acción de cerrar concentración vuelve al editor sin perder el borrador. **Lista** añade una casilla editable; se conserva la continuación de viñetas/números de las listas de texto.
 
 Apariencia y carpeta de las notas vuelven a estar visibles directamente en Ajustes, sin desplegar una sección adicional.
+
+## Dictado, archivos y enlaces
+
+El micrófono **Dictar por voz** de la cabecera abre el reconocimiento del sistema. El texto reconocido sustituye la selección del cuerpo o se inserta en el cursor, con espacios cuando hacen falta y disponible en Deshacer. Cancelar no modifica la nota. Requiere una aplicación compatible de reconocimiento instalada; su disponibilidad y uso de red dependen del servicio del dispositivo.
+
+**Imagen → Adjuntar archivo**, o **Más opciones → Imágenes y archivos**, abre el selector de documentos de Android. Se copian los archivos a almacenamiento privado, con un máximo de 25 MB por archivo. La nota muestra el nombre y tamaño; toca la fila para abrirlo con una app compatible o la **×** para quitarlo. Los nombres se incluyen en búsqueda y exportaciones TXT/PDF; esos formatos no empaquetan los archivos binarios. Quitar un adjunto no modifica su original.
+
+Los enlaces HTTP/HTTPS y `www.` generan automáticamente hasta cinco tarjetas con título, descripción y dominio, después de una pausa al escribir. Las tarjetas abren el navegador al tocarlas. Solo se solicitan metadatos de esas direcciones, sin ejecutar el HTML ni descargar sus imágenes. Los resultados se guardan temporalmente en caché; si no hay conexión o falla la página, se muestra el dominio y el enlace sigue disponible. Escribir y guardar notas sigue funcionando sin red.

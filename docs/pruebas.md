@@ -34,22 +34,25 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 
 | Clase | Casos | Comportamiento comprobado |
 | --- | --- | --- |
-| `EditNoteViewModelTest` | 13 | Autoguardados sobre la misma fila, salida inmediata, escritura lenta, fallos y reintento, guardado explícito de recordatorios, salida repetida, reversión del texto, título vacío, borrador restaurado, texto literal `Remember` y fallo de carga; creación de una nota en la carpeta seleccionada. |
-| `NotesViewModelTest` | 9 | Filtros y búsqueda, reintento de carga, error de eliminación, detención de observación sin suscriptores y restauración de consulta/pestaña/carpeta, creación de carpetas y fallo/reintento de movimientos. |
+| `EditNoteViewModelTest` | 14 | Autoguardados sobre la misma fila, salida inmediata, escritura lenta, fallos y reintento, guardado explícito de recordatorios, salida repetida, reversión del texto, título vacío, borrador restaurado, texto literal `Remember` y fallo de carga; creación de una nota en la carpeta seleccionada y nota de solo archivo, incluida retirada de su último adjunto. |
+| `NotesViewModelTest` | 10 | Filtros y búsqueda, reintento de carga, error de eliminación, detención de observación sin suscriptores y restauración de consulta/pestaña/carpeta, creación de carpetas, fallo/reintento de movimientos y borrado múltiple con error, reintento y bloqueo de envíos duplicados. |
 | `SettingsViewModelTest` | 1 | Conservación del tema persistido cuando falla una escritura y recuperación al reintentar. |
-| `NoteStorageTest` | 4 | Migración 2→4 con SQLite y operaciones de repositorio con IDs estables y orden de consulta. |
+| `NoteStorageTest` | 6 | Migración 2→4 con SQLite y operaciones de repositorio con IDs estables y orden de consulta; rollback entre bloques de borrado y cancelación de avisos seleccionados. |
 | `FolderStorageTest` | 3 | Migración 3→4 conservando todos los campos; creación/renombrado/borrado, movimientos y guardados obsoletos, duplicados con acentos, carpetas desaparecidas y separación de recordatorios. |
 | `SampleNoteCollectionTest` | 3 | Seis estrofas breves, importación repetida y reintento parcial sin duplicar, conservación de notas/metadatos y reutilización de carpetas existentes. |
-| `UserPreferencesRepositoryTest` | 1 | Migración del tema anterior a DataStore y conservación de una nueva selección al reabrir. |
+| `UserPreferencesRepositoryTest` | 2 | Migración del tema anterior a DataStore y conservación de una nueva selección al reabrir y creación/eliminación persistente de temas propios. |
 | `DestinationTest` | 1 | Serialización y deserialización de destinos con argumentos tipados. |
 | `DateUtilsTest` | 2 | Agrupación de fechas de años distintos y detección de hoy/ayer. |
-| `RichEditorTest` | 12 | Compatibilidad con texto antiguo, serialización, reapertura con negrita, deshacer/rehacer, limpieza parcial, listas, casillas, espaciado, color con selección conservada y estado de la barra y continuación/salida de listas con Intro, subtítulos y conservación de metadatos al deshacer y disponibilidad del campo nativo para accesibilidad. |
+| `RichEditorTest` | 13 | Compatibilidad con texto antiguo, serialización, reapertura con negrita, deshacer/rehacer, limpieza parcial, listas, casillas, espaciado, color con selección conservada y estado de la barra y continuación/salida de listas con Intro, subtítulos y conservación de metadatos al deshacer y disponibilidad del campo nativo para accesibilidad y conservación del Editable/composición IME al cambiar metadatos. |
 | `MarkdownCompatibilityTest` | 5 | Documentos normales sin cambios, lectura de documentos Markdown como texto con formato conservando metadatos y destinos de enlaces, estilos/tablas/tareas anteriores, HTML literal y texto legible para buscar/compartir. |
+| `VoiceDictationTest` | 2 | Intent de reconocimiento, resultados cancelados/vacíos, inserción en selección y deshacer conservando adjuntos. |
+| `AttachmentsAndLinksTest` | 3 | Serialización, historial, copia privada independiente y validación de rutas, extracción de URLs y metadatos HTML. |
+| `ThemePaletteTest` | 2 | Contraste de acentos extremos en ambos modos y roles monocromos del tema Gris. |
 | `ExampleUnitTest` | 1 | Prueba aritmética de ejemplo del proyecto; no valida funcionalidad de Clean Mind. |
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
-| `DesignUiTest` | 20 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras. |
+| `DesignUiTest` | 23 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras; aplicación de una paleta y borrado múltiple confirmado en Home y recordatorios sin completar avisos. |
 
-Total actual: **80 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
+Total actual: **96 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
 Las pruebas de ViewModel usan `kotlinx-coroutines-test` para controlar la ejecución y el tiempo virtual. `FakeNoteRepository` permite simular lentitud, errores y cambios observables.
 
@@ -70,7 +73,7 @@ Las carpetas `build/` contienen salidas generadas. No forman parte de la documen
 
 La validación de la revisión de «To Dos» se documenta al final de esta página. Lint conserva avisos sobre versiones de dependencias y recursos.
 
-La comprobación de formato de Android Studio usa el estilo compartido; la revisión nueva abarca 98 archivos.
+La comprobación de formato de Android Studio usa el estilo compartido; la revisión del 28 de noviembre abarca 108 archivos.
 
 ## Validación en Xiaomi · 24 de noviembre de 2026
 
@@ -209,3 +212,24 @@ La fila visible y el panel único se restauran sobre el editor normal. La regres
 La prueba del FAB usa 320 dp de ancho, comprueba los radios de 108 y 216 dp, la ausencia de solapamientos entre los seis objetivos táctiles y la posición estable del botón principal. Se mantienen navegación, ambas opciones de creación, cierre con Volver y foco de búsqueda con doble toque.
 
 Resultado: **80 pruebas locales superadas**, sin fallos ni omisiones; compilaciones debug/release y lint de ambas variantes correctos. El formateador revisó 98 archivos. En el realme RMX3370 se comprobó la distribución radial sin solapamientos, la aplicación y persistencia de negrita en el cuerpo normal, el panel nuevo con H6 y la eliminación de casillas marcadas y vacías. Deshacer recuperó sus identificadores y estado; eliminar todas conservó el cuerpo y la negrita. Se eliminó la nota exclusiva de prueba y la comparación de las 12 notas originales y la carpeta confirmó todos sus campos intactos. Las imágenes del repositorio son capturas sintéticas.
+
+
+## To Dos · 28 de noviembre de 2026
+
+Se implementaron los puntos 2–8 de la nota real en orden, excluyendo Biometría. Los commits y accesos están en [To Dos](to-dos-28-noviembre.md). `assembleDebug`, `assembleRelease`, `testDebugUnitTest`, `lintDebug` y `lintRelease` finalizaron correctamente: **96 pruebas locales**, sin fallos ni omisiones. Lint informa de 0 errores y 53 avisos en debug. El formateador de Android Studio revisó 108 archivos.
+
+En el realme RMX3370, API 33, conectado por USB, se verificaron:
+
+- Actualización sobre la instalación existente, conservando datos.
+- Creación, reapertura, edición y eliminación de un tema personalizado; aspecto claro y oscuro y tema Gris. Restauración del modo anterior Como el dispositivo y de Original.
+- Barra de formato sobre el teclado real, con inserción accesible desde Más opciones; negrita, H3 e interlineado 1.5 guardados en Room. Apertura del panel completo retirando el teclado y conservando el texto seleccionado.
+- Archivo TXT seleccionado mediante SAF desde almacenamiento interno, copia privada comparada byte a byte y apertura/cancelación del selector de aplicaciones, sin enviar contenido. El proveedor Descargas no mostraba el archivo introducido por ADB; se completó la importación con el proveedor de almacenamiento interno.
+- Fotografía sintética elegida en el selector del sistema, copia JPEG persistida y apertura/cierre de la imagen a pantalla completa.
+- Obtención real del título «Example Domain» para un enlace HTTPS.
+- Pulsación de tarjeta con indicación limitada al contorno redondeado, sin esquina cuadrada.
+- Selección de dos notas de prueba, cancelación sin borrar y eliminación confirmada. Selección de dos recordatorios futuros, eliminación conjunta y retirada de su programación, conservando exactamente las preferencias de avisos originales.
+- **Dos pruebas instrumentadas superadas**, incluidas la entrega de una URI de imagen desde el portapapeles nativo y la restauración del portapapeles previo.
+
+El micrófono del editor está accesible y el dispositivo resuelve el Intent de reconocimiento de voz. Los resultados, cancelación e inserción se comprobaron en pruebas locales; no se grabó audio ambiente en esta revisión.
+
+Se eliminaron las notas, recordatorios, archivos privados y medios temporales de prueba y el APK instrumentado. La comparación final conserva idénticos todos los campos de las **12 notas originales y la carpeta**, incluida To Dos. El teléfono queda en Inicio y no aparecen crashes del paquete en el buffer conservado. Las capturas y copias privadas del dispositivo no se incorporan al repositorio.

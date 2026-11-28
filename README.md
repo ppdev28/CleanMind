@@ -1,12 +1,14 @@
 # Clean Mind
 
-Aplicación Android para escribir, consultar y organizar notas y recordatorios personales. Funciona sin conexión y guarda las notas en una base de datos local.
+Aplicación Android para escribir, consultar y organizar notas y recordatorios personales. Guarda las notas en una base de datos local y permite escribir y consultarlas sin conexión. Las vistas previas automáticas de enlaces utilizan Internet.
 
 La interfaz está construida con Jetpack Compose y Material 3. La arquitectura utiliza MVVM con flujo unidireccional de datos, dos capas y un único módulo Gradle.
 
 ## Funciones
 
-- Crear, editar y eliminar notas con formato visual, listas, imágenes y deshacer/rehacer.
+- Crear, editar y eliminar notas con formato visual, listas, imágenes, archivos y deshacer/rehacer.
+- Dictar texto mediante el reconocimiento de voz de Android y abrir fotografías a pantalla completa.
+- Obtener vistas previas automáticas de enlaces y eliminar selecciones de notas o recordatorios.
 - Guardar automáticamente mientras escribes y mostrar el estado de guardado.
 - Eliminar casillas y recuperarlas con Deshacer; herramientas visibles y un panel único de formato.
 - Consultar la actividad por fecha o cambiar a una cuadrícula adaptable.
@@ -14,7 +16,7 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 - Organizar notas en [carpetas](docs/carpetas.md) en cuadrícula, con creación, renombrado y movimiento.
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.
-- Elegir un tema claro, oscuro o vinculado al dispositivo.
+- Elegir modo claro, oscuro o del dispositivo, paletas de acento, un tema Gris o temas personalizados.
 - Arranque monocromo, [superficies Material 3](docs/glass-ui.md) y transiciones breves entre pantallas, pestañas y herramientas.
 - Conservar el tema y restaurar determinados estados de navegación y edición.
 
@@ -79,3 +81,5 @@ Se ha revisado la app en un Xiaomi Redmi Note 8 Pro con Android API 36: creació
 Los últimos ajustes de marca, agenda, iconos, formato y recordatorios están descritos en [Cambios de Clean Mind](docs/cambios-clean-mind.md).
 
 La variante debug incluye [seis notas científicas breves](docs/ciencia-breve.md), que se incorporan una sola vez sin sobrescribir contenido. Release no instala muestras. La revisión se verificó localmente y en un realme RMX3370 tras recuperar la conexión USB; consulta los [resultados de pruebas](docs/pruebas.md).
+
+La revisión de la nota del dispositivo está descrita en [To Dos · 28 de noviembre](docs/to-dos-28-noviembre.md). Se implementan sus puntos 2–8; la biometría queda excluida por indicación del usuario.

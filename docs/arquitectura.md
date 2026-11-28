@@ -2,7 +2,7 @@
 
 ## Decisión
 
-Clean Mind utiliza **MVVM con flujo unidireccional de datos (UDF), dos capas y un único módulo Gradle**. La decisión se tomó para el alcance actual: notas locales, carpetas, recordatorios, búsqueda y una preferencia de apariencia.
+Clean Mind utiliza **MVVM con flujo unidireccional de datos (UDF), dos capas y un único módulo Gradle**. La decisión se tomó para el alcance actual: notas locales, carpetas, recordatorios, búsqueda y preferencias de apariencia.
 
 La capa de presentación recibe datos mediante repositorios y expone estado a Compose. La capa de datos encapsula Room y DataStore. Los modelos compartidos no dependen de Android.
 
@@ -193,3 +193,15 @@ La pantalla vuelve al editor normal con `RichNoteEditor` y `EditorToolbar`. `Ric
 `NotebookFab` presenta dos arcos radiales concéntricos de tres acciones a 108 y 216 dp del centro del botón. Los objetivos táctiles circulares de 72 dp quedan separados incluso a 320 dp de ancho. La expansión anima la distancia, la escala y la opacidad; el botón permanece anclado. Volver cierra el menú antes de navegar. `HomeAgenda` conserva sus celdas adaptables de 128 dp y los estados independientes de cuadrícula y agenda.
 
 `EditNoteScreen` permite eliminar casillas por identificador. El aviso de deshacer reinserta la misma casilla en su posición, conservando las modificaciones posteriores de las demás. Un nuevo borrado sustituye el aviso anterior. Las operaciones siguen el evento de contenido y el autoguardado habitual del ViewModel.
+
+## Extensiones de To Dos · 28 de noviembre de 2026
+
+Se conserva MVVM + UDF. `Appearance` y `CustomTheme` son modelos puros; `UserPreferencesRepository` encapsula sus flujos y escrituras atómicas en DataStore, `SettingsViewModel` los expone y `NotesApp` aplica la paleta a toda la composición. Los roles de color se adaptan al modo de apariencia y al contraste de su superficie.
+
+`VoiceDictation` delega en `RecognizerIntent` mediante Activity Result y entrega texto al campo nativo; no persiste ni graba audio en la app. `NoteFiles` realiza IO de adjuntos privados. `LinkPreviews` encapsula obtención y caché de metadatos HTML mediante jsoup; Compose solicita y presenta resultados en una corrutina cancelable, con una tarjeta de dominio como fallback. El guardado sigue pasando por `EnteredContent` al ViewModel.
+
+La barra inferior del editor consume la unión de insets de teclado y navegación. El contenido consume una sola vez el padding de Scaffold. Los cambios exclusivos de metadatos no reemplazan el Editable, evitando reiniciar composición IME o selección.
+
+La selección visual se conserva con `rememberSaveable`; `NoteDeletion` expone ocupado/error/revisión desde el ViewModel. El DAO borra en una transacción y el repositorio cancela los avisos por ID. La revisión solo avanza tras éxito, cerrando la confirmación y vaciando la selección. `visibleNotes` comparte el filtro entre tarjetas y Seleccionar visibles.
+
+El efecto de pulsación de `DesignNoteCard` se dibuja dentro de Surface, que recorta su contenido al contorno redondeado. El escalado breve permanece fuera de esa interacción.

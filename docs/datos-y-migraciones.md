@@ -2,7 +2,7 @@
 
 ## Fuentes de verdad
 
-Room conserva las notas guardadas. Preferences DataStore conserva la selección del tema. Los estados de pantalla son representaciones o borradores de esos datos, no almacenes alternativos permanentes.
+Room conserva las notas guardadas. Preferences DataStore conserva el modo de apariencia, la paleta seleccionada y los temas personalizados. Los estados de pantalla son representaciones o borradores de esos datos, no almacenes alternativos permanentes.
 
 ## Modelo de nota
 
@@ -38,6 +38,7 @@ No hay columnas independientes de creación, vencimiento, etiqueta o estado comp
 | `getNote(id)` | Nota o `null` cuando no existe. |
 | `saveNote(note)` | ID de la fila insertada o actualizada. |
 | `deleteNote(note)` | Elimina la entidad correspondiente. |
+| `deleteNotes(ids)` | Elimina una selección en una transacción y cancela sus avisos programados. |
 
 Las escrituras de nota usan `@Insert(onConflict = REPLACE)`. Para actualizar se conserva el ID. Los guardados del editor están serializados con un `Mutex`. El repositorio no oculta las excepciones de almacenamiento: los ViewModels las traducen a estado de error.
 
@@ -110,7 +111,7 @@ La restauración de estado depende del ciclo de vida de Android. No equivale a u
 
 ## Almacenamiento y copias del sistema
 
-No hay un backend de la aplicación ni una función propia de sincronización. El manifiesto principal no declara permiso `INTERNET`. Compartir texto delega la entrega en otra aplicación elegida por la persona.
+No hay un backend de la aplicación ni una función propia de sincronización. El manifiesto declara `INTERNET` para obtener las vistas previas de los enlaces escritos por el usuario. No se necesita red para guardar ni consultar notas. Compartir texto delega la entrega en otra aplicación elegida por la persona.
 
 La configuración actual tiene `android:allowBackup="true"` y referencia archivos de reglas de backup y extracción. Esos archivos no implementan una política personalizada completa de inclusión/exclusión. Esta configuración permite la participación del sistema en copias o transferencias según su funcionamiento y ajustes; no es correcto prometer que los datos nunca puedan salir del dispositivo.
 
@@ -130,18 +131,18 @@ La app no añade cifrado de las notas a nivel de aplicación ni un mecanismo pro
 
 ## Contenido enriquecido
 
-`NoteDocument` conserva texto, rangos de formato, nombres de imágenes, ajustes globales de espaciado, `subtitle` opcional y `reminder` opcional. `backgroundColor` se conserva para leer documentos anteriores pero no se aplica: toda nota sigue el tema. Se serializa como JSON precedido por un marcador de formato versión 1 dentro de `Note.content`; no cambia el esquema Room 3. El texto antiguo sin marcador se lee literalmente. Las tarjetas, búsqueda y compartir utilizan la proyección de texto legible.
+`NoteDocument` conserva texto, rangos de formato, nombres de imágenes, ajustes globales de espaciado, `subtitle` opcional y `reminder` opcional. `backgroundColor` se conserva para leer documentos anteriores pero no se aplica: toda nota sigue el tema. Se serializa como JSON precedido por un marcador de formato versión 1 dentro de `Note.content`; no cambia el esquema Room 4. El texto antiguo sin marcador se lee literalmente. Las tarjetas, búsqueda y compartir utilizan la proyección de texto legible.
 
 Los adjuntos viven en `filesDir/note_images`. El documento conserva nombres relativos, no rutas absolutas ni permisos temporales externos. Un FileProvider no exportado concede acceso temporal a la cámara y a los TXT/PDF de `cacheDir/exports` al compartir. Las imágenes se normalizan a JPEG; la transparencia y los metadatos originales no se conservan. Se limita la resolución durante la importación para reducir uso de memoria.
 
 No hay aún recolección automática de archivos huérfanos al eliminar una nota o quitar una imagen. No deben borrarse inmediatamente mientras puedan estar referenciados por un borrador o el historial de deshacer.
 
 
-La carpeta adicional se guarda como URI SAF en `note_export`, con permiso persistente. Las configuraciones activas se indexan en `scheduled_reminders` para recuperar alarmas sin abrir Room durante un broadcast. Ninguna de estas adiciones cambia el esquema Room 3. El manifiesto declara POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM y RECEIVE_BOOT_COMPLETED; no solicita acceso global al almacenamiento.
+La carpeta adicional se guarda como URI SAF en `note_export`, con permiso persistente. Las configuraciones activas se indexan en `scheduled_reminders` para recuperar alarmas sin abrir Room durante un broadcast. Ninguna de estas adiciones cambia el esquema Room 4. El manifiesto declara POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM y RECEIVE_BOOT_COMPLETED; no solicita acceso global al almacenamiento.
 
 `subtitle` se guarda en el documento con valor predeterminado vacío: no cambia Room ni extrae texto del cuerpo de las notas antiguas. La búsqueda y las exportaciones TXT/PDF lo incluyen. Deshacer/rehacer del cuerpo conserva los metadatos editados por separado.
 
-La rama Figma añade campos opcionales `pinned`, `archived`, `reminderCompleted` y `checklist` al documento. Los documentos anteriores se leen con valores predeterminados sin cambiar Room 3. Las listas de casillas se buscan y exportan como texto; los ID de cada elemento se conservan al editar.
+La rama Figma añade campos opcionales `pinned`, `archived`, `reminderCompleted` y `checklist` al documento. Los documentos anteriores se leen con valores predeterminados sin cambiar Room 4. Las listas de casillas se buscan y exportan como texto; los ID de cada elemento se conservan al editar.
 
 `createdAt` es opcional en documentos antiguos. Al guardar, el repositorio conserva primero el valor persistido, después usa el timestamp anterior como referencia para notas legadas, y finalmente el timestamp de inserción para notas nuevas. La agenda usa `createdAt ?: timestamp`; la columna `timestamp` continúa representando la última escritura.
 
@@ -156,3 +157,13 @@ El contenido incorpora `markdown: Boolean = false` y `textAlignment: Int = 0` co
 
 
 La corrección posterior retira el editor Markdown. Los campos `markdown` y `textAlignment` se conservan para leer notas ya almacenadas. `RichDocumentCompatibility` transforma solo la presentación y no actualiza Room al abrirlas; una edición posterior de su contenido utiliza texto y rangos normales. Las casillas y los adjuntos mantienen sus identificadores.
+
+## Temas y adjuntos · 28 de noviembre de 2026
+
+DataStore añade `palette` (ID seleccionado) y `custom_palettes` (JSON de `CustomTheme`: ID, nombre y acento ARGB opaco). La preferencia anterior `theme` conserva su significado. Las paletas incorporadas no se duplican en JSON; un ID desconocido recupera Original. Crear o eliminar una paleta y actualizar su selección se realiza en una sola edición de DataStore.
+
+`NoteDocument.files` es una lista opcional de `NoteFile(name, displayName, mimeType, size)`, vacía en documentos anteriores. Room permanece en versión 4. Los archivos se copian a `filesDir/note_files` con nombres UUID `.bin`; el nombre visible se conserva por separado. FileProvider concede acceso temporal al abrirlos. No se solicitan permisos globales de almacenamiento. El historial del cuerpo conserva archivos, imágenes y los demás metadatos editados por separado.
+
+`cacheDir/link_previews` contiene metadatos de hasta cinco URLs por nota: caducan después de un día si se resolvieron y cinco minutos si fallaron. Cada solicitud limita respuesta, tiempo y redirecciones. Esta caché no es una fuente de verdad y el sistema puede eliminarla.
+
+El borrado múltiple divide los IDs en bloques de 900 dentro de una sola transacción Room. Un fallo en cualquier bloque revierte todos; después de confirmar la transacción se cancelan las alarmas y notificaciones seleccionadas. Los archivos privados sin referencia aún no tienen recolección automática.

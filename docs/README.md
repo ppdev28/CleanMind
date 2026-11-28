@@ -20,6 +20,8 @@ Consulta [Carpetas](carpetas.md) para organización y migraciones, y [Movimiento
 
 Consulta [Superficies y contraste Material 3](glass-ui.md) para el material compartido y [Ciencia breve](ciencia-breve.md) para las seis notas incluidas en la versión de desarrollo.
 
+Consulta [To Dos · 28 de noviembre](to-dos-28-noviembre.md) para dictado, temas, adjuntos, enlaces y selección múltiple.
+
 ## Fuentes de verdad
 
 | Información | Fuente |
