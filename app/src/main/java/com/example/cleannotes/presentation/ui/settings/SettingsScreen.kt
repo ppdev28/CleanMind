@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,17 +32,8 @@ fun SettingsScreen(
 	onBack: () -> Unit,
 	onRetry: () -> Unit,
 	storageContent: @Composable () -> Unit = { StorageSettings() },
-	onPaletteSelected: (String) -> Unit = {},
-	onSaveTheme: (com.example.cleannotes.model.CustomTheme) -> Unit = {},
-	onDeleteTheme: (String) -> Unit = {},
 ) {
 	val context = LocalContext.current
-	var editingTheme by rememberSaveable { mutableStateOf<String?>(null) }
-	editingTheme?.let { id ->
-		ThemeEditorDialog(id, state.appearance, onSaveTheme) {
-			editingTheme = null
-		}
-	}
 	Scaffold(
 		containerColor = Color.Transparent,
 		topBar = { ScreenTopBar(stringResource(R.string.settings), onBack) },
@@ -107,12 +97,6 @@ fun SettingsScreen(
 						}
 				}
 			}
-			ThemePaletteSettings(
-				state.appearance,
-				onPaletteSelected,
-				{ editingTheme = it },
-				onDeleteTheme
-			)
 			Surface(
 				modifier = Modifier.appSurface(RoundedCornerShape(22.dp)),
 				shape = RoundedCornerShape(22.dp),

@@ -2,7 +2,7 @@
 
 ## Fuentes de verdad
 
-Room conserva las notas guardadas. Preferences DataStore conserva el modo de apariencia, la paleta seleccionada y los temas personalizados. Los estados de pantalla son representaciones o borradores de esos datos, no almacenes alternativos permanentes.
+Room conserva las notas guardadas. Preferences DataStore conserva el modo de apariencia claro, oscuro o del sistema. Los estados de pantalla son representaciones o borradores de esos datos, no almacenes alternativos permanentes.
 
 ## Modelo de nota
 
@@ -160,7 +160,7 @@ La corrección posterior retira el editor Markdown. Los campos `markdown` y `tex
 
 ## Temas y adjuntos · 28 de noviembre de 2026
 
-DataStore añade `palette` (ID seleccionado) y `custom_palettes` (JSON de `CustomTheme`: ID, nombre y acento ARGB opaco). La preferencia anterior `theme` conserva su significado. Las paletas incorporadas no se duplican en JSON; un ID desconocido recupera Original. Crear o eliminar una paleta y actualizar su selección se realiza en una sola edición de DataStore.
+Los temas seleccionables se retiraron. `RetiredThemePreferencesMigration` elimina `palette` y `custom_palettes` de las instalaciones anteriores, incluso si el JSON antiguo es inválido. Conserva `theme` y cualquier otra preferencia; no requiere cambiar el esquema Room ni reescribir notas. Los colores azul acero se definen en código y no se guardan como preferencias.
 
 `NoteDocument.files` es una lista opcional de `NoteFile(name, displayName, mimeType, size)`, vacía en documentos anteriores. Room permanece en versión 4. Los archivos se copian a `filesDir/note_files` con nombres UUID `.bin`; el nombre visible se conserva por separado. FileProvider concede acceso temporal al abrirlos. No se solicitan permisos globales de almacenamiento. El historial del cuerpo conserva archivos, imágenes y los demás metadatos editados por separado.
 

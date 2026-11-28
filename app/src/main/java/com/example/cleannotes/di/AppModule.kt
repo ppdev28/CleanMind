@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.example.cleannotes.data.preferences.DataStoreUserPreferencesRepository
+import com.example.cleannotes.data.preferences.RetiredThemePreferencesMigration
 import com.example.cleannotes.data.preferences.UserPreferencesRepository
 import com.example.cleannotes.data.repository.NoteRepository
 import com.example.cleannotes.data.repository.NoteRepositoryImpl
@@ -24,7 +25,7 @@ private val Context.userPreferences by
 preferencesDataStore(
 	name = "user_preferences",
 	produceMigrations = { context ->
-		listOf(SharedPreferencesMigration(context, "appearance"))
+		listOf(SharedPreferencesMigration(context, "appearance"), RetiredThemePreferencesMigration)
 	},
 )
 

@@ -3,7 +3,7 @@ package com.example.cleannotes.presentation.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleannotes.data.preferences.UserPreferencesRepository
-import com.example.cleannotes.model.*
+import com.example.cleannotes.model.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -15,7 +15,6 @@ data class SettingsUiState(
 	val themeMode: ThemeMode = ThemeMode.SYSTEM,
 	val isLoading: Boolean = true,
 	val hasError: Boolean = false,
-	val appearance: Appearance = Appearance(),
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -25,8 +24,8 @@ class SettingsViewModel @Inject constructor(private val repository: UserPreferen
 	private val reload = MutableStateFlow(0)
 	private val writeFailed = MutableStateFlow(false)
 	private val preferences = reload.flatMapLatest {
-		combine(repository.themeMode, repository.appearance) { mode, appearance ->
-			SettingsUiState(themeMode = mode, appearance = appearance, isLoading = false)
+		repository.themeMode.map { mode ->
+			SettingsUiState(themeMode = mode, isLoading = false)
 		}
 			.catch { error ->
 				if (error is CancellationException) throw error
@@ -54,22 +53,6 @@ class SettingsViewModel @Inject constructor(private val repository: UserPreferen
 			}
 		}
 	}
-
-	private fun appearanceWrite(action: suspend () -> Unit) {
-		viewModelScope.launch {
-			try {
-				action(); writeFailed.value = false
-			} catch (e: CancellationException) {
-				throw e
-			} catch (_: Exception) {
-				writeFailed.value = true
-			}
-		}
-	}
-
-	fun selectPalette(id: String) = appearanceWrite { repository.selectPalette(id) }
-	fun saveCustomTheme(theme: CustomTheme) = appearanceWrite { repository.saveCustomTheme(theme) }
-	fun deleteCustomTheme(id: String) = appearanceWrite { repository.deleteCustomTheme(id) }
 
 	fun retry() {
 		writeFailed.value = false

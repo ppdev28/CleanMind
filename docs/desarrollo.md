@@ -109,7 +109,7 @@ No soluciones un error de migración borrando datos como comportamiento de produ
 
 ### Paleta y hoja de compartir
 
-`Color.kt` define los colores y `Theme.kt` adopta la paleta neutra de Figma en esta rama; `Theme.kt` asigna todos los roles de superficie, contenedores, texto, bordes e inversos para claro y oscuro. Los errores mantienen un color semántico propio. Evita colores literales en pantallas: utiliza `MaterialTheme.colorScheme`. Las variantes XML cubren el arranque y los diálogos nativos de fecha y hora, incluso con apariencia forzada desde Ajustes.
+`Color.kt` define los colores y `Theme.kt` define una paleta de grises con azul acero fijo; `Theme.kt` asigna todos los roles de superficie, contenedores, texto, bordes e inversos para claro y oscuro. Los errores mantienen un color semántico propio. Evita colores literales en pantallas: utiliza `MaterialTheme.colorScheme`. Las variantes XML cubren el arranque y los diálogos nativos de fecha y hora, incluso con apariencia forzada desde Ajustes.
 
 `ExportMenu.kt` presenta una hoja inferior con formato seleccionable, vista previa y acciones de compartir, guardar y copiar texto. Incluye previsualizaciones claras, oscuras y a 320 dp con texto grande. Los resultados del selector de archivos conservan una instantánea del documento y el formato solicitado; abrir la hoja de compartir no se considera una entrega confirmada.
 

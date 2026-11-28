@@ -2,7 +2,7 @@
 
 La revisión del 25 de noviembre de 2026 adopta la alternativa Material 3 solicitada por el usuario. Sustituye el acabado de cristal anterior: se retiran Haze, la captura de fondos, los reflejos, el ruido y los degradados decorativos. Las superficies no se presentan como una reproducción del material de iOS.
 
-`AppSurfaces.kt` centraliza los contenedores tonales y las hojas inferiores. El tema oscuro Original utiliza fondo carbón `#181818`, superficies `#202020`, texto principal `#DCDCDC` y secundario `#B3B3B3`. El tema claro utiliza fondo `#F0F0F0`, superficies `#F6F6F6` y texto principal `#3C3C3C`. La revisión actual suaviza la separación entre superficies y contornos manteniendo legibilidad. Los estados seleccionados mantienen el acento azul acero.
+`AppSurfaces.kt` centraliza los contenedores tonales y las hojas inferiores. El modo oscuro utiliza fondo carbón `#181818`, superficies `#202020`, texto principal `#DCDCDC` y secundario `#B3B3B3`. El tema claro utiliza fondo `#F0F0F0`, superficies `#F6F6F6` y texto principal `#3C3C3C`. La revisión actual suaviza la separación entre superficies y contornos manteniendo legibilidad. Los estados seleccionados mantienen el acento azul acero.
 
 Las tarjetas emplean `surfaceContainerLow`, las barras inferiores `surfaceContainer` y los estados seleccionados `tertiaryContainer`. Los límites usan los roles de contorno del tema. Los colores se resuelven como superficies Material 3 y no como transparencias que varíen el contraste del texto según el contenido situado detrás.
 

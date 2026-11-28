@@ -25,11 +25,11 @@ Se eliminan concentración y archivo del editor y el menú de las notas. Las not
 
 ## Contraste
 
-La paleta usa fondos carbón y blanco roto, texto gris y contornos más suaves. El acento sigue las preferencias de apariencia. Original oscuro utiliza `#181818`, superficies `#202020` y texto `#DCDCDC`; claro utiliza `#F0F0F0`, superficies `#F6F6F6` y texto `#3C3C3C`. El tema Gris continúa siendo monocromo. Se comprueba la legibilidad de texto y acciones en todas las paletas incorporadas, además de los acentos personalizados.
+La app usa fondos carbón y blanco roto, texto gris y contornos suaves. El único acento es azul acero: `#3E7194` en claro y `#A1BDD2` en oscuro. Oscuro utiliza fondo `#181818`, superficies `#202020` y texto `#DCDCDC`; claro utiliza `#F0F0F0`, superficies `#F6F6F6` y texto `#3C3C3C`. No hay selector de paletas ni temas propios. Los errores conservan su color semántico.
 
 ## Verificación
 
-Compilaciones debug/release, lint de ambas variantes y **100 pruebas locales** correctas, sin fallos ni omisiones. La suite conserva las regresiones del editor, casillas, metadatos, almacenamiento y selección múltiple. Incluye navegación de cinco acciones a 320 dp con texto grande, ausencia de solapamientos, búsqueda con foco, colocación de cambio de vista junto a Ajustes y acceso a notas archivadas antiguas.
+Compilaciones debug/release, lint de ambas variantes y **97 pruebas locales** correctas, sin fallos ni omisiones. La suite conserva las regresiones del editor, casillas, metadatos, almacenamiento y selección múltiple. Incluye navegación de cinco acciones a 320 dp con texto grande, ausencia de solapamientos, búsqueda con foco, colocación de cambio de vista junto a Ajustes y acceso a notas archivadas antiguas.
 
 
 En la revisión anterior, la comprobación física se realizó en el Xiaomi Redmi Note 8 Pro conectado, Android API 36. Se verificaron los cinco accesos, creación contextual de aviso, cambio de vista en Home/Notas, ausencia de búsqueda en Home, dictado inferior con teclado, creación y persistencia de una casilla desde Lista, ausencia de casillas en formato y de archivo en el menú, búsqueda con foco y filtrado, navegación durante scroll y ambas apariencias. Las dos pruebas instrumentadas también pasaron. El modo previo Como el dispositivo se restauró. Se eliminó la nota temporal y su copia TXT y se compararon todos los campos de las 9 notas originales y las 2 carpetas. Las capturas del repositorio son sintéticas; las del dispositivo se mantienen fuera del repositorio.

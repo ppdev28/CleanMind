@@ -20,7 +20,7 @@ Consulta [Carpetas](carpetas.md) para organización y migraciones, y [Movimiento
 
 Consulta [Superficies y contraste Material 3](glass-ui.md) para el material compartido y [Ciencia breve](ciencia-breve.md) para las seis notas incluidas en la versión de desarrollo.
 
-Consulta [To Dos · 28 de noviembre](to-dos-28-noviembre.md) para dictado, temas, adjuntos, enlaces y selección múltiple.
+Consulta [To Dos · 28 de noviembre](to-dos-28-noviembre.md) para el historial de dictado, adjuntos, enlaces y selección múltiple. Los temas seleccionables de aquella revisión se retiraron posteriormente.
 
 Consulta [Barras, Home y editor](barras-y-editor.md) para la revisión actual de navegación y contraste.
 

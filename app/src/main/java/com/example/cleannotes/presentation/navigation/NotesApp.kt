@@ -43,7 +43,7 @@ fun NotesApp(
 			ThemeMode.LIGHT -> false
 			ThemeMode.DARK -> true
 		}
-	CleanMindTheme(darkTheme = dark, appearance = settings.appearance) {
+	CleanMindTheme(darkTheme = dark) {
 		Surface(
 			color = androidx.compose.ui.graphics.Color.Transparent,
 			modifier = Modifier.fillMaxSize(),
@@ -134,9 +134,6 @@ fun NotesApp(
 									settingsViewModel::setThemeMode,
 									goBack,
 									settingsViewModel::retry,
-									onPaletteSelected = settingsViewModel::selectPalette,
-									onSaveTheme = settingsViewModel::saveCustomTheme,
-									onDeleteTheme = settingsViewModel::deleteCustomTheme,
 								)
 							}
 							entry<Destination.Editor> { destination ->

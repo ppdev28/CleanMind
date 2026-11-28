@@ -1,6 +1,6 @@
 # To Dos · 28 de noviembre de 2026
 
-Se leyó la nota «To Dos» de la instalación realme y se implementaron sus puntos en este orden. El punto 1, Biometría, queda excluido expresamente. La nota original no se marca ni modifica.
+Se leyó la nota «To Dos» de la instalación realme y se implementaron sus puntos en este orden. El punto 1, Biometría, queda excluido expresamente. La nota original no se marca ni modifica. Los puntos 3 y 5 se retiraron después por petición del usuario: la app utiliza ahora un único acento azul acero. La tabla conserva el historial de implementación.
 
 | Punto | Resultado | Commit |
 | --- | --- | --- |

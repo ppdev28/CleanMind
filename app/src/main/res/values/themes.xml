@@ -17,7 +17,7 @@
     </style>
 
     <style name="Theme.CleanMind.Dialog.Light" parent="android:Theme.Material.Light.Dialog.Alert">
-        <item name="android:colorAccent">#1C1C1C</item>
+        <item name="android:colorAccent">#3E7194</item>
         <item name="android:colorBackground">#FAFAFA</item>
         <item name="android:windowBackground">#FAFAFA</item>
         <item name="android:textColorPrimary">#1C1C1C</item>
@@ -25,7 +25,7 @@
     </style>
 
     <style name="Theme.CleanMind.Dialog.Dark" parent="android:Theme.Material.Dialog.Alert">
-        <item name="android:colorAccent">#F2F2F2</item>
+        <item name="android:colorAccent">#A1BDD2</item>
         <item name="android:colorBackground">#1C1C1C</item>
         <item name="android:windowBackground">#1C1C1C</item>
         <item name="android:textColorPrimary">#EEEEEE</item>

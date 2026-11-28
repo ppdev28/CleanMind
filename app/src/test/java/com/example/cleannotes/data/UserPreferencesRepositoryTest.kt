@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.edit
 import com.example.cleannotes.data.preferences.DataStoreUserPreferencesRepository
 import com.example.cleannotes.model.ThemeMode
 import java.io.File
@@ -25,22 +26,42 @@ class UserPreferencesRepositoryTest {
 	val directory = TemporaryFolder()
 
 	@Test
-	fun customPalettesSurviveReopeningAndDeletingTheActiveOneResetsSelection() = runBlocking {
-		val file = File(directory.root, "palettes.preferences_pb")
-		var scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-		var store = PreferenceDataStoreFactory.create(scope = scope, produceFile = { file })
-		val theme = com.example.cleannotes.model.CustomTheme("custom-1", "Mi azul", 0xFF3E7194)
-		DataStoreUserPreferencesRepository(store).saveCustomTheme(theme)
-		scope.cancel(); scope.coroutineContext[Job]!!.join()
-		scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+	fun upgradingRemovesRetiredColorsAndPreservesAppearanceAndOtherPreferences() = runBlocking {
+		val file = File(directory.root, "upgrade.preferences_pb")
+		val oldScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+		val old = PreferenceDataStoreFactory.create(scope = oldScope, produceFile = { file })
+		val mode = androidx.datastore.preferences.core.stringPreferencesKey("theme")
+		val palette = androidx.datastore.preferences.core.stringPreferencesKey("palette")
+		val custom = androidx.datastore.preferences.core.stringPreferencesKey("custom_palettes")
+		val other = androidx.datastore.preferences.core.stringPreferencesKey("other")
 		try {
-			store = PreferenceDataStoreFactory.create(scope = scope, produceFile = { file })
-			val repo = DataStoreUserPreferencesRepository(store)
-			assertEquals(theme, repo.appearance.first().customThemes.single())
-			assertEquals(theme.id, repo.appearance.first().selectedId)
-			repo.deleteCustomTheme(theme.id)
-			assertEquals("default", repo.appearance.first().selectedId)
-			assertTrue(repo.appearance.first().customThemes.isEmpty())
+			old.edit {
+				it[mode] = ThemeMode.DARK.name
+				it[palette] = "custom-1"
+				it[custom] = "old or malformed theme data"
+				it[other] = "preserved"
+			}
+		} finally {
+			oldScope.cancel(); oldScope.coroutineContext[Job]!!.join()
+		}
+		val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+		try {
+			val store = PreferenceDataStoreFactory.create(
+				migrations = listOf(com.example.cleannotes.data.preferences.RetiredThemePreferencesMigration),
+				scope = scope, produceFile = { file }
+			)
+			val repository = DataStoreUserPreferencesRepository(store)
+			assertEquals(ThemeMode.DARK, repository.themeMode.first())
+			val current = store.data.first()
+			assertFalse(current.contains(palette)); assertFalse(current.contains(custom))
+			assertEquals("preserved", current[other])
+			assertFalse(
+				com.example.cleannotes.data.preferences.RetiredThemePreferencesMigration.shouldMigrate(
+					current
+				)
+			)
+			repository.setThemeMode(ThemeMode.LIGHT)
+			assertEquals(ThemeMode.LIGHT, repository.themeMode.first())
 		} finally {
 			scope.cancel(); scope.coroutineContext[Job]!!.join()
 		}

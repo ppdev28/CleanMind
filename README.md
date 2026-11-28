@@ -16,7 +16,7 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 - Organizar notas en [carpetas](docs/carpetas.md) en cuadrícula, con creación, renombrado y movimiento.
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.
-- Elegir modo claro, oscuro o del dispositivo, paletas de acento, un tema Gris o temas personalizados.
+- Elegir modo claro, oscuro o del dispositivo, con azul acero como único acento.
 - Arranque monocromo, [superficies Material 3 de contraste suave](docs/glass-ui.md) y transiciones breves entre pantallas, pestañas y herramientas.
 - Conservar el tema y restaurar determinados estados de navegación y edición.
 

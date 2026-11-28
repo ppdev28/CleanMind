@@ -196,7 +196,7 @@ La pantalla vuelve al editor normal con `RichNoteEditor` y `EditorToolbar`. `Ric
 
 ## Extensiones de To Dos · 28 de noviembre de 2026
 
-Se conserva MVVM + UDF. `Appearance` y `CustomTheme` son modelos puros; `UserPreferencesRepository` encapsula sus flujos y escrituras atómicas en DataStore, `SettingsViewModel` los expone y `NotesApp` aplica la paleta a toda la composición. Los roles de color se adaptan al modo de apariencia y al contraste de su superficie.
+Se conserva MVVM + UDF. `UserPreferencesRepository` expone únicamente el modo claro/oscuro/sistema, `SettingsViewModel` lo observa y `NotesApp` lo aplica. `Theme.kt` contiene dos esquemas estáticos de Material 3 con acento azul acero. Se retiraron los modelos, flujos, callbacks, pantallas y generación dinámica de paletas. Una migración de limpieza retira las dos claves antiguas sin alterar el modo de apariencia ni otras preferencias.
 
 `VoiceDictation` delega en `RecognizerIntent` mediante Activity Result y entrega texto al campo nativo; no persiste ni graba audio en la app. `NoteFiles` realiza IO de adjuntos privados. `LinkPreviews` encapsula obtención y caché de metadatos HTML mediante jsoup; Compose solicita y presenta resultados en una corrutina cancelable, con una tarjeta de dominio como fallback. El guardado sigue pasando por `EnteredContent` al ViewModel.
 

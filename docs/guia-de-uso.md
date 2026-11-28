@@ -111,7 +111,7 @@ En Ajustes puedes elegir:
 - **Claro:** fuerza el tema claro.
 - **Oscuro:** fuerza el tema oscuro.
 
-En **Temas** puedes elegir Original, Gris, Azul acero, Bosque o Lavanda. **Crear tema** permite guardar un nombre y un color de acento (seis dígitos HEX), editarlo o eliminarlo. Los colores de las acciones se adaptan al modo claro u oscuro para conservar contraste con el fondo. Gris usa controles monocromos y un fondo grafito en oscuro; los errores conservan su color semántico. Eliminar un tema activo recupera Original. Los diálogos de fecha y hora también siguen la apariencia elegida.
+El acento es siempre **azul acero**, adaptado al modo claro u oscuro. Se han retirado el selector de paletas y la creación, edición y eliminación de temas propios. Los diálogos de fecha y hora también utilizan azul acero y siguen el modo de apariencia elegido.
 
 La selección se aplica al guardarse y se conserva en DataStore. No hay un botón adicional para confirmar los ajustes. Si aparece un error de escritura, vuelve a seleccionar el tema; **Reintentar** vuelve a consultar las preferencias.
 
