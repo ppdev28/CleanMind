@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.cleannotes.R
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.presentation.ui.design.*
 
@@ -15,7 +17,7 @@ fun NoteCreationSheet(onCreate: (Boolean) -> Unit, onDismiss: () -> Unit) {
 			Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
 			verticalArrangement = Arrangement.spacedBy(12.dp)
 		) {
-			Text("Crear", style = MaterialTheme.typography.titleLarge)
+			Text(stringResource(R.string.create), style = MaterialTheme.typography.titleLarge)
 			DesignRow("Nueva nota", MindIcons.EditNote, "Guarda una idea o una lista") { onCreate(false) }
 			DesignRow(
 				"Nuevo recordatorio",

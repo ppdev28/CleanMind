@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
-import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.util.DateUtils
 
 @Composable
@@ -102,7 +101,7 @@ fun DesignNoteCard(
 	val pressed by interactions.collectIsPressedAsState()
 	val scale by animateFloatAsState(if (pressed) 0.985f else 1f, tween(120), label = "notePress")
 	val selectionChecked = selected
-	val doc = NoteDocument.decode(note.content)
+	val doc = note.document
 	val detail = buildList {
 		if (doc.pinned) add("Fijada")
 		add(
@@ -111,7 +110,6 @@ fun DesignNoteCard(
 			else DateUtils.shortDate(dateTimestamp)
 		)
 		add("${doc.images.size} ${if (doc.images.size == 1) "imagen" else "imágenes"}")
-		if (Regex("(?m)^(• |☐ |☑ |\\d+\\. )").containsMatchIn(doc.text)) add("Lista")
 	}
 		.joinToString(" · ")
 	Surface(

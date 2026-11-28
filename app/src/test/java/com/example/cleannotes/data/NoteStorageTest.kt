@@ -137,7 +137,7 @@ class NoteStorageTest {
 			assertFalse(repository.getNote(first)!!.isReminder)
 			repository.saveNote(repository.getNote(first)!!.copy(content = "Actualizada"))
 			assertEquals(2, repository.observeNotes().first().size)
-			repository.deleteNote(repository.getNote(second)!!)
+			repository.deleteNotes(setOf(second))
 			assertNull(repository.getNote(second))
 		} finally {
 			database.close()

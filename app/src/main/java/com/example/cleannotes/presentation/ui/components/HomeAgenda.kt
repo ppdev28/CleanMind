@@ -17,7 +17,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import com.example.cleannotes.presentation.ui.motion.AppMotion
 import java.text.SimpleDateFormat
 import java.util.Date

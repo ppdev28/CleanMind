@@ -45,7 +45,6 @@ import com.example.cleannotes.presentation.ui.components.NotebookBottomBar
 import com.example.cleannotes.presentation.ui.components.CustomTopBar
 import com.example.cleannotes.presentation.ui.components.NoteCreationSheet
 import com.example.cleannotes.presentation.ui.design.*
-import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.edit_note.ExportMenu
 import com.example.cleannotes.presentation.ui.folders.*
 import com.example.cleannotes.presentation.ui.motion.AppMotion
@@ -95,7 +94,8 @@ fun NotebookScreen(
 	var confirmSelectionDelete by rememberSaveable { mutableStateOf(false) }
 	var deletionRevision by rememberSaveable { mutableIntStateOf(state.deletion.revision) }
 	val latestState by rememberUpdatedState(state)
-	val selecting = selectedIds.isNotEmpty()
+	val selection = remember(selectedIds) { selectedIds.toSet() }
+	val selecting = selection.isNotEmpty()
 	val visibleNotes = remember(
 		state.allNotes,
 		state.selectedTab,
@@ -122,8 +122,10 @@ fun NotebookScreen(
 		}
 	}
 	LaunchedEffect(state.allNotes, state.isLoading, state.deletion.busy) {
-		if (!state.isLoading && !state.deletion.busy) selectedIds =
-			selectedIds.filter { id -> state.allNotes.any { it.id == id } }
+		if (!state.isLoading && !state.deletion.busy) {
+			val available = state.allNotes.mapNotNull { it.id }.toHashSet()
+			selectedIds = selectedIds.filter { it in available }
+		}
 		if (selectedIds.isEmpty()) confirmSelectionDelete = false
 	}
 	BackHandler(enabled = active && selecting) {
@@ -165,14 +167,15 @@ fun NotebookScreen(
 	}
 	val snackbar = remember { SnackbarHostState() }
 	val tabStates = rememberSaveableStateHolder()
-	val notes = state.allNotes.filterNot { it.isReminder }
+	val notes = remember(state.allNotes) { state.allNotes.filterNot { it.isReminder } }
+	val folderCounts = remember(notes) { notes.groupingBy { it.folderId }.eachCount() }
 	if (confirmSelectionDelete && selecting) BatchDeleteDialog(
 		selectedIds.size,
 		state.deletion,
 		onDismiss = { confirmSelectionDelete = false },
-		onConfirm = { onDeleteSelection(selectedIds.toSet()) })
+		onConfirm = { onDeleteSelection(selection) })
 	sharing?.let { note ->
-		ExportMenu(note.title, NoteDocument.decode(note.content)) {
+		ExportMenu(note.title, note.document) {
 			sharing = null
 		}
 	}
@@ -223,7 +226,7 @@ fun NotebookScreen(
 					onMove = selectedNote?.takeUnless { it.isReminder }
 						?.let { note -> ({ moving = note; onClearFolderError() }) },
 					onPin = selectedNote?.let { note -> ({ onUpdateNote(note) { it.copy(pinned = !it.pinned) } }) },
-					pinned = selectedNote?.let { NoteDocument.decode(it.content).pinned } ?: false)
+					pinned = selectedNote?.let { it.document.pinned } ?: false)
 			}
 		},
 		bottomBar = {
@@ -233,7 +236,7 @@ fun NotebookScreen(
 					onQueryChange(""); onTabSelected(tab)
 					if (tab == NotesTab.SEARCH) searchFocusRequest++
 				},
-				onCreateNote = { creating = true },
+				onCreate = { creating = true },
 				enabled = !selecting && active && !state.deletion.busy,
 				folderName = if (state.selectedTab == NotesTab.NOTES) state.folders.firstOrNull { it.id == state.selectedFolderId }?.name else null,
 			)
@@ -281,7 +284,7 @@ fun NotebookScreen(
 								onOpen = ::openOrSelect,
 								onSelect = { toggleSelection(it); onClearDeletionError() },
 								onCreate = onQuickCreate,
-								selectedIds = selectedIds.toSet(),
+								selectedIds = selection,
 							)
 
 							notesTab -> {
@@ -411,7 +414,7 @@ fun NotebookScreen(
 											item(key = "folder-unfiled") {
 												FolderTile(
 													"Sin carpeta",
-													notes.count { it.folderId == null },
+													folderCounts[null] ?: 0,
 													state.selectedFolderId == 0,
 													{ onFolderSelected(0) },
 													Modifier.animateItem(),
@@ -420,7 +423,7 @@ fun NotebookScreen(
 											items(state.folders, key = { "folder-${it.id}" }) { folder ->
 												FolderTile(
 													folder.name,
-													notes.count { it.folderId == folder.id },
+													folderCounts[folder.id] ?: 0,
 													state.selectedFolderId == folder.id,
 													{ onFolderSelected(folder.id) },
 													Modifier.animateItem(),
@@ -446,7 +449,7 @@ fun NotebookScreen(
 												modifier = Modifier.animateItem(),
 												onClick = { openOrSelect(note) },
 												onLongClick = { toggleSelection(note); onClearDeletionError() },
-												selectionMode = selecting, selected = note.id in selectedIds,
+												selectionMode = selecting, selected = note.id in selection,
 												compact = gridMode,
 											)
 										}
@@ -466,8 +469,8 @@ fun NotebookScreen(
 
 							else ->
 								ReminderCollection(
-									state.allNotes, ::openOrSelect, onCreate, onUpdateNote,
-									selectedIds = selectedIds.toSet(), onToggleSelection = ::toggleSelection,
+									visibleNotes, ::openOrSelect, onCreate, onUpdateNote,
+									selectedIds = selection, onToggleSelection = ::toggleSelection,
 									onSelect = { toggleSelection(it); onClearDeletionError() }
 								)
 						}
@@ -568,7 +571,7 @@ private fun ReminderCollection(
 	editing?.let { note ->
 		com.example.cleannotes.presentation.ui.edit_note.ReminderSheet(
 			note.title,
-			NoteDocument.decode(note.content),
+			note.document,
 			onConfirm = { draft ->
 				update(note) { it.copy(reminder = draft.reminder, reminderCompleted = false) }
 				editing = null
@@ -576,13 +579,12 @@ private fun ReminderCollection(
 			onDismiss = { editing = null },
 		)
 	}
-	val reminders =
-		notes
-			.filter {
-				val d = NoteDocument.decode(it.content)
-				(it.isReminder || d.reminder != null) && !d.reminderCompleted
-			}
-			.sortedBy { NoteDocument.decode(it.content).reminder?.at ?: Long.MAX_VALUE }
+	val reminders = remember(notes) { notes.sortedBy { it.document.reminder?.at ?: Long.MAX_VALUE } }
+	val groups = remember(reminders) {
+		reminders.groupBy {
+			it.document.reminder?.at?.let(DateUtils::dayKey) ?: "Sin fecha"
+		}
+	}
 	LazyColumn(
 		contentPadding =
 			PaddingValues(
@@ -608,11 +610,9 @@ private fun ReminderCollection(
 			}
 		}
 
-		val groups = reminders.groupBy {
-			NoteDocument.decode(it.content).reminder?.at?.let(DateUtils::dayKey) ?: "Sin fecha"
-		}
+
 		groups.forEach { (_, group) ->
-			val at = NoteDocument.decode(group.first().content).reminder?.at
+			val at = group.first().document.reminder?.at
 			item {
 				Column(
 					Modifier.padding(top = 12.dp),
@@ -628,7 +628,7 @@ private fun ReminderCollection(
 				}
 			}
 			items(group, key = { requireNotNull(it.id) }) { note ->
-				val doc = NoteDocument.decode(note.content)
+				val doc = note.document
 				Row(
 					Modifier.fillMaxWidth().heightIn(min = 72.dp).animateItem(),
 					verticalAlignment = Alignment.CenterVertically,

@@ -68,8 +68,6 @@ private fun HomePreview(dark: Boolean, empty: Boolean = false) {
 			state =
 				com.example.cleannotes.presentation.notebook.NotesUiState(
 					allNotes = notes,
-					notes = notes.filterNot { it.isReminder },
-					reminders = notes.filter { it.isReminder },
 					isLoading = false,
 				),
 			onTabSelected = {},

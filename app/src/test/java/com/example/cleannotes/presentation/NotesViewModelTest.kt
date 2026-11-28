@@ -30,6 +30,39 @@ class NotesViewModelTest {
 	}
 
 	@Test
+	fun editedCopiesRefreshSearchAndMetadataWithoutChangingTheOriginal() {
+		val original = Note(
+			1,
+			"Idea",
+			com.example.cleannotes.model.NoteDocument(text = "Antes", subtitle = "Antiguo").encode(),
+			1
+		)
+		assertEquals(
+			listOf(original),
+			visibleNotes(
+				NotesUiState(
+					allNotes = listOf(original),
+					selectedTab = NotesTab.SEARCH,
+					query = "Antes"
+				), "Todas"
+			)
+		)
+		val edited = original.copy(
+			content = com.example.cleannotes.model.NoteDocument(
+				text = "Después",
+				subtitle = "Nuevo",
+				images = listOf("photo.jpg")
+			).encode()
+		)
+		val state =
+			NotesUiState(allNotes = listOf(edited), selectedTab = NotesTab.SEARCH, query = "  DESPUÉS  ")
+		assertEquals(listOf(edited), visibleNotes(state, "Con imágenes"))
+		assertTrue(visibleNotes(state.copy(query = "Antiguo"), "Todas").isEmpty())
+		assertEquals("Antiguo", original.document.subtitle)
+		assertEquals("Nuevo", edited.document.subtitle)
+	}
+
+	@Test
 	fun removingArchiveKeepsLegacyNotesVisibleWithoutRewritingThem() {
 		val note = Note(
 			1,
@@ -83,11 +116,26 @@ class NotesViewModelTest {
 			}
 			runCurrent()
 			assertFalse(viewModel.uiState.value.isLoading)
-			assertEquals(listOf(1), viewModel.uiState.value.notes.map { it.id })
-			assertEquals(listOf(2), viewModel.uiState.value.reminders.map { it.id })
+			assertEquals(
+				listOf(1),
+				visibleNotes(
+					viewModel.uiState.value.copy(selectedTab = NotesTab.NOTES),
+					"Todas"
+				).map { it.id })
+			assertEquals(
+				listOf(2),
+				visibleNotes(
+					viewModel.uiState.value.copy(selectedTab = NotesTab.REMINDERS),
+					"Todas"
+				).map { it.id })
 			viewModel.onQueryChange("  REMEMBER  ")
 			runCurrent()
-			assertEquals(listOf(1), viewModel.uiState.value.searchResults.map { it.id })
+			assertEquals(
+				listOf(1),
+				visibleNotes(
+					viewModel.uiState.value.copy(selectedTab = NotesTab.SEARCH),
+					"Todas"
+				).map { it.id })
 		}
 
 	@Test
@@ -119,13 +167,13 @@ class NotesViewModelTest {
 				viewModel.uiState.collect()
 			}
 			runCurrent()
-			viewModel.deleteNote(note)
+			viewModel.deleteNotes(setOf(requireNotNull(note.id)))
 			runCurrent()
-			assertEquals(NotesError.DELETE, viewModel.uiState.value.error)
+			assertNotNull(viewModel.uiState.value.deletion.error)
 			assertEquals(1, viewModel.uiState.value.allNotes.size)
-			viewModel.dismissError()
+			viewModel.clearDeletionError()
 			runCurrent()
-			assertNull(viewModel.uiState.value.error)
+			assertNull(viewModel.uiState.value.deletion.error)
 		}
 
 	@Test
@@ -206,10 +254,14 @@ class NotesViewModelTest {
 			val vm = NotesViewModel(repository, SavedStateHandle(mapOf("folder" to 4)))
 			backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect() }
 			runCurrent()
-			assertEquals(listOf(1), vm.uiState.value.notes.map { it.id })
+			assertEquals(
+				listOf(1),
+				visibleNotes(vm.uiState.value.copy(selectedTab = NotesTab.NOTES), "Todas").map { it.id })
 			vm.selectFolder(0)
 			runCurrent()
-			assertEquals(listOf(2), vm.uiState.value.notes.map { it.id })
+			assertEquals(
+				listOf(2),
+				visibleNotes(vm.uiState.value.copy(selectedTab = NotesTab.NOTES), "Todas").map { it.id })
 			vm.saveFolder(null, "Personal")
 			runCurrent()
 			assertEquals(

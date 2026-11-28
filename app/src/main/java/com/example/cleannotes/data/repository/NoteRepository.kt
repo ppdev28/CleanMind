@@ -12,8 +12,6 @@ interface NoteRepository {
 	/** Inserts or updates, returning the stable database ID. A title is required. */
 	suspend fun saveNote(note: Note): Int
 
-	suspend fun deleteNote(note: Note)
-
 	/** Deletes the selection atomically and cancels its scheduled notifications. */
 	suspend fun deleteNotes(ids: Set<Int>)
 

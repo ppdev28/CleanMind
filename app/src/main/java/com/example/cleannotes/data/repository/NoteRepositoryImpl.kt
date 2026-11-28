@@ -11,7 +11,7 @@ class NoteRepositoryImpl
 @Inject
 constructor(
 	private val dao: NoteDao,
-	@dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context,
+	@param:dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context,
 ) : NoteRepository {
 	override fun observeNotes(): Flow<List<Note>> =
 		dao.observeNotes().map { entities -> entities.map { it.toNote() } }
@@ -22,10 +22,10 @@ constructor(
 		require(note.title.isNotBlank()) { "A note must have a title" }
 		val previous = note.id?.let { dao.getNoteById(it)?.toNote() }
 		val previousDocument = previous?.let {
-			com.example.cleannotes.model.NoteDocument.decode(it.content)
+			it.document
 		}
 		val document =
-			com.example.cleannotes.model.NoteDocument.decode(note.content)
+			note.document
 				.copy(
 					createdAt = previousDocument?.createdAt ?: previous?.timestamp ?: note.timestamp
 				)
@@ -67,20 +67,12 @@ constructor(
 		return id
 	}
 
-	override suspend fun deleteNote(note: Note) {
-		dao.deleteNote(note.toNoteEntity())
-		kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-			note.id?.let {
-				com.example.cleannotes.data.reminders.ReminderScheduler.cancel(context, it)
-			}
-		}
-	}
 
 	override suspend fun deleteNotes(ids: Set<Int>) {
 		if (ids.isEmpty()) return
 		kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable + kotlinx.coroutines.Dispatchers.IO) {
 			dao.deleteNotes(ids.toList())
-			ids.forEach { com.example.cleannotes.data.reminders.ReminderScheduler.cancel(context, it) }
+			com.example.cleannotes.data.reminders.ReminderScheduler.cancel(context, ids)
 		}
 	}
 

@@ -8,10 +8,6 @@
     <string name="back">Volver</string>
     <string name="create">Crear</string>
     <string name="note">Nota</string>
-    <string name="delete_note">Eliminar nota</string>
-    <string name="delete_reminder">Eliminar recordatorio</string>
-    <string name="delete_message">Se eliminará «%1$s». Esta acción no se puede deshacer.</string>
-    <string name="delete">Eliminar</string>
     <string name="cancel">Cancelar</string>
     <string name="appearance">Apariencia</string>
     <string name="appearance_body">Elige el ambiente para tus ideas.</string>

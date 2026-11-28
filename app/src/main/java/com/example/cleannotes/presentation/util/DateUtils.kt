@@ -4,18 +4,12 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 object DateUtils {
-	fun getDayNumber(timestamp: Long): String = format(timestamp, "dd")
-
-	fun getMonthName(timestamp: Long): String =
-		format(timestamp, "MMM").uppercase(Locale.getDefault())
-
 	fun getTime(timestamp: Long): String = format(timestamp, "HH:mm")
 
 	fun dayKey(timestamp: Long): String = format(timestamp, "yyyy-MM-dd")
-
-	fun fullDate(timestamp: Long): String = format(timestamp, "EEEE, d MMMM")
 
 	fun shortDate(timestamp: Long): String = format(timestamp, "d MMM yyyy")
 
@@ -26,6 +20,21 @@ object DateUtils {
 		return dayKey(timestamp) == dayKey(yesterday.timeInMillis)
 	}
 
-	private fun format(timestamp: Long, pattern: String): String =
-		SimpleDateFormat(pattern, Locale.getDefault()).format(Date(timestamp))
+	private data class Formats(
+		val locale: Locale,
+		val zone: TimeZone,
+		val values: MutableMap<String, SimpleDateFormat> = mutableMapOf()
+	)
+
+	private val formats = ThreadLocal<Formats>()
+
+	private fun format(timestamp: Long, pattern: String): String {
+		val locale = Locale.getDefault()
+		val zone = TimeZone.getDefault()
+		val cache = formats.get()?.takeIf { it.locale == locale && it.zone == zone }
+			?: Formats(locale, zone).also(formats::set)
+		val formatter =
+			cache.values.getOrPut(pattern) { SimpleDateFormat(pattern, locale).apply { timeZone = zone } }
+		return formatter.format(Date(timestamp))
+	}
 }

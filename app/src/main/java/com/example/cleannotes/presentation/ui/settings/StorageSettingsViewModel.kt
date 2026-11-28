@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleannotes.data.export.NoteExport
 import com.example.cleannotes.data.repository.NoteRepository
-import com.example.cleannotes.model.NoteDocument
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -20,7 +19,7 @@ class StorageSettingsViewModel
 @Inject
 constructor(
 	private val notes: NoteRepository,
-	@ApplicationContext private val context: Context,
+	@param:ApplicationContext private val context: Context,
 ) : ViewModel() {
 	private val _status = MutableStateFlow("")
 	val status = _status.asStateFlow()
@@ -38,7 +37,7 @@ constructor(
 					NoteExport.saveToFolder(
 						context,
 						note.title,
-						NoteDocument.decode(note.content),
+						note.document,
 						false,
 						"nota-${note.id}.txt",
 					)

@@ -12,7 +12,6 @@ enum class NotesTab {
 
 enum class NotesError {
 	LOAD,
-	DELETE,
 	UPDATE,
 }
 
@@ -22,9 +21,6 @@ data class NotesUiState(
 	val selectedFolderId: Int? = null,
 	val folderOperation: FolderOperation = FolderOperation(),
 	val deletion: NoteDeletion = NoteDeletion(),
-	val notes: List<Note> = emptyList(),
-	val reminders: List<Note> = emptyList(),
-	val searchResults: List<Note> = emptyList(),
 	val query: String = "",
 	val selectedTab: NotesTab = NotesTab.HOME,
 	val isLoading: Boolean = true,

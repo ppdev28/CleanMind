@@ -150,7 +150,7 @@ fun RichEditorContent(
 			view.isEnabled = enabled
 			view.setTextColor(color)
 			view.setHintTextColor(hintColor)
-			view.hint = "Nota"
+			view.hint = view.context.getString(com.example.cleannotes.R.string.note)
 			view.bind(document)
 		},
 		modifier =

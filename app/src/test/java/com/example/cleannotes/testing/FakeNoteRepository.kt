@@ -50,11 +50,6 @@ class FakeNoteRepository : NoteRepository {
 		return id
 	}
 
-	override suspend fun deleteNote(note: Note) {
-		if (failDeletes) error("Delete failed")
-		notes.remove(note.id)
-		publish()
-	}
 
 	override suspend fun deleteNotes(ids: Set<Int>) {
 		delay(writeDelay)

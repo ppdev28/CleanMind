@@ -6,6 +6,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
+import com.example.cleannotes.R
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -22,7 +24,7 @@ import com.example.cleannotes.presentation.ui.design.MindIcons
 fun NotebookBottomBar(
 	selectedTab: NotesTab,
 	onTabSelected: (NotesTab) -> Unit,
-	onCreateNote: () -> Unit,
+	onCreate: () -> Unit,
 	enabled: Boolean = true,
 	folderName: String? = null,
 ) {
@@ -48,12 +50,12 @@ fun NotebookBottomBar(
 			).forEach { tab ->
 				if (tab == null) {
 					Surface(
-						onClick = onCreateNote,
+						onClick = onCreate,
 						enabled = enabled,
 						color = androidx.compose.ui.graphics.Color.Transparent,
 						modifier = Modifier.alpha(if (enabled) 1f else 0.38f).semantics {
 							contentDescription = "Nueva nota"
-							if (folderName != null) stateDescription = "Guardar en $folderName"
+							if (folderName != null) stateDescription = "Notas nuevas en $folderName"
 						},
 					) {
 						Column(
@@ -76,10 +78,10 @@ fun NotebookBottomBar(
 					}
 				} else {
 					val label = when (tab) {
-						NotesTab.HOME -> "Inicio"
-						NotesTab.NOTES -> "Notas"
-						NotesTab.REMINDERS -> "Recordar"
-						NotesTab.SEARCH -> "Buscar"
+						NotesTab.HOME -> stringResource(R.string.home)
+						NotesTab.NOTES -> stringResource(R.string.notes)
+						NotesTab.REMINDERS -> stringResource(R.string.nav_reminders)
+						NotesTab.SEARCH -> stringResource(R.string.search)
 					}
 					val icon = when (tab) {
 						NotesTab.HOME -> MindIcons.Home

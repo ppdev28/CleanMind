@@ -18,26 +18,27 @@ object MarkdownText {
 	private val plainRenderer = TextContentRenderer.builder().extensions(extensions).build()
 
 	fun parse(source: String): Node = parser.parse(source)
+	private val styleTag = Regex("</?(?:strong|b|em|i|u|s|del|big)>", RegexOption.IGNORE_CASE)
+	private val lineBreak = Regex("<br\\s*/?>", RegexOption.IGNORE_CASE)
+
 	fun plain(source: String): String {
 		val root = parse(source)
 		fun stripTags(node: Node) {
-			generateSequence(node.firstChild) { it.next }.toList().forEach { child ->
-				if (child is HtmlInline && Regex(
-						"</?(?:strong|b|em|i|u|s|del|big)>",
-						RegexOption.IGNORE_CASE
-					).matches(child.literal)
-				) child.unlink()
-				else if (child is HtmlInline && Regex(
-						"<br\\s*/?>",
-						RegexOption.IGNORE_CASE
-					).matches(child.literal)
-				) {
-					child.insertBefore(Text("\n")); child.unlink()
-				} else stripTags(child)
+			var child = node.firstChild
+			while (child != null) {
+				val current = child
+				child = current.next
+				when {
+					current is HtmlInline && styleTag.matches(current.literal) -> current.unlink()
+					current is HtmlInline && lineBreak.matches(current.literal) -> {
+						current.insertBefore(Text("\n")); current.unlink()
+					}
+
+					else -> stripTags(current)
+				}
 			}
 		}
 		stripTags(root)
 		return plainRenderer.render(root).trimEnd()
 	}
-
 }

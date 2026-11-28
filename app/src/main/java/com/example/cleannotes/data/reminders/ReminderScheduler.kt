@@ -17,18 +17,19 @@ object ReminderScheduler {
 	private fun prefs(context: Context) =
 		context.getSharedPreferences("scheduled_reminders", Context.MODE_PRIVATE)
 
-	private fun alarm(context: Context, id: Int) =
+	private fun alarm(context: Context, id: Int, flags: Int = PendingIntent.FLAG_UPDATE_CURRENT) =
 		PendingIntent.getBroadcast(
 			context,
 			id,
 			Intent(context, ReminderReceiver::class.java).setAction("fire").putExtra("id", id),
-			PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+			flags or PendingIntent.FLAG_IMMUTABLE,
 		)
 
 	fun exactAllowed(context: Context) =
 		Build.VERSION.SDK_INT < 31 ||
 				context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
 
+	@android.annotation.SuppressLint("ApplySharedPref")
 	fun update(context: Context, id: Int, title: String, config: ReminderConfig?) {
 		if (
 			config != null &&
@@ -54,10 +55,21 @@ object ReminderScheduler {
 		schedule(context, id, at)
 	}
 
-	fun cancel(context: Context, id: Int) {
-		context.getSystemService(AlarmManager::class.java).cancel(alarm(context, id))
-		NotificationManagerCompat.from(context).cancel(id)
-		prefs(context).edit().remove("config_$id").remove("title_$id").commit()
+	fun cancel(context: Context, id: Int) = cancel(context, listOf(id))
+
+	// Called on IO; durable metadata must be removed before a future broadcast can restore it.
+	@android.annotation.SuppressLint("ApplySharedPref")
+	fun cancel(context: Context, ids: Collection<Int>) {
+		if (ids.isEmpty()) return
+		val editor = prefs(context).edit()
+		ids.forEach { editor.remove("config_$it").remove("title_$it") }
+		editor.commit()
+		val manager = context.getSystemService(AlarmManager::class.java)
+		val notifications = NotificationManagerCompat.from(context)
+		ids.forEach { id ->
+			alarm(context, id, PendingIntent.FLAG_NO_CREATE)?.let { manager.cancel(it) }
+			notifications.cancel(id)
+		}
 	}
 
 	private fun schedule(context: Context, id: Int, at: Long) {
@@ -90,12 +102,10 @@ object ReminderScheduler {
 			}
 	}
 
-	private fun config(context: Context, id: Int) = runCatching {
-		Json.decodeFromString<ReminderConfig>(
-			prefs(context).getString("config_$id", null) ?: return null
-		)
+	private fun config(context: Context, id: Int): ReminderConfig? {
+		val stored = prefs(context).getString("config_$id", null) ?: return null
+		return runCatching { Json.decodeFromString<ReminderConfig>(stored) }.getOrNull()
 	}
-		.getOrNull()
 
 	fun ensureChannel(context: Context, config: ReminderConfig): String {
 		val channel = "reminder_${config.sound}_${config.vibrate}_${config.highPriority}"

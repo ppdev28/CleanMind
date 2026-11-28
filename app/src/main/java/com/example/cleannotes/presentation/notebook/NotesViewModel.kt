@@ -46,31 +46,8 @@ constructor(
 			val selected = folderId?.takeIf {
 				it == 0 || state.folders.any { folder -> folder.id == it }
 			}
-			val term = query.trim()
 			state.copy(
-				notes =
-					state.allNotes
-						.filterNot { it.isReminder }
-						.filter {
-							selected == null ||
-									(if (selected == 0) it.folderId == null
-									else it.folderId == selected)
-						},
 				selectedFolderId = selected,
-				reminders =
-					state.allNotes.filter { note ->
-						NoteDocument.decode(note.content).let {
-							(note.isReminder || it.reminder != null) && !it.reminderCompleted
-						}
-					},
-				searchResults =
-					if (term.isBlank()) emptyList()
-					else
-						state.allNotes.filter {
-							it.title.contains(term, ignoreCase = true) ||
-									NoteDocument.plainText(it.content)
-										.contains(term, ignoreCase = true)
-						},
 				query = query,
 				selectedTab = NotesTab.entries.firstOrNull { it.name == tab } ?: NotesTab.HOME,
 				error = state.error ?: error,
@@ -89,7 +66,7 @@ constructor(
 			try {
 				edits.withLock {
 					val latest = note.id?.let { repository.getNote(it) } ?: return@withLock
-					val updated = transform(NoteDocument.decode(latest.content))
+					val updated = transform(latest.document)
 					repository.saveNote(latest.copy(content = updated.encode()))
 				}
 			} catch (e: CancellationException) {
@@ -191,15 +168,5 @@ constructor(
 		}
 	}
 
-	fun deleteNote(note: Note) {
-		viewModelScope.launch {
-			try {
-				repository.deleteNote(note)
-			} catch (e: CancellationException) {
-				throw e
-			} catch (_: Exception) {
-				actionError.value = NotesError.DELETE
-			}
-		}
-	}
+
 }

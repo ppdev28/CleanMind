@@ -5,35 +5,36 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.cleannotes.R
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.Note
-import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.design.DesignIconButton
 import com.example.cleannotes.presentation.ui.design.MindIcons
 
 /** The contextual action uses exactly the same filtered collection as the visible cards. */
-internal fun visibleNotes(state: NotesUiState, filter: String): List<Note> =
-	state.allNotes.filter { note ->
-		val document = NoteDocument.decode(note.content)
+internal fun visibleNotes(state: NotesUiState, filter: String): List<Note> {
+	val term = state.query.trim()
+	return state.allNotes.filter { note ->
 		when (state.selectedTab) {
 			NotesTab.HOME -> !note.isReminder
-			NotesTab.REMINDERS -> (note.isReminder || document.reminder != null) && !document.reminderCompleted
+			NotesTab.REMINDERS -> note.document.let { (note.isReminder || it.reminder != null) && !it.reminderCompleted }
 			NotesTab.NOTES, NotesTab.SEARCH -> {
 				val matchesFilter = when (filter) {
-					"Fijadas" -> document.pinned
-					"Con imágenes" -> document.images.isNotEmpty()
+					"Fijadas" -> note.document.pinned
+					"Con imágenes" -> note.document.images.isNotEmpty()
 					else -> true
 				}
 				matchesFilter && if (state.selectedTab == NotesTab.NOTES) {
 					!note.isReminder && (state.selectedFolderId == null || if (state.selectedFolderId == 0) note.folderId == null else note.folderId == state.selectedFolderId)
-				} else {
-					state.query.isBlank() || note.title.contains(state.query, true) || NoteDocument.plainText(
-						note.content
-					).contains(state.query, true)
-				}
+				} else term.isBlank() || note.title.contains(term, true) || note.searchableText.contains(
+					term,
+					true
+				)
 			}
 		}
 	}
+}
 
 @Composable
 internal fun NoteSelectionBar(
@@ -111,7 +112,7 @@ internal fun BatchDeleteDialog(
 			TextButton(
 				onClick = onDismiss,
 				enabled = !operation.busy
-			) { Text("Cancelar") }
+			) { Text(stringResource(R.string.cancel)) }
 		}
 	)
 }

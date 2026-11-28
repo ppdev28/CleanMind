@@ -29,7 +29,7 @@ data class SampleNoteCollection(val folder: String, val notes: List<SampleNote>)
 		val missing =
 			notes.distinct().filterNot { sample ->
 				existing.any { note ->
-					val document = NoteDocument.decode(note.content)
+					val document = note.document
 					note.title == sample.title &&
 							document.text == sample.text &&
 							document.subtitle == sample.subtitle

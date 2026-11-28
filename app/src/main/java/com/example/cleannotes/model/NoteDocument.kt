@@ -28,14 +28,21 @@ data class NoteDocument(
 	val files: List<NoteFile> = emptyList(),
 ) {
 	fun completeReminder(now: Long): NoteDocument {
-		val next = reminder?.let { it.nextAfter(maxOf(now, it.at)) }
+		val config = reminder ?: return copy(reminderCompleted = true)
+		val next = config.nextAfter(maxOf(now, config.at))
 		return copy(
 			reminderCompleted = next == null,
-			reminder = if (next == null) reminder else reminder?.copy(at = next),
+			reminder = if (next == null) config else config.copy(at = next),
 		)
 	}
 
 	fun encode(): String = PREFIX + Json.encodeToString(this)
+
+	fun plainText(): String = listOf(
+		subtitle, if (markdown) MarkdownText.plain(text) else text,
+		files.joinToString("\n") { it.displayName },
+		checklist.joinToString("\n") { (if (it.done) "☑ " else "☐ ") + it.text },
+	).filter(String::isNotBlank).joinToString("\n\n")
 
 	companion object {
 		private const val PREFIX = "\u001eCleanMind:document:1\n"
@@ -54,19 +61,7 @@ data class NoteDocument(
 				}
 		}
 
-		fun plainText(content: String): String =
-			decode(content).let {
-				listOf(
-					it.subtitle,
-					if (it.markdown) MarkdownText.plain(it.text) else it.text,
-					it.files.joinToString("\n") { file -> file.displayName },
-					it.checklist.joinToString("\n") { item ->
-						(if (item.done) "☑ " else "☐ ") + item.text
-					},
-				)
-					.filter(String::isNotBlank)
-					.joinToString("\n\n")
-			}
+		fun plainText(content: String): String = decode(content).plainText()
 	}
 }
 
