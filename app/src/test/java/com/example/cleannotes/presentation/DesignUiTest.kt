@@ -219,7 +219,7 @@ class DesignUiTest {
 		screenshot("home-dark")
 		compose.onNodeWithText("Para cuando me bloquee").performTouchInput { longClick() }
 		compose.onNodeWithText("Compartir nota").assertExists()
-		compose.onNodeWithText("Archivar").assertExists()
+		compose.onNodeWithText("Archivar").assertDoesNotExist()
 	}
 
 	@Test
@@ -330,32 +330,39 @@ class DesignUiTest {
 	}
 
 	@Test
-	fun editorCanEnterAndLeaveFocusWithoutNavigatingAway() {
-		var back = false
+	fun editorKeepsOnlyCaptureAndFormattingTools() {
+		var document = NoteDocument(text = "Salir sin prisa.", subtitle = "Cámara y río")
 		compose.setContent {
-			CleanMindTheme(darkTheme = true) {
-				EditNoteScreen(
+			var state by remember {
+				mutableStateOf(
 					EditNoteUiState(
 						title = "Paseo del sábado",
-						content =
-							NoteDocument(text = "Salir sin prisa.", subtitle = "Cámara y río")
-								.encode(),
-						saveStatus = SaveStatus.SAVED,
-					),
-					{},
-					{},
-					{ back = true },
+						content = document.encode()
+					)
 				)
+			}
+			CleanMindTheme(darkTheme = true) {
+				EditNoteScreen(state, { event ->
+					if (event is com.example.cleannotes.presentation.ui.edit_note.EditNoteEvent.EnteredContent) {
+						document = NoteDocument.decode(event.value); state = state.copy(content = event.value)
+					}
+				}, {}, {})
 			}
 		}
 		screenshot("editor-dark")
-		compose.onNodeWithContentDescription("Cuerpo de la nota").assertExists()
-		compose.onNodeWithText("Concentrarme").performClick()
-		compose.onNodeWithText("Recordar").assertDoesNotExist()
-		screenshot("focus-dark")
-		compose.onNodeWithContentDescription("Salir de concentración").performClick()
-		compose.onNodeWithText("Concentrarme").assertExists()
-		assertFalse(back)
+		compose.onNodeWithText("Concentrarme").assertDoesNotExist()
+		compose.onNodeWithContentDescription("Archivar nota").assertDoesNotExist()
+		compose.onNodeWithContentDescription("Casilla en el texto").assertDoesNotExist()
+		val mic = compose.onNodeWithContentDescription("Dictar por voz").assertIsDisplayed()
+			.fetchSemanticsNode().boundsInRoot
+		val list = compose.onNodeWithText("Lista").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+		assertTrue(mic.top <= list.top && mic.bottom >= list.bottom)
+		compose.onNodeWithText("Lista").performClick()
+		assertEquals(1, document.checklist.size)
+		assertEquals("Salir sin prisa.", document.text)
+		compose.onNodeWithContentDescription("Más formato y espaciado").performClick()
+		compose.onNodeWithText("Casilla").assertDoesNotExist()
+		compose.onNodeWithText("H6").assertExists()
 	}
 
 	@Test
@@ -440,7 +447,7 @@ class DesignUiTest {
 		}
 		compose.onNodeWithContentDescription("Negrita").assertIsDisplayed()
 		compose.onNodeWithContentDescription("Más formato y espaciado").assertIsDisplayed()
-		listOf("Lista", "Imagen", "Recordar").forEach { label ->
+		listOf("Dictar", "Lista", "Imagen", "Recordar").forEach { label ->
 			val layouts = mutableListOf<TextLayoutResult>()
 			compose.onNodeWithText(label).assertIsDisplayed().performSemanticsAction(
 				SemanticsActions.GetTextLayoutResult

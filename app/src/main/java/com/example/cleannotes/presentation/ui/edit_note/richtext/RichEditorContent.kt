@@ -127,7 +127,6 @@ fun RichEditorContent(
 	enabled: Boolean,
 	controller: RichEditorController,
 	onChange: (String) -> Unit,
-	focusMode: Boolean = false,
 ) {
 	val currentChange by rememberUpdatedState(onChange)
 	val color = MaterialTheme.colorScheme.onSurface.toArgb()
@@ -142,7 +141,7 @@ fun RichEditorContent(
 				controller.canRedo = redo
 				controller.activeFormats = formats
 			}
-			view.textSize = if (focusMode) 18f else 16f
+			view.textSize = 16f
 			view.typeface =
 				androidx.core.content.res.ResourcesCompat.getFont(
 					view.context,

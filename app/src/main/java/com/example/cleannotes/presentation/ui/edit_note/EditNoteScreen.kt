@@ -1,7 +1,6 @@
 package com.example.cleannotes.presentation.ui.edit_note
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.rememberScrollState
@@ -28,7 +27,6 @@ import com.example.cleannotes.model.CheckItem
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.design.*
 import com.example.cleannotes.presentation.ui.edit_note.richtext.*
-import com.example.cleannotes.presentation.ui.motion.AppMotion
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +51,6 @@ fun EditNoteScreen(
 		rememberFileAttachments(document, controller) { onEvent(EditNoteEvent.EnteredContent(it)) }
 	val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
 	val enabled = !state.isLoading && !state.loadFailed && !state.isClosing
-	var focus by rememberSaveable { mutableStateOf(false) }
 	var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
 	var imageMenu by rememberSaveable { mutableStateOf(false) }
 	var share by rememberSaveable { mutableStateOf(false) }
@@ -78,7 +75,7 @@ fun EditNoteScreen(
 		else if (state.saveStatus == SaveStatus.ERROR && state.hasChanges) discard = true
 		else onSaveAndClose()
 	}
-	BackHandler(enabled = active) { if (focus) focus = false else close() }
+	BackHandler(enabled = active) { close() }
 	val status =
 		when {
 			state.loadFailed -> "No se pudo abrir"
@@ -219,132 +216,134 @@ fun EditNoteScreen(
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				DesignIconButton(
-					if (focus) MindIcons.Close else MindIcons.ArrowBack,
-					if (focus) "Salir de concentración" else "Volver",
+					MindIcons.ArrowBack,
+					"Volver",
 				) {
-					if (focus) focus = false else close()
+					close()
 				}
 				Text(
-					if (focus) "Salir de concentración" else status,
+					status,
 					Modifier.weight(1f).padding(start = 8.dp),
 					style = MaterialTheme.typography.bodyMedium,
 					color =
 						if (state.saveStatus == SaveStatus.ERROR) MaterialTheme.colorScheme.error
 						else MaterialTheme.colorScheme.onSurfaceVariant,
 				)
-				if (!focus) DesignIconButton(
-					MindIcons.Mic,
-					"Dictar por voz",
+				IconToggleButton(
+					checked = document.pinned,
 					enabled = enabled,
-					onClick = dictate
-				)
-				if (!focus)
-					IconToggleButton(
-						checked = document.pinned,
-						enabled = enabled,
-						onCheckedChange = { change(document.copy(pinned = it)) },
-						modifier = Modifier.size(48.dp),
-					) {
-						Icon(
-							MindIcons.PushPin,
-							if (document.pinned) "Desfijar nota" else "Fijar nota",
-							tint =
-								if (document.pinned) MaterialTheme.colorScheme.primary
-								else MaterialTheme.colorScheme.onSurfaceVariant,
-						)
-					}
+					onCheckedChange = { change(document.copy(pinned = it)) },
+					modifier = Modifier.size(48.dp),
+				) {
+					Icon(
+						MindIcons.PushPin,
+						if (document.pinned) "Desfijar nota" else "Fijar nota",
+						tint =
+							if (document.pinned) MaterialTheme.colorScheme.primary
+							else MaterialTheme.colorScheme.onSurfaceVariant,
+					)
+				}
 			}
 		},
 		bottomBar = {
-			AnimatedVisibility(!focus, enter = AppMotion.reveal(), exit = AppMotion.conceal()) {
-				Surface(color = MaterialTheme.colorScheme.background) {
-					Column(Modifier.windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars))) {
-						HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-						AnimatedVisibility(
-							!keyboardVisible,
-							enter = AppMotion.reveal(),
-							exit = AppMotion.conceal()
+
+			Surface(color = MaterialTheme.colorScheme.background) {
+				Column(Modifier.windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars))) {
+					HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+					FlowRow(
+						Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+						horizontalArrangement = Arrangement.spacedBy(8.dp),
+						verticalArrangement = Arrangement.spacedBy(8.dp),
+						maxItemsInEachRow = if (!keyboardVisible && LocalDensity.current.fontScale > 1.15f) 2 else 4,
+					) {
+						CaptureTool(
+							"Dictar",
+							MindIcons.Mic,
+							enabled,
+							Modifier.weight(1f),
+							compact = keyboardVisible,
+							onClick = dictate
+						)
+						CaptureTool(
+							"Lista",
+							MindIcons.List,
+							enabled,
+							Modifier.weight(1f),
+							compact = keyboardVisible,
+							onClick = ::addItem,
+						)
+						CaptureTool(
+							"Imagen",
+							MindIcons.Image,
+							enabled && !controller.importing,
+							Modifier.weight(1f),
+							compact = keyboardVisible,
 						) {
-							Row(
-								Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-								horizontalArrangement = Arrangement.spacedBy(8.dp),
-							) {
-								CaptureTool(
-									"Lista",
-									MindIcons.List,
-									enabled,
-									Modifier.weight(1f),
-									::addItem,
-								)
-								CaptureTool(
-									"Imagen",
-									MindIcons.Image,
-									enabled && !controller.importing,
-									Modifier.weight(1f),
-								) {
-									imageMenu = true
-								}
-								CaptureTool(
-									"Recordar",
-									MindIcons.Notifications,
-									enabled,
-									Modifier.weight(1f),
-								) {
-									reminder = true
-								}
-							}
+							imageMenu = true
 						}
-						Row(
-							Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-							verticalAlignment = Alignment.CenterVertically,
+						CaptureTool(
+							"Recordar",
+							MindIcons.Notifications,
+							enabled,
+							Modifier.weight(1f),
+							compact = keyboardVisible,
 						) {
-							RichFormatBar(document, controller, enabled, Modifier.weight(1f))
-							Box {
-								IconButton(onClick = { more = true }) {
-									Icon(MindIcons.MoreVert, "Más opciones")
-								}
-								DropdownMenu(more, { more = false }) {
-									DropdownMenuItem(
-										text = { Text("Añadir casilla") },
-										enabled = enabled,
-										onClick = { more = false; addItem() })
-									DropdownMenuItem(
-										text = { Text("Imágenes y archivos") },
-										enabled = enabled && !controller.importing,
-										onClick = { more = false; imageMenu = true })
-									DropdownMenuItem(
-										text = { Text("Recordatorio") },
-										enabled = enabled,
-										onClick = { more = false; reminder = true })
-									DropdownMenuItem(
-										text = { Text("Compartir") },
-										onClick = {
-											more = false
-											share = true
-										},
-									)
-									DropdownMenuItem(
-										text = { Text("Deshacer") },
-										enabled = controller.canUndo,
-										onClick = {
-											more = false
-											controller.editor?.undoEdit()
-										},
-									)
-									DropdownMenuItem(
-										text = { Text("Rehacer") },
-										enabled = controller.canRedo,
-										onClick = {
-											more = false
-											controller.editor?.redoEdit()
-										},
-									)
-								}
+							reminder = true
+						}
+					}
+
+					Row(
+						Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+						verticalAlignment = Alignment.CenterVertically,
+					) {
+						RichFormatBar(document, controller, enabled, Modifier.weight(1f))
+						Box {
+							IconButton(onClick = { more = true }) {
+								Icon(MindIcons.MoreVert, "Más opciones")
+							}
+							DropdownMenu(more, { more = false }) {
+								DropdownMenuItem(
+									text = { Text("Añadir casilla") },
+									enabled = enabled,
+									onClick = { more = false; addItem() })
+								DropdownMenuItem(
+									text = { Text("Imágenes y archivos") },
+									enabled = enabled && !controller.importing,
+									onClick = { more = false; imageMenu = true })
+								DropdownMenuItem(
+									text = { Text("Recordatorio") },
+									enabled = enabled,
+									onClick = { more = false; reminder = true })
+								DropdownMenuItem(
+									text = { Text("Compartir") },
+									onClick = {
+										more = false
+										share = true
+									},
+								)
+								DropdownMenuItem(
+									text = { Text("Deshacer") },
+									enabled = controller.canUndo,
+									onClick = {
+										more = false
+										controller.editor?.undoEdit()
+									},
+								)
+								DropdownMenuItem(
+									text = { Text("Rehacer") },
+									enabled = controller.canRedo,
+									onClick = {
+										more = false
+										controller.editor?.redoEdit()
+									},
+								)
 							}
 						}
 					}
 				}
 			}
+
 		},
 	) { padding ->
 		if (state.isLoading)
@@ -359,69 +358,17 @@ fun EditNoteScreen(
 				Modifier.fillMaxSize()
 					.padding(padding)
 					.consumeWindowInsets(padding)
-					.then(if (focus) Modifier.imePadding() else Modifier)
 					.verticalScroll(rememberScrollState())
 					.padding(horizontal = 24.dp)
 					.padding(top = 16.dp, bottom = 24.dp),
 				verticalArrangement = Arrangement.spacedBy(16.dp),
 			) {
-				if (!focus && !quickCapture) {
-					Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-						Surface(
-							onClick = { focus = true },
-							enabled = enabled,
-							modifier = Modifier.weight(1f),
-							color = MaterialTheme.colorScheme.surfaceContainer,
-							shape = RoundedCornerShape(14.dp),
-						) {
-							Row(
-								Modifier.heightIn(min = 48.dp).padding(12.dp),
-								verticalAlignment = Alignment.CenterVertically,
-								horizontalArrangement = Arrangement.spacedBy(8.dp),
-							) {
-								Icon(MindIcons.CenterFocusStrong, null)
-								Text(
-									"Concentrarme",
-									style = MaterialTheme.typography.bodyMedium,
-								)
-							}
-						}
-						Surface(
-							onClick = {
-								val before = document.archived
-								change(document.copy(archived = !before))
-								scope.launch {
-									if (
-										snackbar.showSnackbar(
-											if (before) "Nota restaurada" else "Nota archivada",
-											"Deshacer",
-										) == SnackbarResult.ActionPerformed
-									)
-										change(latestDocument.copy(archived = before))
-								}
-							},
-							enabled = enabled,
-							shape = RoundedCornerShape(14.dp),
-							color = MaterialTheme.colorScheme.surfaceContainer,
-						) {
-							Box(
-								Modifier.size(48.dp),
-								contentAlignment = Alignment.Center,
-							) {
-								DesignIcon(
-									MindIcons.Archive,
-									if (document.archived) "Desarchivar nota" else "Archivar nota",
-								)
-							}
-						}
-					}
-				}
-				if (!focus)
-					Text(
-						"Título opcional",
-						style = MaterialTheme.typography.bodySmall,
-						color = MaterialTheme.colorScheme.onSurfaceVariant,
-					)
+
+				Text(
+					"Título opcional",
+					style = MaterialTheme.typography.bodySmall,
+					color = MaterialTheme.colorScheme.onSurfaceVariant,
+				)
 				BasicTextField(
 					state.title,
 					{ onEvent(EditNoteEvent.EnteredTitle(it)) },
@@ -430,8 +377,8 @@ fun EditNoteScreen(
 					textStyle =
 						MaterialTheme.typography.headlineLarge.copy(
 							color = MaterialTheme.colorScheme.onSurface,
-							fontSize = if (focus) 30.sp else 28.sp,
-							lineHeight = if (focus) 39.sp else 36.sp,
+							fontSize = 28.sp,
+							lineHeight = 36.sp,
 						),
 					cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
 					decorationBox = { field ->
@@ -459,7 +406,7 @@ fun EditNoteScreen(
 					cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
 					decorationBox = { field ->
 						Box {
-							if (document.subtitle.isBlank() && !focus)
+							if (document.subtitle.isBlank())
 								Text(
 									"Subtítulo (opcional)",
 									style = MaterialTheme.typography.bodyMedium,
@@ -474,7 +421,6 @@ fun EditNoteScreen(
 					enabled,
 					controller,
 					{ onEvent(EditNoteEvent.EnteredContent(it)) },
-					focus,
 				)
 				document.checklist.forEachIndexed { index, item ->
 					key(item.id) {
@@ -552,7 +498,7 @@ fun EditNoteScreen(
 						style = MaterialTheme.typography.bodySmall,
 						color = MaterialTheme.colorScheme.onSurfaceVariant,
 					)
-				if (document.reminder != null && !document.reminderCompleted && !focus)
+				if (document.reminder != null && !document.reminderCompleted)
 					DesignRow(
 						"Recordatorio",
 						MindIcons.Notifications,
@@ -581,45 +527,31 @@ private fun CaptureTool(
 	icon: androidx.compose.ui.graphics.vector.ImageVector,
 	enabled: Boolean,
 	modifier: Modifier,
+	compact: Boolean,
 	onClick: () -> Unit,
 ) {
-	val stacked = LocalDensity.current.fontScale > 1.1f
 	Surface(
 		onClick = onClick,
 		enabled = enabled,
-		modifier = modifier,
+		modifier = modifier.semantics {
+			contentDescription = if (label == "Dictar") "Dictar por voz" else label
+		},
 		shape = RoundedCornerShape(12.dp),
 		color = MaterialTheme.colorScheme.surfaceContainer,
 	) {
-		if (stacked) {
-			Column(
-				Modifier.heightIn(min = 76.dp).padding(horizontal = 4.dp, vertical = 4.dp),
-				horizontalAlignment = Alignment.CenterHorizontally,
-				verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
-			) {
-				DesignIcon(icon)
-				Text(
-					label,
-					style = MaterialTheme.typography.bodyMedium,
-					maxLines = 1,
-					overflow = TextOverflow.Ellipsis,
-				)
-			}
-		} else {
-			Row(
-				Modifier.heightIn(min = 48.dp).padding(horizontal = 8.dp),
-				verticalAlignment = Alignment.CenterVertically,
-				horizontalArrangement = Arrangement.Center,
-			) {
-				DesignIcon(icon)
-				Spacer(Modifier.width(8.dp))
-				Text(
-					label,
-					style = MaterialTheme.typography.bodyMedium,
-					maxLines = 1,
-					overflow = TextOverflow.Ellipsis,
-				)
-			}
+		Column(
+			Modifier.heightIn(min = if (compact) 48.dp else 68.dp)
+				.padding(horizontal = 4.dp, vertical = 8.dp),
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
+		) {
+			DesignIcon(icon)
+			if (!compact) Text(
+				label,
+				style = MaterialTheme.typography.labelMedium,
+				maxLines = 1,
+				overflow = TextOverflow.Ellipsis
+			)
 		}
 	}
 }

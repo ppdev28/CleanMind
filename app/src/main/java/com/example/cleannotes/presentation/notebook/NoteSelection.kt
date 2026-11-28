@@ -16,14 +16,13 @@ internal fun visibleNotes(state: NotesUiState, filter: String): List<Note> =
 	state.allNotes.filter { note ->
 		val document = NoteDocument.decode(note.content)
 		when (state.selectedTab) {
-			NotesTab.HOME -> !note.isReminder && !document.archived
-			NotesTab.REMINDERS -> (note.isReminder || document.reminder != null) && !document.reminderCompleted && !document.archived
+			NotesTab.HOME -> !note.isReminder
+			NotesTab.REMINDERS -> (note.isReminder || document.reminder != null) && !document.reminderCompleted
 			NotesTab.NOTES, NotesTab.SEARCH -> {
 				val matchesFilter = when (filter) {
-					"Archivadas" -> document.archived
-					"Fijadas" -> document.pinned && !document.archived
-					"Con imágenes" -> document.images.isNotEmpty() && !document.archived
-					else -> !document.archived
+					"Fijadas" -> document.pinned
+					"Con imágenes" -> document.images.isNotEmpty()
+					else -> true
 				}
 				matchesFilter && if (state.selectedTab == NotesTab.NOTES) {
 					!note.isReminder && (state.selectedFolderId == null || if (state.selectedFolderId == 0) note.folderId == null else note.folderId == state.selectedFolderId)

@@ -30,6 +30,15 @@ class NotesViewModelTest {
 	}
 
 	@Test
+	fun removingArchiveKeepsLegacyNotesVisibleWithoutRewritingThem() {
+		val note = Note(1, "Anterior", com.example.cleannotes.model.NoteDocument(text = "Original", archived = true).encode(), 1)
+		for (tab in listOf(NotesTab.HOME, NotesTab.NOTES, NotesTab.SEARCH)) {
+			assertEquals(listOf(note), visibleNotes(NotesUiState(allNotes = listOf(note), selectedTab = tab), "Todas"))
+		}
+		assertTrue(com.example.cleannotes.model.NoteDocument.decode(note.content).archived)
+	}
+
+	@Test
 	fun batchDeleteKeepsTheSelectionOnFailureAndCanBeRetried() = runTest(dispatcher) {
 		repository.notes[1] = Note(1, "Nota", "Texto", 1)
 		repository.notes[2] = Note(2, "Aviso", "", 2, true)

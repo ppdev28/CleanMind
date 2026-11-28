@@ -52,7 +52,6 @@ import com.example.cleannotes.presentation.ui.motion.AppMotion
 import com.example.cleannotes.presentation.util.DateUtils
 import java.text.SimpleDateFormat
 import java.util.Date
-import kotlinx.coroutines.launch
 
 typealias NoteChange = (Note, (NoteDocument) -> NoteDocument) -> Unit
 
@@ -160,35 +159,7 @@ fun NotebookScreen(
 	}
 	val snackbar = remember { SnackbarHostState() }
 	val tabStates = rememberSaveableStateHolder()
-	val scope = rememberCoroutineScope()
-	var pendingArchive by remember { mutableStateOf<Pair<Note, Boolean>?>(null) }
-	val activeNotes = state.allNotes.filterNot { NoteDocument.decode(it.content).archived }
 	val notes = state.allNotes.filterNot { it.isReminder }
-	fun archive(note: Note) {
-		val archived = NoteDocument.decode(note.content).archived
-		pendingArchive = note to archived
-		onUpdateNote(note) { it.copy(archived = !archived) }
-	}
-	LaunchedEffect(state.allNotes, state.error, pendingArchive) {
-		val pending = pendingArchive ?: return@LaunchedEffect
-		if (state.error != null) {
-			pendingArchive = null
-			return@LaunchedEffect
-		}
-		val saved =
-			state.allNotes.firstOrNull { it.id == pending.first.id } ?: return@LaunchedEffect
-		if (NoteDocument.decode(saved.content).archived == pending.second) return@LaunchedEffect
-		pendingArchive = null
-		scope.launch {
-			val result =
-				snackbar.showSnackbar(
-					if (pending.second) "Nota restaurada" else "Nota archivada",
-					"Deshacer",
-				)
-			if (result == SnackbarResult.ActionPerformed)
-				onUpdateNote(saved) { it.copy(archived = pending.second) }
-		}
-	}
 	if (confirmSelectionDelete && selecting) BatchDeleteDialog(
 		selectedIds.size,
 		state.deletion,
@@ -255,16 +226,6 @@ fun NotebookScreen(
 					)
 					Spacer(Modifier.width(12.dp))
 					Text(if (doc.pinned) "Desfijar" else "Fijar a mano")
-				}
-				TextButton(
-					onClick = {
-						options = null
-						archive(note)
-					}
-				) {
-					DesignIcon(MindIcons.Archive)
-					Spacer(Modifier.width(12.dp))
-					Text(if (doc.archived) "Desarchivar" else "Archivar")
 				}
 				TextButton(
 					onClick = {
@@ -375,7 +336,7 @@ fun NotebookScreen(
 					tabStates.SaveableStateProvider(selectedTab) {
 						when {
 							selectedTab == NotesTab.HOME -> HomeAgenda(
-								notes = activeNotes.filterNot { it.isReminder },
+								notes = notes,
 								grid = homeGrid,
 								onToggle = { homeGrid = !homeGrid },
 								onOpen = ::openOrSelect,
@@ -409,7 +370,7 @@ fun NotebookScreen(
 												.selectableGroup(),
 											horizontalArrangement = Arrangement.spacedBy(4.dp),
 										) {
-											listOf("Todas", "Fijadas", "Con imágenes", "Archivadas")
+											listOf("Todas", "Fijadas", "Con imágenes")
 												.forEach { label ->
 													Surface(
 														modifier =
@@ -576,7 +537,7 @@ fun NotebookScreen(
 
 							else ->
 								ReminderCollection(
-									activeNotes, ::openOrSelect, onCreate, onUpdateNote,
+									state.allNotes, ::openOrSelect, onCreate, onUpdateNote,
 									selectedIds = selectedIds.toSet(), onToggleSelection = ::toggleSelection,
 									onOptions = { if (selecting) toggleSelection(it) else options = it }
 								)

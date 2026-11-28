@@ -57,7 +57,6 @@ fun RichFormatBar(
 				"Lista numerada",
 				enabled
 			) { editor?.list("number") }
-			FormatAction(MindIcons.CheckBox, "Casilla en el texto", enabled) { editor?.checkItem() }
 			FormatAction(
 				MindIcons.StrikethroughS,
 				"Tachado",
@@ -101,7 +100,7 @@ fun RichFormatBar(
 					"Negrita" to { editor?.format("bold") }, "Cursiva" to { editor?.format("italic") },
 					"Subrayado" to { editor?.format("underline") }, "Tachado" to { editor?.format("strike") },
 					"Viñetas" to { editor?.list("• ") }, "Numeración" to { editor?.list("number") },
-					"Casilla" to { editor?.checkItem() }, "Borrar formato" to { editor?.format("clear") },
+					"Borrar formato" to { editor?.format("clear") },
 				).forEach { (label, action) -> AssistChip(onClick = action, label = { Text(label) }) }
 			}
 			Text("Alineación y sangría", style = MaterialTheme.typography.labelLarge)
