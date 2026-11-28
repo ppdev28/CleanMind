@@ -30,6 +30,7 @@ import com.example.cleannotes.R
 import com.example.cleannotes.data.reminders.ReminderScheduler
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.model.ReminderConfig
+import com.example.cleannotes.presentation.ui.components.ContentSheet
 import com.example.cleannotes.presentation.ui.components.ScreenTopBar
 import com.example.cleannotes.presentation.ui.design.DesignRow
 import com.example.cleannotes.presentation.ui.design.AppBottomSheet
@@ -161,7 +162,7 @@ fun ReminderEditorScreen(
 			)
 		},
 		bottomBar = {
-			Surface(color = MaterialTheme.colorScheme.background) {
+			Surface(color = MaterialTheme.colorScheme.surface) {
 				Button(
 					onClick = {
 						if (
@@ -188,161 +189,162 @@ fun ReminderEditorScreen(
 			}
 		},
 	) { padding ->
-		Column(
-			Modifier.fillMaxSize()
-				.animateContentSize()
-				.padding(padding)
-				.verticalScroll(rememberScrollState())
-				.padding(24.dp),
-			verticalArrangement = Arrangement.spacedBy(20.dp),
-		) {
-			Text("Una cosa menos en tu cabeza", style = MaterialTheme.typography.titleLarge)
-			OutlinedTextField(
-				state.title,
-				{ onEvent(EditNoteEvent.EnteredTitle(it)) },
-				enabled = enabled,
-				label = { Text("¿Qué quieres recordar?") },
-				modifier = Modifier.fillMaxWidth(),
-				minLines = 2,
-				shape = RoundedCornerShape(16.dp),
-			)
-			Row(verticalAlignment = Alignment.CenterVertically) {
-				Icon(
-					MindIcons.Notifications,
-					null,
-					tint = MaterialTheme.colorScheme.onSurfaceVariant,
+		ContentSheet(padding) {
+			Column(
+				Modifier.fillMaxSize()
+					.animateContentSize()
+					.verticalScroll(rememberScrollState())
+					.padding(24.dp),
+				verticalArrangement = Arrangement.spacedBy(20.dp),
+			) {
+				Text("Una cosa menos en tu cabeza", style = MaterialTheme.typography.titleLarge)
+				OutlinedTextField(
+					state.title,
+					{ onEvent(EditNoteEvent.EnteredTitle(it)) },
+					enabled = enabled,
+					label = { Text("¿Qué quieres recordar?") },
+					modifier = Modifier.fillMaxWidth(),
+					minLines = 2,
+					shape = RoundedCornerShape(16.dp),
 				)
-				Text(
-					"Avisarme",
-					Modifier.weight(1f).padding(start = 12.dp),
-					style = MaterialTheme.typography.bodyMedium,
-				)
-				Switch(
-					notify,
+				Row(verticalAlignment = Alignment.CenterVertically) {
+					Icon(
+						MindIcons.Notifications,
+						null,
+						tint = MaterialTheme.colorScheme.onSurfaceVariant,
+					)
+					Text(
+						"Avisarme",
+						Modifier.weight(1f).padding(start = 12.dp),
+						style = MaterialTheme.typography.bodyMedium,
+					)
+					Switch(
+						notify,
+						{ value ->
+							notify = value
+							onEvent(
+								EditNoteEvent.EnteredContent(
+									doc.copy(text = message, reminder = if (value) config else null)
+										.encode()
+								)
+							)
+						},
+						enabled = enabled,
+					)
+				}
+				AnimatedVisibility(notify, enter = AppMotion.reveal(), exit = AppMotion.conceal()) {
+					Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+						DesignRow(
+							"Fecha",
+							MindIcons.Event,
+							DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(config.at),
+						) {
+							val c = Calendar.getInstance().apply { timeInMillis = config.at }
+							DatePickerDialog(
+								dialogContext,
+								{ _, y, m, d ->
+									c.set(y, m, d)
+									change(config.copy(at = c.timeInMillis))
+								},
+								c.get(Calendar.YEAR),
+								c.get(Calendar.MONTH),
+								c.get(Calendar.DAY_OF_MONTH),
+							)
+								.show()
+						}
+						DesignRow(
+							"Hora",
+							MindIcons.Clock,
+							DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(config.at),
+						) {
+							val c = Calendar.getInstance().apply { timeInMillis = config.at }
+							TimePickerDialog(
+								dialogContext,
+								{ _, h, m ->
+									c.set(Calendar.HOUR_OF_DAY, h)
+									c.set(
+										Calendar.MINUTE,
+										m,
+									)
+									c.set(Calendar.SECOND, 0)
+									c.set(
+										Calendar.MILLISECOND,
+										0,
+									)
+									change(config.copy(at = c.timeInMillis))
+								},
+								c.get(Calendar.HOUR_OF_DAY),
+								c.get(Calendar.MINUTE),
+								android.text.format.DateFormat.is24HourFormat(context),
+							)
+								.show()
+						}
+						if (!validTime)
+							Text(
+								"Elige una hora futura.",
+								color = MaterialTheme.colorScheme.error,
+								style = MaterialTheme.typography.bodySmall,
+							)
+						if (!ReminderScheduler.exactAllowed(context))
+							Text(
+								"El aviso puede llegar con retraso. Puedes permitir alarmas exactas en las opciones.",
+								style = MaterialTheme.typography.bodySmall,
+								color = MaterialTheme.colorScheme.onSurfaceVariant,
+							)
+						TextButton(onClick = { advanced = true }) {
+							Icon(
+								MindIcons.Tune,
+								null,
+							)
+							Spacer(Modifier.width(8.dp))
+							Text("Repetición y opciones de aviso")
+						}
+					}
+				}
+				OutlinedTextField(
+					message,
 					{ value ->
-						notify = value
 						onEvent(
 							EditNoteEvent.EnteredContent(
-								doc.copy(text = message, reminder = if (value) config else null)
+								doc.copy(
+									text = value,
+									reminder = if (notify) config.copy(message = value) else null,
+								)
 									.encode()
 							)
 						)
 					},
 					enabled = enabled,
+					modifier = Modifier.fillMaxWidth(),
+					label = { Text("Detalle (opcional)") },
+					shape = RoundedCornerShape(16.dp),
 				)
-			}
-			AnimatedVisibility(notify, enter = AppMotion.reveal(), exit = AppMotion.conceal()) {
-				Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-					DesignRow(
-						"Fecha",
-						MindIcons.Event,
-						DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(config.at),
-					) {
-						val c = Calendar.getInstance().apply { timeInMillis = config.at }
-						DatePickerDialog(
-							dialogContext,
-							{ _, y, m, d ->
-								c.set(y, m, d)
-								change(config.copy(at = c.timeInMillis))
-							},
-							c.get(Calendar.YEAR),
-							c.get(Calendar.MONTH),
-							c.get(Calendar.DAY_OF_MONTH),
-						)
-							.show()
-					}
-					DesignRow(
-						"Hora",
-						MindIcons.Clock,
-						DateFormat.getTimeInstance(DateFormat.SHORT, locale).format(config.at),
-					) {
-						val c = Calendar.getInstance().apply { timeInMillis = config.at }
-						TimePickerDialog(
-							dialogContext,
-							{ _, h, m ->
-								c.set(Calendar.HOUR_OF_DAY, h)
-								c.set(
-									Calendar.MINUTE,
-									m,
-								)
-								c.set(Calendar.SECOND, 0)
-								c.set(
-									Calendar.MILLISECOND,
-									0,
-								)
-								change(config.copy(at = c.timeInMillis))
-							},
-							c.get(Calendar.HOUR_OF_DAY),
-							c.get(Calendar.MINUTE),
-							android.text.format.DateFormat.is24HourFormat(context),
-						)
-							.show()
-					}
-					if (!validTime)
-						Text(
-							"Elige una hora futura.",
-							color = MaterialTheme.colorScheme.error,
-							style = MaterialTheme.typography.bodySmall,
-						)
-					if (!ReminderScheduler.exactAllowed(context))
-						Text(
-							"El aviso puede llegar con retraso. Puedes permitir alarmas exactas en las opciones.",
-							style = MaterialTheme.typography.bodySmall,
-							color = MaterialTheme.colorScheme.onSurfaceVariant,
-						)
-					TextButton(onClick = { advanced = true }) {
-						Icon(
-							MindIcons.Tune,
-							null,
-						)
-						Spacer(Modifier.width(8.dp))
-						Text("Repetición y opciones de aviso")
-					}
-				}
-			}
-			OutlinedTextField(
-				message,
-				{ value ->
-					onEvent(
-						EditNoteEvent.EnteredContent(
-							doc.copy(
-								text = value,
-								reminder = if (notify) config.copy(message = value) else null,
-							)
-								.encode()
-						)
+				if (denied) {
+					Text(
+						"Activa las notificaciones o desmarca Avisarme para guardarlo sin aviso.",
+						style = MaterialTheme.typography.bodySmall,
+						color = MaterialTheme.colorScheme.error,
 					)
-				},
-				enabled = enabled,
-				modifier = Modifier.fillMaxWidth(),
-				label = { Text("Detalle (opcional)") },
-				shape = RoundedCornerShape(16.dp),
-			)
-			if (denied) {
-				Text(
-					"Activa las notificaciones o desmarca Avisarme para guardarlo sin aviso.",
-					style = MaterialTheme.typography.bodySmall,
-					color = MaterialTheme.colorScheme.error,
-				)
-				TextButton(
-					onClick = {
-						context.startActivity(
-							Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-								.putExtra(
-									Settings.EXTRA_APP_PACKAGE,
-									context.packageName,
-								)
-						)
+					TextButton(
+						onClick = {
+							context.startActivity(
+								Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+									.putExtra(
+										Settings.EXTRA_APP_PACKAGE,
+										context.packageName,
+									)
+							)
+						}
+					) {
+						Text("Permitir notificaciones")
 					}
-				) {
-					Text("Permitir notificaciones")
 				}
+				if (state.saveStatus == SaveStatus.ERROR)
+					Text(
+						"No se pudo guardar. Vuelve a intentarlo.",
+						color = MaterialTheme.colorScheme.error,
+					)
 			}
-			if (state.saveStatus == SaveStatus.ERROR)
-				Text(
-					"No se pudo guardar. Vuelve a intentarlo.",
-					color = MaterialTheme.colorScheme.error,
-				)
 		}
 	}
 }

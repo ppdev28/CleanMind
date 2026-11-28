@@ -42,6 +42,7 @@ import com.example.cleannotes.model.Note
 import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.components.HomeAgenda
 import com.example.cleannotes.presentation.ui.components.NotebookBottomBar
+import com.example.cleannotes.presentation.ui.components.ContentSheet
 import com.example.cleannotes.presentation.ui.components.CustomTopBar
 import com.example.cleannotes.presentation.ui.components.NoteCreationSheet
 import com.example.cleannotes.presentation.ui.design.*
@@ -242,239 +243,239 @@ fun NotebookScreen(
 			)
 		},
 	) { padding ->
-		Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding()) {
-			if (state.error != null)
-				Row(
-					Modifier.padding(horizontal = 24.dp),
-					verticalAlignment = Alignment.CenterVertically,
-				) {
-					Text(
-						"No se pudo completar la operación",
-						Modifier.weight(1f),
-						color = MaterialTheme.colorScheme.error,
-					)
-					TextButton(
-						onClick = if (state.error == NotesError.LOAD) onRetry else onDismissError
+		ContentSheet(padding) {
+			Column(Modifier.fillMaxSize().imePadding()) {
+				if (state.error != null)
+					Row(
+						Modifier.padding(horizontal = 24.dp),
+						verticalAlignment = Alignment.CenterVertically,
 					) {
-						Text("Reintentar")
+						Text(
+							"No se pudo completar la operación",
+							Modifier.weight(1f),
+							color = MaterialTheme.colorScheme.error,
+						)
+						TextButton(
+							onClick = if (state.error == NotesError.LOAD) onRetry else onDismissError
+						) {
+							Text("Reintentar")
+						}
 					}
-				}
-			AnimatedContent(
-				targetState = state.isLoading to state.selectedTab,
-				modifier = Modifier.fillMaxSize(),
-				transitionSpec = {
-					AppMotion.content(targetState.second.ordinal >= initialState.second.ordinal)
-				},
-				label = "notebookSection",
-			) { (loading, selectedTab) ->
-				val notesTab = selectedTab in listOf(NotesTab.NOTES, NotesTab.SEARCH)
-				if (loading)
-					Box(
-						Modifier.fillMaxSize(),
-						contentAlignment = Alignment.Center,
-					) {
-						CircularProgressIndicator()
-					}
-				else
-					tabStates.SaveableStateProvider(selectedTab) {
-						when {
-							selectedTab == NotesTab.HOME -> HomeAgenda(
-								notes = notes,
-								grid = homeGrid,
-								onOpen = ::openOrSelect,
-								onSelect = { toggleSelection(it); onClearDeletionError() },
-								onCreate = onQuickCreate,
-								selectedIds = selection,
-							)
+				AnimatedContent(
+					targetState = state.isLoading to state.selectedTab,
+					modifier = Modifier.fillMaxSize(),
+					transitionSpec = {
+						AppMotion.content(targetState.second.ordinal >= initialState.second.ordinal)
+					},
+					label = "notebookSection",
+				) { (loading, selectedTab) ->
+					val notesTab = selectedTab in listOf(NotesTab.NOTES, NotesTab.SEARCH)
+					if (loading)
+						Box(
+							Modifier.fillMaxSize(),
+							contentAlignment = Alignment.Center,
+						) {
+							CircularProgressIndicator()
+						}
+					else
+						tabStates.SaveableStateProvider(selectedTab) {
+							when {
+								selectedTab == NotesTab.HOME -> HomeAgenda(
+									notes = notes,
+									grid = homeGrid,
+									onOpen = ::openOrSelect,
+									onSelect = { toggleSelection(it); onClearDeletionError() },
+									onCreate = onQuickCreate,
+									selectedIds = selection,
+								)
 
-							notesTab -> {
-								val listLayoutState = rememberLazyGridState()
-								val gridLayoutState = rememberLazyGridState()
-								LaunchedEffect(searchFocusRequest) {
-									if (selectedTab == NotesTab.SEARCH && searchFocusRequest > 0) {
-										listLayoutState.scrollToItem(0)
-										gridLayoutState.scrollToItem(0)
+								notesTab -> {
+									val listLayoutState = rememberLazyGridState()
+									val gridLayoutState = rememberLazyGridState()
+									LaunchedEffect(searchFocusRequest) {
+										if (selectedTab == NotesTab.SEARCH && searchFocusRequest > 0) {
+											listLayoutState.scrollToItem(0)
+											gridLayoutState.scrollToItem(0)
+										}
 									}
-								}
-								val filtered = visibleNotes
-								val header: @Composable () -> Unit = {
-									Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-										if (selectedTab == NotesTab.SEARCH)
-											SearchEntry(state.query, onQueryChange, focusRequest = searchFocusRequest)
-										Row(
-											Modifier.fillMaxWidth()
-												.horizontalScroll(rememberScrollState())
-												.selectableGroup(),
-											horizontalArrangement = Arrangement.spacedBy(4.dp),
-										) {
-											listOf("Todas", "Fijadas", "Con imágenes")
-												.forEach { label ->
-													Surface(
-														modifier =
-															Modifier.clip(RoundedCornerShape(12.dp)).selectable(
-																filter == label,
-																role = Role.Tab,
-																onClick = { filter = label },
-															),
-														color =
-															if (filter == label)
-																MaterialTheme.colorScheme
-																	.primaryContainer
-															else
-																MaterialTheme.colorScheme
-																	.background,
-														shape = RoundedCornerShape(12.dp),
-													) {
-														Row(
-															Modifier.heightIn(min = 48.dp)
-																.padding(horizontal = 10.dp),
-															verticalAlignment =
-																Alignment.CenterVertically,
-															horizontalArrangement =
-																Arrangement.spacedBy(6.dp),
+									val filtered = visibleNotes
+									val header: @Composable () -> Unit = {
+										Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+											if (selectedTab == NotesTab.SEARCH)
+												SearchEntry(state.query, onQueryChange, focusRequest = searchFocusRequest)
+											Row(
+												Modifier.fillMaxWidth()
+													.horizontalScroll(rememberScrollState())
+													.selectableGroup(),
+												horizontalArrangement = Arrangement.spacedBy(4.dp),
+											) {
+												listOf("Todas", "Fijadas", "Con imágenes")
+													.forEach { label ->
+														Surface(
+															modifier =
+																Modifier.clip(RoundedCornerShape(12.dp)).selectable(
+																	filter == label,
+																	role = Role.Tab,
+																	onClick = { filter = label },
+																),
+															color =
+																if (filter == label)
+																	MaterialTheme.colorScheme
+																		.primaryContainer
+																else androidx.compose.ui.graphics.Color.Transparent,
+															shape = RoundedCornerShape(12.dp),
 														) {
-															if (filter == label)
-																Icon(
-																	MindIcons.Check,
-																	null,
-																	Modifier.size(16.dp),
+															Row(
+																Modifier.heightIn(min = 48.dp)
+																	.padding(horizontal = 10.dp),
+																verticalAlignment =
+																	Alignment.CenterVertically,
+																horizontalArrangement =
+																	Arrangement.spacedBy(6.dp),
+															) {
+																if (filter == label)
+																	Icon(
+																		MindIcons.Check,
+																		null,
+																		Modifier.size(16.dp),
+																	)
+																Text(
+																	label,
+																	style =
+																		MaterialTheme.typography
+																			.bodySmall,
 																)
-															Text(
-																label,
-																style =
-																	MaterialTheme.typography
-																		.bodySmall,
-															)
+															}
 														}
+													}
+											}
+											Row(
+												Modifier.fillMaxWidth(),
+												verticalAlignment = Alignment.CenterVertically,
+											) {
+												Text(
+													if (selectedTab == NotesTab.SEARCH) {
+														if (state.query.isBlank()) "Busca en tu libreta"
+														else "Coincidencias en título y contenido"
+													} else
+														state.folders
+															.firstOrNull {
+																it.id == state.selectedFolderId
+															}
+															?.name
+															?: if (state.selectedFolderId == 0)
+																"Sin carpeta"
+															else "Todas las notas",
+													Modifier.weight(1f),
+													style = MaterialTheme.typography.bodyMedium,
+													color = MaterialTheme.colorScheme.onSurfaceVariant,
+												)
+
+											}
+										}
+									}
+									Crossfade(
+										targetState = grid,
+										animationSpec = tween(AppMotion.Short),
+										label = "noteCollectionLayout",
+									) { gridMode ->
+										LazyVerticalGrid(
+											columns = GridCells.Adaptive(128.dp),
+											state = if (gridMode) gridLayoutState else listLayoutState,
+											contentPadding =
+												PaddingValues(
+													start = 24.dp,
+													end = 24.dp,
+													top = 8.dp,
+													bottom = 24.dp,
+												),
+											verticalArrangement = Arrangement.spacedBy(16.dp),
+											horizontalArrangement = Arrangement.spacedBy(16.dp),
+										) {
+											if (selectedTab == NotesTab.NOTES) {
+												item(
+													key = "folder-header",
+													span = { GridItemSpan(maxLineSpan) },
+												) {
+													FolderGridHeader {
+														managingFolders = true
+														onClearFolderError()
+													}
+												}
+												item(key = "folder-all") {
+													FolderTile(
+														"Todas las notas",
+														notes.size,
+														state.selectedFolderId == null,
+														{ onFolderSelected(null) },
+														Modifier.animateItem(),
+													)
+												}
+												item(key = "folder-unfiled") {
+													FolderTile(
+														"Sin carpeta",
+														folderCounts[null] ?: 0,
+														state.selectedFolderId == 0,
+														{ onFolderSelected(0) },
+														Modifier.animateItem(),
+													)
+												}
+												items(state.folders, key = { "folder-${it.id}" }) { folder ->
+													FolderTile(
+														folder.name,
+														folderCounts[folder.id] ?: 0,
+														state.selectedFolderId == folder.id,
+														{ onFolderSelected(folder.id) },
+														Modifier.animateItem(),
+													)
+												}
+											}
+											item(
+												key = "collection-tools",
+												span = { GridItemSpan(maxLineSpan) },
+											) {
+												header()
+											}
+
+											items(
+												filtered,
+												key = { requireNotNull(it.id) },
+												span = {
+													GridItemSpan(if (gridMode) 1 else maxLineSpan)
+												},
+											) { note ->
+												DesignNoteCard(
+													note,
+													modifier = Modifier.animateItem(),
+													onClick = { openOrSelect(note) },
+													onLongClick = { toggleSelection(note); onClearDeletionError() },
+													selectionMode = selecting, selected = note.id in selection,
+													compact = gridMode,
+												)
+											}
+											if (filtered.isEmpty())
+												item(span = { GridItemSpan(maxLineSpan) }) {
+													EmptyDesignState(
+														"Sin notas aquí",
+														"Prueba otra búsqueda o guarda una nueva idea.",
+														"Crear una nota",
+													) {
+														onCreate(false)
 													}
 												}
 										}
-										Row(
-											Modifier.fillMaxWidth(),
-											verticalAlignment = Alignment.CenterVertically,
-										) {
-											Text(
-												if (selectedTab == NotesTab.SEARCH) {
-													if (state.query.isBlank()) "Busca en tu libreta"
-													else "Coincidencias en título y contenido"
-												} else
-													state.folders
-														.firstOrNull {
-															it.id == state.selectedFolderId
-														}
-														?.name
-														?: if (state.selectedFolderId == 0)
-															"Sin carpeta"
-														else "Todas las notas",
-												Modifier.weight(1f),
-												style = MaterialTheme.typography.bodyMedium,
-												color = MaterialTheme.colorScheme.onSurfaceVariant,
-											)
-
-										}
 									}
 								}
-								Crossfade(
-									targetState = grid,
-									animationSpec = tween(AppMotion.Short),
-									label = "noteCollectionLayout",
-								) { gridMode ->
-									LazyVerticalGrid(
-										columns = GridCells.Adaptive(128.dp),
-										state = if (gridMode) gridLayoutState else listLayoutState,
-										contentPadding =
-											PaddingValues(
-												start = 24.dp,
-												end = 24.dp,
-												top = 8.dp,
-												bottom = 24.dp,
-											),
-										verticalArrangement = Arrangement.spacedBy(16.dp),
-										horizontalArrangement = Arrangement.spacedBy(16.dp),
-									) {
-										if (selectedTab == NotesTab.NOTES) {
-											item(
-												key = "folder-header",
-												span = { GridItemSpan(maxLineSpan) },
-											) {
-												FolderGridHeader {
-													managingFolders = true
-													onClearFolderError()
-												}
-											}
-											item(key = "folder-all") {
-												FolderTile(
-													"Todas las notas",
-													notes.size,
-													state.selectedFolderId == null,
-													{ onFolderSelected(null) },
-													Modifier.animateItem(),
-												)
-											}
-											item(key = "folder-unfiled") {
-												FolderTile(
-													"Sin carpeta",
-													folderCounts[null] ?: 0,
-													state.selectedFolderId == 0,
-													{ onFolderSelected(0) },
-													Modifier.animateItem(),
-												)
-											}
-											items(state.folders, key = { "folder-${it.id}" }) { folder ->
-												FolderTile(
-													folder.name,
-													folderCounts[folder.id] ?: 0,
-													state.selectedFolderId == folder.id,
-													{ onFolderSelected(folder.id) },
-													Modifier.animateItem(),
-												)
-											}
-										}
-										item(
-											key = "collection-tools",
-											span = { GridItemSpan(maxLineSpan) },
-										) {
-											header()
-										}
 
-										items(
-											filtered,
-											key = { requireNotNull(it.id) },
-											span = {
-												GridItemSpan(if (gridMode) 1 else maxLineSpan)
-											},
-										) { note ->
-											DesignNoteCard(
-												note,
-												modifier = Modifier.animateItem(),
-												onClick = { openOrSelect(note) },
-												onLongClick = { toggleSelection(note); onClearDeletionError() },
-												selectionMode = selecting, selected = note.id in selection,
-												compact = gridMode,
-											)
-										}
-										if (filtered.isEmpty())
-											item(span = { GridItemSpan(maxLineSpan) }) {
-												EmptyDesignState(
-													"Sin notas aquí",
-													"Prueba otra búsqueda o guarda una nueva idea.",
-													"Crear una nota",
-												) {
-													onCreate(false)
-												}
-											}
-									}
-								}
+								else ->
+									ReminderCollection(
+										visibleNotes, ::openOrSelect, onCreate, onUpdateNote,
+										selectedIds = selection, onToggleSelection = ::toggleSelection,
+										onSelect = { toggleSelection(it); onClearDeletionError() }
+									)
 							}
-
-							else ->
-								ReminderCollection(
-									visibleNotes, ::openOrSelect, onCreate, onUpdateNote,
-									selectedIds = selection, onToggleSelection = ::toggleSelection,
-									onSelect = { toggleSelection(it); onClearDeletionError() }
-								)
 						}
-					}
+				}
 			}
 		}
 	}

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleannotes.model.CheckItem
 import com.example.cleannotes.model.NoteDocument
+import com.example.cleannotes.presentation.ui.components.ContentSheet
 import com.example.cleannotes.presentation.ui.design.*
 import com.example.cleannotes.presentation.ui.edit_note.richtext.*
 import kotlinx.coroutines.launch
@@ -247,7 +248,7 @@ fun EditNoteScreen(
 		},
 		bottomBar = {
 
-			Surface(color = MaterialTheme.colorScheme.background) {
+			Surface(color = MaterialTheme.colorScheme.surface) {
 				Column(Modifier.windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars))) {
 					HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
@@ -305,178 +306,178 @@ fun EditNoteScreen(
 
 		},
 	) { padding ->
-		if (state.isLoading)
-			Box(
-				Modifier.fillMaxSize().padding(padding),
-				contentAlignment = Alignment.Center,
-			) {
-				CircularProgressIndicator()
-			}
-		else
-			Column(
-				Modifier.fillMaxSize()
-					.padding(padding)
-					.consumeWindowInsets(padding)
-					.verticalScroll(rememberScrollState())
-					.padding(horizontal = 24.dp)
-					.padding(top = 16.dp, bottom = 24.dp),
-				verticalArrangement = Arrangement.spacedBy(16.dp),
-			) {
+		ContentSheet(padding) {
+			if (state.isLoading)
+				Box(
+					Modifier.fillMaxSize(),
+					contentAlignment = Alignment.Center,
+				) {
+					CircularProgressIndicator()
+				}
+			else
+				Column(
+					Modifier.fillMaxSize()
+						.verticalScroll(rememberScrollState())
+						.padding(horizontal = 24.dp)
+						.padding(top = 16.dp, bottom = 24.dp),
+					verticalArrangement = Arrangement.spacedBy(16.dp),
+				) {
 
-				Text(
-					"Título opcional",
-					style = MaterialTheme.typography.bodySmall,
-					color = MaterialTheme.colorScheme.onSurfaceVariant,
-				)
-				BasicTextField(
-					state.title,
-					{ onEvent(EditNoteEvent.EnteredTitle(it)) },
-					enabled = enabled,
-					modifier = Modifier.fillMaxWidth().semantics { contentDescription = "Título" },
-					textStyle =
-						MaterialTheme.typography.headlineLarge.copy(
-							color = MaterialTheme.colorScheme.onSurface,
-							fontSize = 28.sp,
-							lineHeight = 36.sp,
-						),
-					cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-					decorationBox = { field ->
-						Box {
-							if (state.title.isBlank())
-								Text(
-									"Sin título",
-									style = MaterialTheme.typography.headlineLarge,
-									color = MaterialTheme.colorScheme.onSurfaceVariant,
-								)
-							field()
-						}
-					},
-				)
-				BasicTextField(
-					document.subtitle,
-					{ change(document.copy(subtitle = it)) },
-					enabled = enabled,
-					modifier =
-						Modifier.fillMaxWidth().semantics { contentDescription = "Subtítulo" },
-					textStyle =
-						MaterialTheme.typography.bodyMedium.copy(
-							color = MaterialTheme.colorScheme.onSurfaceVariant
-						),
-					cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-					decorationBox = { field ->
-						Box {
-							if (document.subtitle.isBlank())
-								Text(
-									"Subtítulo (opcional)",
-									style = MaterialTheme.typography.bodyMedium,
-									color = MaterialTheme.colorScheme.onSurfaceVariant,
-								)
-							field()
-						}
-					},
-				)
-				RichEditorContent(
-					document,
-					enabled,
-					controller,
-					{ onEvent(EditNoteEvent.EnteredContent(it)) },
-				)
-				document.checklist.forEachIndexed { index, item ->
-					key(item.id) {
-						Row(
-							Modifier.heightIn(min = 48.dp),
-							verticalAlignment = Alignment.CenterVertically,
-							horizontalArrangement = Arrangement.spacedBy(8.dp),
-						) {
-							Checkbox(
-								item.done,
-								{ checked ->
-									change(
-										document.copy(
-											checklist =
-												document.checklist.map {
-													if (it.id == item.id) it.copy(done = checked)
-													else it
-												}
-										)
+					Text(
+						"Título opcional",
+						style = MaterialTheme.typography.bodySmall,
+						color = MaterialTheme.colorScheme.onSurfaceVariant,
+					)
+					BasicTextField(
+						state.title,
+						{ onEvent(EditNoteEvent.EnteredTitle(it)) },
+						enabled = enabled,
+						modifier = Modifier.fillMaxWidth().semantics { contentDescription = "Título" },
+						textStyle =
+							MaterialTheme.typography.headlineLarge.copy(
+								color = MaterialTheme.colorScheme.onSurface,
+								fontSize = 28.sp,
+								lineHeight = 36.sp,
+							),
+						cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+						decorationBox = { field ->
+							Box {
+								if (state.title.isBlank())
+									Text(
+										"Sin título",
+										style = MaterialTheme.typography.headlineLarge,
+										color = MaterialTheme.colorScheme.onSurfaceVariant,
 									)
-								},
-								enabled = enabled,
-							)
-							BasicTextField(
-								item.text,
-								{ text ->
-									change(
-										document.copy(
-											checklist =
-												document.checklist.map {
-													if (it.id == item.id) it.copy(text = text)
-													else it
-												}
-										)
+								field()
+							}
+						},
+					)
+					BasicTextField(
+						document.subtitle,
+						{ change(document.copy(subtitle = it)) },
+						enabled = enabled,
+						modifier =
+							Modifier.fillMaxWidth().semantics { contentDescription = "Subtítulo" },
+						textStyle =
+							MaterialTheme.typography.bodyMedium.copy(
+								color = MaterialTheme.colorScheme.onSurfaceVariant
+							),
+						cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+						decorationBox = { field ->
+							Box {
+								if (document.subtitle.isBlank())
+									Text(
+										"Subtítulo (opcional)",
+										style = MaterialTheme.typography.bodyMedium,
+										color = MaterialTheme.colorScheme.onSurfaceVariant,
 									)
-								},
-								enabled = enabled,
-								modifier =
-									Modifier.weight(1f).semantics {
-										contentDescription = "Elemento de lista"
-									},
-								singleLine = true,
-								keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-								keyboardActions = KeyboardActions(onNext = { addItem() }),
-								textStyle =
-									MaterialTheme.typography.bodyMedium.copy(
-										color = MaterialTheme.colorScheme.onSurface,
-										textDecoration =
-											if (item.done) TextDecoration.LineThrough else null,
-									),
-								decorationBox = { field ->
-									Box {
-										if (item.text.isEmpty())
-											Text(
-												"Elemento de lista",
-												style = MaterialTheme.typography.bodyMedium,
-												color = MaterialTheme.colorScheme.onSurfaceVariant,
+								field()
+							}
+						},
+					)
+					RichEditorContent(
+						document,
+						enabled,
+						controller,
+						{ onEvent(EditNoteEvent.EnteredContent(it)) },
+					)
+					document.checklist.forEachIndexed { index, item ->
+						key(item.id) {
+							Row(
+								Modifier.heightIn(min = 48.dp),
+								verticalAlignment = Alignment.CenterVertically,
+								horizontalArrangement = Arrangement.spacedBy(8.dp),
+							) {
+								Checkbox(
+									item.done,
+									{ checked ->
+										change(
+											document.copy(
+												checklist =
+													document.checklist.map {
+														if (it.id == item.id) it.copy(done = checked)
+														else it
+													}
 											)
-										field()
-									}
-								},
-							)
-							IconButton(onClick = { removeItem(item, index) }, enabled = enabled) {
-								Icon(MindIcons.Close, "Eliminar casilla ${index + 1}")
+										)
+									},
+									enabled = enabled,
+								)
+								BasicTextField(
+									item.text,
+									{ text ->
+										change(
+											document.copy(
+												checklist =
+													document.checklist.map {
+														if (it.id == item.id) it.copy(text = text)
+														else it
+													}
+											)
+										)
+									},
+									enabled = enabled,
+									modifier =
+										Modifier.weight(1f).semantics {
+											contentDescription = "Elemento de lista"
+										},
+									singleLine = true,
+									keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+									keyboardActions = KeyboardActions(onNext = { addItem() }),
+									textStyle =
+										MaterialTheme.typography.bodyMedium.copy(
+											color = MaterialTheme.colorScheme.onSurface,
+											textDecoration =
+												if (item.done) TextDecoration.LineThrough else null,
+										),
+									decorationBox = { field ->
+										Box {
+											if (item.text.isEmpty())
+												Text(
+													"Elemento de lista",
+													style = MaterialTheme.typography.bodyMedium,
+													color = MaterialTheme.colorScheme.onSurfaceVariant,
+												)
+											field()
+										}
+									},
+								)
+								IconButton(onClick = { removeItem(item, index) }, enabled = enabled) {
+									Icon(MindIcons.Close, "Eliminar casilla ${index + 1}")
+								}
 							}
 						}
 					}
-				}
-				NoteImageStrip(document, enabled) { onEvent(EditNoteEvent.EnteredContent(it)) }
-				NoteFileList(document, enabled, controller) { onEvent(EditNoteEvent.EnteredContent(it)) }
-				NoteLinkPreviews(state.title, document, controller)
-				if (document.images.isNotEmpty())
-					Text(
-						"${document.images.size} ${if (document.images.size == 1) "imagen" else "imágenes"}",
-						style = MaterialTheme.typography.bodySmall,
-						color = MaterialTheme.colorScheme.onSurfaceVariant,
-					)
-				if (document.reminder != null && !document.reminderCompleted)
-					DesignRow(
-						"Recordatorio",
-						MindIcons.Notifications,
-						java.text.DateFormat.getDateTimeInstance(
-							java.text.DateFormat.SHORT,
-							java.text.DateFormat.SHORT,
+					NoteImageStrip(document, enabled) { onEvent(EditNoteEvent.EnteredContent(it)) }
+					NoteFileList(document, enabled, controller) { onEvent(EditNoteEvent.EnteredContent(it)) }
+					NoteLinkPreviews(state.title, document, controller)
+					if (document.images.isNotEmpty())
+						Text(
+							"${document.images.size} ${if (document.images.size == 1) "imagen" else "imágenes"}",
+							style = MaterialTheme.typography.bodySmall,
+							color = MaterialTheme.colorScheme.onSurfaceVariant,
 						)
-							.format(document.reminder.at),
-					) {
-						reminder = true
-					}
-				if (quickCapture)
-					Text(
-						"Puedes organizarlo después.",
-						style = MaterialTheme.typography.bodySmall,
-						color = MaterialTheme.colorScheme.onSurfaceVariant,
-					)
-				if (controller.importing) LinearProgressIndicator(Modifier.fillMaxWidth())
-			}
+					if (document.reminder != null && !document.reminderCompleted)
+						DesignRow(
+							"Recordatorio",
+							MindIcons.Notifications,
+							java.text.DateFormat.getDateTimeInstance(
+								java.text.DateFormat.SHORT,
+								java.text.DateFormat.SHORT,
+							)
+								.format(document.reminder.at),
+						) {
+							reminder = true
+						}
+					if (quickCapture)
+						Text(
+							"Puedes organizarlo después.",
+							style = MaterialTheme.typography.bodySmall,
+							color = MaterialTheme.colorScheme.onSurfaceVariant,
+						)
+					if (controller.importing) LinearProgressIndicator(Modifier.fillMaxWidth())
+				}
+		}
 	}
 }
 
