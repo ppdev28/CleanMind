@@ -345,6 +345,22 @@ class RichNoteEditor(context: Context) : EditText(context) {
 		}
 	}
 
+	/** Dictation is a normal edit, preserving selection, formatting and undo history. */
+	fun insertDictation(value: String) {
+		if (value.isBlank()) return
+		val editable = text ?: return
+		val start = minOf(selectionStart, selectionEnd).coerceIn(0, editable.length)
+		val end = maxOf(selectionStart, selectionEnd).coerceIn(start, editable.length)
+		val prefix = if (start > 0 && !editable[start - 1].isWhitespace() && !value.first()
+				.isWhitespace()
+		) " " else ""
+		val suffix = if (end < editable.length && !editable[end].isWhitespace() && !value.last()
+				.isWhitespace()
+		) " " else ""
+		editable.replace(start, end, prefix + value + suffix)
+		setSelection(start + prefix.length + value.length + suffix.length)
+	}
+
 	fun pasteImage(): Boolean {
 		val clip =
 			(context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).primaryClip

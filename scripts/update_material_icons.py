@@ -16,6 +16,9 @@ from fontTools.pens.transformPen import TransformPen
 
 ROOT = Path(__file__).resolve().parents[1]
 CLASSIC = {
+    "Mic": "mic",
+    "AttachFile": "attach_file",
+    "Link": "link",
     "Add": "add",
     "AddBox": "add_box",
     "ArrowBack": "arrow_back",

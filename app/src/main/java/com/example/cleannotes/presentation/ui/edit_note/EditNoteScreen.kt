@@ -48,6 +48,7 @@ fun EditNoteScreen(
 	val change: (NoteDocument) -> Unit = { onEvent(EditNoteEvent.EnteredContent(it.encode())) }
 	val controller =
 		rememberRichEditorController(document) { onEvent(EditNoteEvent.EnteredContent(it)) }
+	val dictate = rememberVoiceDictation(controller)
 	val enabled = !state.isLoading && !state.loadFailed && !state.isClosing
 	var focus by rememberSaveable { mutableStateOf(false) }
 	var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
@@ -226,6 +227,12 @@ fun EditNoteScreen(
 					color =
 						if (state.saveStatus == SaveStatus.ERROR) MaterialTheme.colorScheme.error
 						else MaterialTheme.colorScheme.onSurfaceVariant,
+				)
+				if (!focus) DesignIconButton(
+					MindIcons.Mic,
+					"Dictar por voz",
+					enabled = enabled,
+					onClick = dictate
 				)
 				if (!focus)
 					IconToggleButton(
