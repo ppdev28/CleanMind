@@ -43,7 +43,7 @@ import com.example.cleannotes.model.NoteDocument
 import com.example.cleannotes.presentation.ui.components.HomeAgenda
 import com.example.cleannotes.presentation.ui.components.NotebookBottomBar
 import com.example.cleannotes.presentation.ui.components.CustomTopBar
-import com.example.cleannotes.presentation.ui.components.DeleteNoteDialog
+import com.example.cleannotes.presentation.ui.components.NoteCreationSheet
 import com.example.cleannotes.presentation.ui.design.*
 import com.example.cleannotes.presentation.ui.design.AppBottomSheet
 import com.example.cleannotes.presentation.ui.edit_note.ExportMenu
@@ -61,7 +61,6 @@ fun NotebookScreen(
 	state: NotesUiState,
 	onTabSelected: (NotesTab) -> Unit,
 	onQueryChange: (String) -> Unit,
-	onDelete: (Note) -> Unit,
 	onRetry: () -> Unit,
 	onDismissError: () -> Unit,
 	onOpenNote: (Note) -> Unit,
@@ -97,7 +96,16 @@ fun NotebookScreen(
 	var deletionRevision by rememberSaveable { mutableIntStateOf(state.deletion.revision) }
 	val latestState by rememberUpdatedState(state)
 	val selecting = selectedIds.isNotEmpty()
-	val visibleNotes = visibleNotes(state, filter)
+	val visibleNotes = remember(
+		state.allNotes,
+		state.selectedTab,
+		state.selectedFolderId,
+		state.query,
+		filter
+	) { visibleNotes(state, filter) }
+	val selectedNote =
+		if (selectedIds.size == 1) state.allNotes.firstOrNull { it.id == selectedIds.first() } else null
+
 	fun toggleSelection(note: Note) {
 		if (latestState.deletion.busy) return
 		val id = note.id ?: return
@@ -123,8 +131,6 @@ fun NotebookScreen(
 			selectedIds = emptyList(); confirmSelectionDelete = false
 		}
 	}
-	var options by remember { mutableStateOf<Note?>(null) }
-	var deleting by remember { mutableStateOf<Note?>(null) }
 	var sharing by remember { mutableStateOf<Note?>(null) }
 	var managingFolders by rememberSaveable { mutableStateOf(false) }
 	var moving by remember { mutableStateOf<Note?>(null) }
@@ -165,88 +171,15 @@ fun NotebookScreen(
 		state.deletion,
 		onDismiss = { confirmSelectionDelete = false },
 		onConfirm = { onDeleteSelection(selectedIds.toSet()) })
-	DeleteNoteDialog(deleting, { deleting = null }, onDelete)
 	sharing?.let { note ->
 		ExportMenu(note.title, NoteDocument.decode(note.content)) {
 			sharing = null
 		}
 	}
-	options?.let { note ->
-		val doc = NoteDocument.decode(note.content)
-		AppBottomSheet(
-			onDismissRequest = { options = null },
-			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-		) {
-			Column(
-				Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
-				verticalArrangement = Arrangement.spacedBy(8.dp),
-			) {
-				Text(note.title, style = MaterialTheme.typography.titleMedium)
-				TextButton(onClick = {
-					options = null; note.id?.let {
-					selectedIds = listOf(it)
-				}; onClearDeletionError()
-				}) {
-					Icon(MindIcons.CheckBox, null); Spacer(Modifier.width(12.dp)); Text("Seleccionar")
-				}
-				if (!note.isReminder)
-					TextButton(
-						onClick = {
-							options = null
-							moving = note
-							onClearFolderError()
-						}
-					) {
-						Icon(MindIcons.FolderOpen, null)
-						Spacer(Modifier.width(12.dp))
-						Text("Mover a carpeta")
-					}
-				TextButton(
-					onClick = {
-						options = null
-						sharing = note
-					}
-				) {
-					Icon(
-						MindIcons.Share,
-						null,
-					)
-					Spacer(Modifier.width(12.dp))
-					Text("Compartir nota")
-				}
-				TextButton(
-					onClick = {
-						options = null
-						onUpdateNote(note) { it.copy(pinned = !it.pinned) }
-					}
-				) {
-					Icon(
-						MindIcons.PushPin,
-						null,
-					)
-					Spacer(Modifier.width(12.dp))
-					Text(if (doc.pinned) "Desfijar" else "Fijar a mano")
-				}
-				TextButton(
-					onClick = {
-						options = null
-						deleting = note
-					}
-				) {
-					Icon(
-						MindIcons.Delete,
-						null,
-						tint = MaterialTheme.colorScheme.error,
-					)
-					Spacer(Modifier.width(12.dp))
-					Text(
-						"Eliminar",
-						color = MaterialTheme.colorScheme.error,
-					)
-				}
-			}
-		}
-	}
+	var creating by rememberSaveable { mutableStateOf(false) }
+	if (creating) NoteCreationSheet(
+		onCreate = { reminder -> creating = false; onCreate(reminder) },
+		onDismiss = { creating = false })
 	Scaffold(
 		modifier = Modifier.nestedScroll(topBarScroll.nestedScrollConnection),
 		containerColor = androidx.compose.ui.graphics.Color.Transparent,
@@ -285,7 +218,12 @@ fun NotebookScreen(
 					onSelectAll = {
 						selectedIds = (selectedIds + visibleNotes.mapNotNull { it.id }).distinct()
 					},
-					onDelete = { onClearDeletionError(); confirmSelectionDelete = true })
+					onDelete = { onClearDeletionError(); confirmSelectionDelete = true },
+					onShare = selectedNote?.let { note -> ({ sharing = note }) },
+					onMove = selectedNote?.takeUnless { it.isReminder }
+						?.let { note -> ({ moving = note; onClearFolderError() }) },
+					onPin = selectedNote?.let { note -> ({ onUpdateNote(note) { it.copy(pinned = !it.pinned) } }) },
+					pinned = selectedNote?.let { NoteDocument.decode(it.content).pinned } ?: false)
 			}
 		},
 		bottomBar = {
@@ -295,7 +233,7 @@ fun NotebookScreen(
 					onQueryChange(""); onTabSelected(tab)
 					if (tab == NotesTab.SEARCH) searchFocusRequest++
 				},
-				onCreateNote = { onCreate(false) },
+				onCreateNote = { creating = true },
 				enabled = !selecting && active && !state.deletion.busy,
 				folderName = if (state.selectedTab == NotesTab.NOTES) state.folders.firstOrNull { it.id == state.selectedFolderId }?.name else null,
 			)
@@ -341,7 +279,7 @@ fun NotebookScreen(
 								notes = notes,
 								grid = homeGrid,
 								onOpen = ::openOrSelect,
-								onOptions = { if (selecting) toggleSelection(it) else options = it },
+								onSelect = { toggleSelection(it); onClearDeletionError() },
 								onCreate = onQuickCreate,
 								selectedIds = selectedIds.toSet(),
 							)
@@ -507,7 +445,7 @@ fun NotebookScreen(
 												note,
 												modifier = Modifier.animateItem(),
 												onClick = { openOrSelect(note) },
-												onLongClick = { if (selecting) toggleSelection(note) else options = note },
+												onLongClick = { toggleSelection(note); onClearDeletionError() },
 												selectionMode = selecting, selected = note.id in selectedIds,
 												compact = gridMode,
 											)
@@ -530,7 +468,7 @@ fun NotebookScreen(
 								ReminderCollection(
 									state.allNotes, ::openOrSelect, onCreate, onUpdateNote,
 									selectedIds = selectedIds.toSet(), onToggleSelection = ::toggleSelection,
-									onOptions = { if (selecting) toggleSelection(it) else options = it }
+									onSelect = { toggleSelection(it); onClearDeletionError() }
 								)
 						}
 					}
@@ -621,7 +559,7 @@ private fun ReminderCollection(
 	update: NoteChange,
 	selectedIds: Set<Int>,
 	onToggleSelection: (Note) -> Unit,
-	onOptions: (Note) -> Unit,
+	onSelect: (Note) -> Unit,
 ) {
 	val selecting = selectedIds.isNotEmpty()
 	val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
@@ -712,8 +650,8 @@ private fun ReminderCollection(
 								onClick = {
 									if (selecting || note.isReminder) onOpen(note) else editing = note
 								},
-								onLongClick = { onOptions(note) },
-								onLongClickLabel = "Opciones del recordatorio",
+								onLongClick = { onSelect(note) },
+								onLongClickLabel = "Seleccionar recordatorio",
 							)
 							.padding(vertical = 12.dp),
 						verticalArrangement = Arrangement.spacedBy(4.dp),

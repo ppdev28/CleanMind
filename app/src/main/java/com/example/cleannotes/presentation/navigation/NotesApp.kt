@@ -92,7 +92,6 @@ fun NotesApp(
 									state,
 									viewModel::onTabSelected,
 									viewModel::onQueryChange,
-									viewModel::deleteNote,
 									viewModel::retry,
 									viewModel::dismissError,
 									onOpenNote = { open(Destination.Editor(noteId = it.id)) },

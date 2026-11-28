@@ -2,7 +2,7 @@ package com.example.cleannotes.presentation.notebook
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,7 +41,11 @@ internal fun NoteSelectionBar(
 	enabled: Boolean,
 	onClose: () -> Unit,
 	onSelectAll: () -> Unit,
-	onDelete: () -> Unit
+	onDelete: () -> Unit,
+	onShare: (() -> Unit)? = null,
+	onMove: (() -> Unit)? = null,
+	onPin: (() -> Unit)? = null,
+	pinned: Boolean = false,
 ) {
 	Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
 		Row(
@@ -55,6 +59,27 @@ internal fun NoteSelectionBar(
 				style = MaterialTheme.typography.titleSmall
 			)
 			DesignIconButton(MindIcons.CheckBox, "Seleccionar visibles", enabled, onSelectAll)
+			if (onShare != null) Box {
+				var expanded by remember { mutableStateOf(false) }
+				DesignIconButton(MindIcons.MoreVert, "Más acciones de selección", enabled) {
+					expanded = true
+				}
+				DropdownMenu(expanded, { expanded = false }) {
+					DropdownMenuItem(
+						text = { Text("Compartir nota") },
+						onClick = { expanded = false; onShare() })
+					onMove?.let { action ->
+						DropdownMenuItem(
+							text = { Text("Mover a carpeta") },
+							onClick = { expanded = false; action() })
+					}
+					onPin?.let { action ->
+						DropdownMenuItem(
+							text = { Text(if (pinned) "Desfijar" else "Fijar a mano") },
+							onClick = { expanded = false; action() })
+					}
+				}
+			}
 			DesignIconButton(MindIcons.Delete, "Eliminar seleccionados", enabled, onDelete)
 		}
 	}

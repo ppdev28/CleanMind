@@ -54,7 +54,6 @@ fun EditNoteScreen(
 	var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
 	var imageMenu by rememberSaveable { mutableStateOf(false) }
 	var share by rememberSaveable { mutableStateOf(false) }
-	var more by remember { mutableStateOf(false) }
 	var discard by remember { mutableStateOf(false) }
 	val snackbar = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
@@ -126,8 +125,8 @@ fun EditNoteScreen(
 
 	fun addItem() {
 		change(
-			document.copy(
-				checklist = document.checklist + CheckItem(java.util.UUID.randomUUID().toString())
+			latestDocument.copy(
+				checklist = latestDocument.checklist + CheckItem(java.util.UUID.randomUUID().toString())
 			)
 		)
 	}
@@ -229,6 +228,7 @@ fun EditNoteScreen(
 						if (state.saveStatus == SaveStatus.ERROR) MaterialTheme.colorScheme.error
 						else MaterialTheme.colorScheme.onSurfaceVariant,
 				)
+				DesignIconButton(MindIcons.Share, "Compartir nota", enabled) { share = true }
 				IconToggleButton(
 					checked = document.pinned,
 					enabled = enabled,
@@ -298,48 +298,7 @@ fun EditNoteScreen(
 						verticalAlignment = Alignment.CenterVertically,
 					) {
 						RichFormatBar(document, controller, enabled, Modifier.weight(1f))
-						Box {
-							IconButton(onClick = { more = true }) {
-								Icon(MindIcons.MoreVert, "Más opciones")
-							}
-							DropdownMenu(more, { more = false }) {
-								DropdownMenuItem(
-									text = { Text("Añadir casilla") },
-									enabled = enabled,
-									onClick = { more = false; addItem() })
-								DropdownMenuItem(
-									text = { Text("Imágenes y archivos") },
-									enabled = enabled && !controller.importing,
-									onClick = { more = false; imageMenu = true })
-								DropdownMenuItem(
-									text = { Text("Recordatorio") },
-									enabled = enabled,
-									onClick = { more = false; reminder = true })
-								DropdownMenuItem(
-									text = { Text("Compartir") },
-									onClick = {
-										more = false
-										share = true
-									},
-								)
-								DropdownMenuItem(
-									text = { Text("Deshacer") },
-									enabled = controller.canUndo,
-									onClick = {
-										more = false
-										controller.editor?.undoEdit()
-									},
-								)
-								DropdownMenuItem(
-									text = { Text("Rehacer") },
-									enabled = controller.canRedo,
-									onClick = {
-										more = false
-										controller.editor?.redoEdit()
-									},
-								)
-							}
-						}
+
 					}
 				}
 			}

@@ -127,7 +127,7 @@ fun DesignNoteCard(
 				.combinedClickable(
 					interactionSource = interactions, indication = LocalIndication.current,
 					onClick = onClick, onLongClick = onLongClick,
-					onLongClickLabel = if (selectionMode) "Alternar selección" else "Opciones de la nota"
+					onLongClickLabel = if (selectionMode) "Alternar selección" else "Seleccionar nota"
 				)
 				.semantics { if (selectionMode) this.selected = selectionChecked }
 				.padding(16.dp),
@@ -173,13 +173,6 @@ fun DesignSnackbarHost(state: SnackbarHostState) {
 				verticalAlignment = Alignment.CenterVertically,
 				horizontalArrangement = Arrangement.spacedBy(8.dp),
 			) {
-				if (
-					data.visuals.message.contains(
-						"archiv",
-						true,
-					) || data.visuals.message.contains("restaur", true)
-				)
-					DesignIcon(MindIcons.Archive)
 				Text(
 					data.visuals.message + (data.visuals.actionLabel?.let { " · $it" } ?: ""),
 					style = MaterialTheme.typography.bodyMedium,

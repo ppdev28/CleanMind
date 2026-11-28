@@ -104,7 +104,6 @@ class DesignUiTest {
 					),
 					onTabSelected = { tab = it },
 					onQueryChange = { query = it },
-					onDelete = {},
 					onRetry = {},
 					onDismissError = {},
 					onOpenNote = {},
@@ -155,7 +154,7 @@ class DesignUiTest {
 		compose.setContent {
 			var state by remember { mutableStateOf(NotesUiState(allNotes = sample, isLoading = false)) }
 			CleanMindTheme(darkTheme = true) {
-				NotebookScreen(state, {}, {}, {}, {}, {}, {}, {}, {}, onDeleteSelection = { ids ->
+				NotebookScreen(state, {}, {}, {}, {}, {}, {}, {}, onDeleteSelection = { ids ->
 					deleted = ids
 					state = state.copy(
 						allNotes = state.allNotes.filterNot { it.id in ids },
@@ -165,7 +164,8 @@ class DesignUiTest {
 			}
 		}
 		compose.onNodeWithText(sample[0].title).performTouchInput { longClick() }
-		compose.onNodeWithText("Seleccionar").performClick()
+		compose.onNodeWithText("1 seleccionado").assertIsDisplayed()
+		compose.onAllNodes(isDialog()).assertCountEquals(0)
 		compose.onNodeWithText(sample[1].title).performClick()
 		screenshot("selection-home-dark")
 		compose.onNodeWithText("2 seleccionados").assertIsDisplayed()
@@ -195,12 +195,13 @@ class DesignUiTest {
 						selectedTab = NotesTab.REMINDERS,
 						isLoading = false
 					),
-					{}, {}, {}, {}, {}, { opened = true }, {}, {},
+					{}, {}, {}, {}, { opened = true }, {}, {},
 					onUpdateNote = { _, _ -> completed = true }, onDeleteSelection = { deleted = it })
 			}
 		}
 		compose.onNodeWithText(reminders.first().title).performTouchInput { longClick() }
-		compose.onNodeWithText("Seleccionar").performClick()
+		compose.onNodeWithText("1 seleccionado").assertIsDisplayed()
+		compose.onAllNodes(isDialog()).assertCountEquals(0)
 		compose.onNodeWithContentDescription("Seleccionar Segundo aviso").performClick()
 		compose.onNodeWithText("2 seleccionados").assertIsDisplayed()
 		assertFalse(completed); assertFalse(opened)
@@ -216,8 +217,12 @@ class DesignUiTest {
 		compose
 			.onNodeWithText("Elegir solo el siguiente paso.\nLo demás puede esperar.")
 			.assertExists()
+		compose.onNodeWithText("Tu agenda").assertDoesNotExist()
 		screenshot("home-dark")
 		compose.onNodeWithText("Para cuando me bloquee").performTouchInput { longClick() }
+		compose.onNodeWithText("1 seleccionado").assertIsDisplayed()
+		compose.onAllNodes(isDialog()).assertCountEquals(0)
+		compose.onNodeWithContentDescription("Más acciones de selección").performClick()
 		compose.onNodeWithText("Compartir nota").assertExists()
 		compose.onNodeWithText("Archivar").assertDoesNotExist()
 	}
@@ -285,7 +290,7 @@ class DesignUiTest {
 						},
 						isLoading = false,
 					),
-					{ tab = it }, {}, {}, {}, {}, {}, {}, {},
+					{ tab = it }, {}, {}, {}, {}, {}, {},
 				)
 			}
 		}
@@ -365,7 +370,13 @@ class DesignUiTest {
 		assertTrue(mic.top <= list.top && mic.bottom >= list.bottom)
 		compose.onNodeWithText("Lista").performClick()
 		assertEquals(1, document.checklist.size)
+		compose.onNodeWithText("Lista").performClick()
+		assertEquals(2, document.checklist.size)
 		assertEquals("Salir sin prisa.", document.text)
+		compose.onNodeWithContentDescription("Más opciones").assertDoesNotExist()
+		compose.onNodeWithContentDescription("Compartir nota").assertIsDisplayed()
+		compose.onNodeWithContentDescription("Deshacer").assertExists()
+		compose.onNodeWithContentDescription("Rehacer").assertExists()
 		compose.onNodeWithContentDescription("Más formato y espaciado").performClick()
 		compose.onNodeWithText("Casilla").assertDoesNotExist()
 		compose.onNodeWithText("H6").assertExists()
@@ -490,7 +501,6 @@ class DesignUiTest {
 					{},
 					{},
 					{},
-					{},
 					onUpdateNote = { note, transform ->
 						persisted =
 							note.copy(
@@ -608,7 +618,6 @@ class DesignUiTest {
 					{},
 					{},
 					{},
-					{},
 				)
 			}
 		}
@@ -666,7 +675,14 @@ class DesignUiTest {
 		var reminder: Boolean? = null
 		screen(onCreate = { reminder = it })
 		compose.onNodeWithContentDescription("Nueva nota").performClick()
+		compose.onNodeWithText("Crear").assertIsDisplayed()
+		compose.onNodeWithText("Nuevo recordatorio").assertIsDisplayed()
+		screenshot("creation-sheet-dark", dialog = true)
+		compose.onNode(hasText("Nueva nota") and hasAnyAncestor(isDialog())).performClick()
 		assertEquals(false, reminder)
+		compose.onNodeWithContentDescription("Nueva nota").performClick()
+		compose.onNodeWithText("Nuevo recordatorio").performClick()
+		assertEquals(true, reminder)
 		compose.onNodeWithContentDescription("Recordar").performClick()
 		compose.onNodeWithContentDescription("Nuevo recordatorio").performClick()
 		assertEquals(true, reminder)
@@ -735,7 +751,6 @@ class DesignUiTest {
 					{},
 					{},
 					{},
-					{},
 					onFolderSelected = { state = state.copy(selectedFolderId = it) },
 					onMoveNote = { note, folder ->
 						state =
@@ -759,6 +774,7 @@ class DesignUiTest {
 		compose.onNodeWithText("Comprar café").assertDoesNotExist()
 		screenshot("folders-dark")
 		compose.onNodeWithText("Reunión del equipo").performTouchInput { longClick() }
+		compose.onNodeWithContentDescription("Más acciones de selección").performClick()
 		compose.onNodeWithText("Mover a carpeta").performClick()
 		compose.onNodeWithContentDescription("Mover a Sin carpeta").performClick()
 		compose.onNodeWithText("Reunión del equipo").assertDoesNotExist()
@@ -783,7 +799,6 @@ class DesignUiTest {
 				NotebookScreen(
 					NotesUiState(selectedTab = NotesTab.NOTES, isLoading = false),
 					{ tabChanged = true },
-					{},
 					{},
 					{},
 					{},

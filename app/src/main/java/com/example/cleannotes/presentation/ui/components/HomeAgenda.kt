@@ -53,7 +53,7 @@ fun HomeAgenda(
 	notes: List<Note>,
 	grid: Boolean,
 	onOpen: (Note) -> Unit,
-	onOptions: (Note) -> Unit,
+	onSelect: (Note) -> Unit,
 	onCreate: () -> Unit,
 	selectedIds: Set<Int> = emptySet(),
 ) {
@@ -71,13 +71,6 @@ fun HomeAgenda(
 			horizontalArrangement = Arrangement.spacedBy(12.dp),
 			verticalArrangement = Arrangement.spacedBy(12.dp),
 		) {
-			item(key = "agenda-title", span = { GridItemSpan(maxLineSpan) }) {
-				Text(
-					"Tu agenda",
-					style = MaterialTheme.typography.titleMedium,
-					modifier = Modifier.padding(vertical = 8.dp)
-				)
-			}
 			days.forEach { (day, notesOfDay) ->
 				item(key = "day-$day", span = { GridItemSpan(maxLineSpan) }) {
 					AgendaDateDivider(notesOfDay.first().creationTimestamp())
@@ -90,7 +83,7 @@ fun HomeAgenda(
 						note,
 						Modifier.animateItem(),
 						{ onOpen(note) },
-						{ onOptions(note) },
+						{ onSelect(note) },
 						compact = gridMode,
 						dateTimestamp = note.creationTimestamp(),
 						selectionMode = selectedIds.isNotEmpty(), selected = note.id in selectedIds

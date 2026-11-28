@@ -30,6 +30,18 @@ fun RichFormatBar(
 	val active = controller.activeFormats
 	Row(modifier) {
 		Row(Modifier.weight(1f).horizontalScroll(rememberScrollState())) {
+			IconButton(onClick = { editor?.undoEdit() }, enabled = enabled && controller.canUndo) {
+				Icon(
+					MindIcons.Undo,
+					"Deshacer"
+				)
+			}
+			IconButton(onClick = { editor?.redoEdit() }, enabled = enabled && controller.canRedo) {
+				Icon(
+					MindIcons.Redo,
+					"Rehacer"
+				)
+			}
 			FormatAction(
 				MindIcons.FormatBold,
 				"Negrita",

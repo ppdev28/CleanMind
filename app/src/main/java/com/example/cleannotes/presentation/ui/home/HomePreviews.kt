@@ -74,7 +74,6 @@ private fun HomePreview(dark: Boolean, empty: Boolean = false) {
 				),
 			onTabSelected = {},
 			onQueryChange = {},
-			onDelete = {},
 			onRetry = {},
 			onDismissError = {},
 			onOpenNote = {},
