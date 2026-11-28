@@ -229,3 +229,11 @@ Las pruebas nuevas cubren PKCE S256, estado/nonce, firma y claims OIDC, registro
 Las **dos pruebas instrumentadas** de `EncryptedAiSettingsTest` pasan en el emulador Android API 35: compatibilidad y cifrado de la configuración de API, y persistencia/rotación/borrado de los tokens de ChatGPT en un archivo aislado. Se ha arrancado el APK y abierto Ajustes en ese emulador sin errores de ejecución.
 
 No se ha completado el acceso con una cuenta real de Google/ChatGPT ni se han consumido peticiones del plan de una cuenta real. Esa validación requiere que su titular elija la cuenta y autorice la integración en OpenAI. Consulta [Cuenta de ChatGPT](chatgpt.md).
+
+## Comprobación real con Google/ChatGPT en Xiaomi · 28 de noviembre de 2026
+
+Se comprobó el acceso real en el Xiaomi Redmi Note 8 Pro. Android tenía activado `restricted_networking_mode=1`, que impedía crear el socket local de retorno (`ECONNREFUSED`) antes de abrir el navegador. Con autorización del usuario se desactivó temporalmente; la preparación del acceso pasó en el dispositivo y se abrió el sitio oficial de OpenAI. El ajuste se restauró a `1` al terminar.
+
+Se utilizó la cuenta de Google que el usuario confirmó. El navegador completó el acceso y mostró la autorización de Clean Mind. Un primer retorno produjo un error de red en la app; las comprobaciones públicas desde el UID de la aplicación alcanzaron el descubrimiento OIDC (HTTP 200) y el catálogo de API sin credenciales (HTTP 401, esperado). Un nuevo acceso con la cuenta ya identificada llegó a una restricción explícita del proveedor: «Un permiso obligatorio no está disponible. No puedes continuar con esta área de trabajo y este plan». OpenAI mostraba Continuar desactivado y Mejorar plan. Se canceló ese intento, sin abrir la compra ni cambiar el plan.
+
+Resultado: **no se completó la vinculación ni se verificó una generación con el plan**. No se enviaron notas al proveedor. Las capturas privadas, las copias de comprobación y los diagnósticos temporales se retiraron; no se incorporan credenciales, correos ni imágenes del teléfono al repositorio. El contenido de las notas y carpetas se comparó al finalizar.

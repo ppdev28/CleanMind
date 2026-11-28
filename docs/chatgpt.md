@@ -56,3 +56,7 @@ Si Android cierra el proceso durante el acceso en el navegador, vuelve a abrir A
 - [Usar tu plan en otras aplicaciones](https://help.openai.com/en/articles/20001542-using-your-chatgpt-plan-in-other-apps-and-sites).
 
 [IA con clave de API](ia.md) · [Índice](README.md).
+
+### Resultado de la prueba real en Xiaomi
+
+El acceso con la cuenta de Google confirmada llegó a OpenAI, pero el proveedor bloqueó el permiso obligatorio del plan/área de trabajo y desactivó Continuar. La cuenta no quedó vinculada y no se verificó inferencia. El Xiaomi también tenía activado el modo de redes restringidas; su desactivación temporal, autorizada para la prueba, permitió preparar el retorno local y se revirtió al terminar. Consulta el registro de [Pruebas](pruebas.md).
