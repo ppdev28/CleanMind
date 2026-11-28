@@ -193,3 +193,9 @@ La pantalla vuelve al editor normal con `RichNoteEditor` y `EditorToolbar`. `Ric
 `NotebookFab` presenta dos arcos radiales concéntricos de tres acciones a 108 y 216 dp del centro del botón. Los objetivos táctiles circulares de 72 dp quedan separados incluso a 320 dp de ancho. La expansión anima la distancia, la escala y la opacidad; el botón permanece anclado. Volver cierra el menú antes de navegar. `HomeAgenda` conserva sus celdas adaptables de 128 dp y los estados independientes de cuadrícula y agenda.
 
 `EditNoteScreen` permite eliminar casillas por identificador. El aviso de deshacer reinserta la misma casilla en su posición, conservando las modificaciones posteriores de las demás. Un nuevo borrado sustituye el aviso anterior. Las operaciones siguen el evento de contenido y el autoguardado habitual del ViewModel.
+
+## Asistente de IA
+
+`ai/` contiene los contratos `AiSettingsRepository` y `AiGateway`, los snapshots de nota y las validaciones. `data/ai/` implementa cifrado Android Keystore y peticiones HTTPS cancelables con OkHttp. `AiModule` conecta ambas implementaciones con Hilt. Los ViewModels de configuración y asistente exponen estado por separado del tema y del borrador del editor; la clave no se guarda en estado restaurable.
+
+`NotesApp` conecta la hoja de IA con el editor. La generación no modifica la nota: entrega una propuesta asociada al título/documento originales. `EditNoteViewModel.applyAiSuggestion` verifica ese snapshot, añade texto conservando el documento y pasa por el evento y autoguardado existentes. Consulta [IA](ia.md) para el contrato de API, privacidad y límites.

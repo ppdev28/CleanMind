@@ -32,6 +32,7 @@ fun SettingsScreen(
 	onBack: () -> Unit,
 	onRetry: () -> Unit,
 	storageContent: @Composable () -> Unit = { StorageSettings() },
+	aiContent: @Composable () -> Unit = { AiSettings() },
 ) {
 	val context = LocalContext.current
 	Scaffold(
@@ -103,6 +104,13 @@ fun SettingsScreen(
 				color = Color.Transparent,
 			) {
 				Column(Modifier.padding(20.dp)) { storageContent() }
+			}
+			Surface(
+				modifier = Modifier.appSurface(RoundedCornerShape(22.dp)),
+				shape = RoundedCornerShape(22.dp),
+				color = Color.Transparent,
+			) {
+				Column(Modifier.padding(20.dp)) { aiContent() }
 			}
 			Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 				Icon(

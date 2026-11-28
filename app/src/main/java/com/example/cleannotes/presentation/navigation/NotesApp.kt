@@ -22,6 +22,9 @@ import com.example.cleannotes.presentation.notebook.NotebookScreen
 import com.example.cleannotes.presentation.notebook.NotesViewModel
 import com.example.cleannotes.presentation.ui.edit_note.EditNoteScreen
 import com.example.cleannotes.presentation.ui.edit_note.viewmodel.EditNoteViewModel
+import com.example.cleannotes.ai.AiNoteSnapshot
+import com.example.cleannotes.presentation.ui.ai.AiAssistantSheet
+import com.example.cleannotes.presentation.ui.ai.AiAssistantViewModel
 import com.example.cleannotes.presentation.ui.motion.AppMotion
 import com.example.cleannotes.presentation.ui.settings.SettingsScreen
 import com.example.cleannotes.presentation.ui.settings.SettingsViewModel
@@ -158,7 +161,9 @@ fun NotesApp(
 											goBack,
 											active = backStack.lastOrNull() == destination,
 										)
-								else
+								else {
+									val assistant: AiAssistantViewModel = hiltViewModel()
+									val aiState by assistant.state.collectAsStateWithLifecycle()
 									EditNoteScreen(
 										state,
 										viewModel::onEvent,
@@ -166,7 +171,21 @@ fun NotesApp(
 										goBack,
 										destination.quickCapture,
 										active = backStack.lastOrNull() == destination,
+										onAi = assistant::open,
 									)
+									AiAssistantSheet(
+										state = aiState,
+										note = AiNoteSnapshot(state.title, state.content),
+										enabled = !state.isLoading && !state.loadFailed && !state.isClosing && !state.exitRequested,
+										onSelect = assistant::select,
+										onInstruction = assistant::instruct,
+										onGenerate = { assistant.generate(AiNoteSnapshot(state.title, state.content)) },
+										onApply = { if (viewModel.applyAiSuggestion(it)) assistant.dismiss() },
+										onSettings = { assistant.dismiss(); open(Destination.Settings) },
+										onCancel = assistant::cancelGeneration,
+										onDismiss = assistant::dismiss,
+									)
+								}
 							}
 						},
 				)

@@ -2,6 +2,8 @@
 
 Esta documentación describe la implementación del repositorio, incluidos el rediseño de la interfaz y la arquitectura MVVM + UDF. Está escrita en español y distingue las funciones disponibles de las comprobaciones pendientes.
 
+El asistente opcional de IA se describe en [Inteligencia artificial](ia.md), con configuración de API, recorrido de uso, almacenamiento de credenciales y pruebas.
+
 ## Para usar la aplicación
 
 Empieza por la [guía de uso](guia-de-uso.md). Explica cómo crear y encontrar notas, qué significa el guardado automático y cómo funcionan los recordatorios.

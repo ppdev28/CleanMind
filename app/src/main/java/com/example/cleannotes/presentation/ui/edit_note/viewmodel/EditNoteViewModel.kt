@@ -130,6 +130,21 @@ constructor(
 		}
 	}
 
+	/** Apply only to the exact draft used for generation, through the normal autosave path. */
+	fun applyAiSuggestion(suggestion: com.example.cleannotes.ai.AiSuggestion): Boolean {
+		val state = uiState.value
+		if (state.isLoading || state.loadFailed || state.isClosing || state.exitRequested ||
+			state.title != suggestion.note.title || state.content != suggestion.note.content ||
+			suggestion.text.isBlank()
+		) return false
+		val document = com.example.cleannotes.text.RichDocumentCompatibility.editable(
+			com.example.cleannotes.model.NoteDocument.decode(state.content)
+		)
+		val text = document.text + (if (document.text.isBlank()) "" else "\n\n") + suggestion.text.trim()
+		onEvent(EditNoteEvent.EnteredContent(document.copy(text = text).encode()))
+		return true
+	}
+
 	private suspend fun persist(): Boolean = saveMutex.withLock {
 		val state = uiState.value
 		if (state.isLoading || state.loadFailed) return@withLock false

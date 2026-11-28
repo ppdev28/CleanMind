@@ -156,3 +156,9 @@ El contenido incorpora `markdown: Boolean = false` y `textAlignment: Int = 0` co
 
 
 La corrección posterior retira el editor Markdown. Los campos `markdown` y `textAlignment` se conservan para leer notas ya almacenadas. `RichDocumentCompatibility` transforma solo la presentación y no actualiza Room al abrirlas; una edición posterior de su contenido utiliza texto y rangos normales. Las casillas y los adjuntos mantienen sus identificadores.
+
+## Configuración de IA
+
+La configuración de IA usa `EncryptedAiSettingsRepository`, independiente de Room y DataStore. La URL, el modelo y la clave de API se cifran conjuntamente con AES-256-GCM y Android Keystore en un `AtomicFile` de `noBackupFilesDir`. No se respalda ni transfiere a otro dispositivo; una restauración requiere reintroducirla. El borrado desde Ajustes elimina el archivo persistido. Un fallo de descifrado se comunica como error recuperable mediante recarga o eliminación de la configuración.
+
+Las propuestas permanecen en memoria hasta aceptarse. La aceptación añade texto al documento existente y usa el guardado normal de notas, sin cambio de esquema ni migración. Detalles en [IA](ia.md).

@@ -126,3 +126,7 @@ STUDIO_FORMATTER="/ruta/Android Studio.app/Contents/bin/format.sh" ./scripts/for
 ```
 
 El script aísla la configuración del formateador para poder usarlo con Android Studio abierto. Si se define `KTFMT_JAR`, aplica primero ktfmt con estilo Kotlin. Los iconos se regeneran con `scripts/update_material_icons.py`; consulta [Recursos](../design/README.md).
+
+## Integración opcional de IA
+
+La configuración de URL, modelo y clave se introduce en **Ajustes → Inteligencia artificial**; no hay secretos de IA en Gradle, recursos o `BuildConfig`. El cliente usa OkHttp, y las pruebas HTTPS locales emplean MockWebServer y `okhttp-tls`, todos fijados en el catálogo de versiones. Consulta [IA](ia.md) para el contrato compatible y los comandos de verificación, incluida la prueba de Android Keystore en dispositivo/emulador.

@@ -40,6 +40,7 @@ fun EditNoteScreen(
 	onBack: () -> Unit,
 	quickCapture: Boolean = false,
 	active: Boolean = true,
+	onAi: () -> Unit = {},
 ) {
 	val document = remember(state.content) {
 		com.example.cleannotes.text.RichDocumentCompatibility.editable(NoteDocument.decode(state.content))
@@ -227,6 +228,7 @@ fun EditNoteScreen(
 						if (state.saveStatus == SaveStatus.ERROR) MaterialTheme.colorScheme.error
 						else MaterialTheme.colorScheme.onSurfaceVariant,
 				)
+				if (!focus) TextButton(onClick = onAi, enabled = enabled) { Text("IA") }
 				if (!focus)
 					IconToggleButton(
 						checked = document.pinned,

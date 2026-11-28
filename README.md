@@ -1,6 +1,6 @@
 # Clean Mind
 
-Aplicación Android para escribir, consultar y organizar notas y recordatorios personales. Funciona sin conexión y guarda las notas en una base de datos local.
+Aplicación Android para escribir, consultar y organizar notas y recordatorios personales. Guarda las notas en una base de datos local y permite editarlas sin conexión. El asistente opcional de IA necesita conexión y una API propia.
 
 La interfaz está construida con Jetpack Compose y Material 3. La arquitectura utiliza MVVM con flujo unidireccional de datos, dos capas y un único módulo Gradle.
 
@@ -15,6 +15,7 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.
 - Elegir un tema claro, oscuro o vinculado al dispositivo.
+- Configurar una API de IA y generar resúmenes, mejoras de redacción, tareas o texto propio, revisar la propuesta y añadirla a la nota.
 - Arranque monocromo, [superficies Material 3](docs/glass-ui.md) y transiciones breves entre pantallas, pestañas y herramientas.
 - Conservar el tema y restaurar determinados estados de navegación y edición.
 
@@ -30,6 +31,7 @@ Los recordatorios permiten notificaciones configurables, repetición y posposici
 | [Arquitectura](docs/arquitectura.md) | Decisión MVVM + UDF, responsabilidades, navegación y estado. |
 | [Datos y migraciones](docs/datos-y-migraciones.md) | Modelo, Room, DataStore, compatibilidad y almacenamiento. |
 | [Pruebas](docs/pruebas.md) | Comandos locales, cobertura real y validación pendiente. |
+| [Inteligencia artificial](docs/ia.md) | Configuración de la API, recorrido completo, privacidad y límites. |
 | [Mantenimiento](docs/mantenimiento.md) | Cómo ampliar la aplicación y actualizar su documentación. |
 
 ## Preparación rápida

@@ -454,6 +454,7 @@ class DesignUiTest {
 					storageContent = {
 						com.example.cleannotes.presentation.ui.settings.StorageSettings(storage)
 					},
+					aiContent = {},
 				)
 			}
 		}

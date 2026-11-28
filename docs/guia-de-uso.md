@@ -11,7 +11,7 @@ Clean Mind permite guardar ideas y apuntes personales en Android. No necesitas u
 | Recordar | Acceso a la colección de recordatorios. Su pantalla se titula «Recordatorios». |
 | Buscar | Resultados por título o contenido. |
 | Editor | Título, subtítulo opcional, cuerpo de la nota, estado de guardado y acciones. |
-| Ajustes | Selección de apariencia e información sobre almacenamiento y recordatorios. |
+| Ajustes | Apariencia, almacenamiento, configuración de la API de IA y recordatorios. |
 
 El botón flotante **+** despliega seis acciones en dos arcos radiales: Inicio, Notas, Recordar, Buscar, Nueva nota y Nuevo aviso (nuevo recordatorio). El botón gira a **×** para cerrarlas; Volver también cierra el despliegue sin cambiar de pantalla. Un doble toque en la lupa abre Buscar con el campo enfocado para escribir. La cabecera se oculta al bajar y reaparece al llegar al inicio; el engranaje abre Ajustes.
 
@@ -113,7 +113,15 @@ En Ajustes puedes elegir:
 
 La rama de Figma utiliza la paleta neutra del diseño: superficies oscuras y acciones claras, con una adaptación equivalente para el tema claro. Los diálogos de fecha y hora también siguen la apariencia elegida.
 
-La selección se aplica al guardarse y se conserva en DataStore. No hay un botón adicional para confirmar los ajustes. Si aparece un error de escritura, vuelve a seleccionar el tema; **Reintentar** vuelve a consultar las preferencias.
+La selección del tema se aplica al guardarse y se conserva en DataStore, sin confirmación adicional. Si aparece un error de escritura, vuelve a seleccionar el tema; **Reintentar** vuelve a consultar las preferencias. La configuración de IA tiene su propio botón **Guardar configuración de IA**.
+
+### Asistente de IA
+
+En **Ajustes → Inteligencia artificial**, introduce una URL base HTTPS, el modelo y tu clave de API. Usa **Probar conexión** y después **Guardar configuración de IA**. La clave se guarda cifrada en el dispositivo; **Eliminar clave y configuración** desactiva la integración.
+
+Abre una nota y pulsa **IA** en la cabecera. Elige **Resumir**, **Mejorar redacción**, **Extraer tareas** o **Instrucción propia** y pulsa **Generar**. La instrucción propia también permite escribir desde una nota vacía. Revisa el resultado y pulsa **Añadir a la nota** para incorporarlo al final mediante el autoguardado habitual. **Cerrar** descarta la propuesta; **Cancelar generación** interrumpe la espera. Si cambias la nota, genera una propuesta nueva antes de añadirla.
+
+La IA solo recibe el título y el texto de la nota abierta, incluidos subtítulo y casillas. No recibe imágenes ni el resto del cuaderno. La prueba de conexión envía únicamente un mensaje de prueba. Las peticiones pueden tener coste según el proveedor. Consulta [configuración, privacidad y límites](ia.md).
 
 ## Datos y límites
 

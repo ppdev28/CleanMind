@@ -46,6 +46,9 @@ android {
 }
 
 dependencies {
+	implementation(libs.okhttp)
+	testImplementation(libs.okhttp.mockwebserver)
+	testImplementation(libs.okhttp.tls)
 	implementation(libs.commonmark)
 	implementation(libs.commonmark.tables)
 	implementation(libs.commonmark.strike)

@@ -209,3 +209,13 @@ La fila visible y el panel único se restauran sobre el editor normal. La regres
 La prueba del FAB usa 320 dp de ancho, comprueba los radios de 108 y 216 dp, la ausencia de solapamientos entre los seis objetivos táctiles y la posición estable del botón principal. Se mantienen navegación, ambas opciones de creación, cierre con Volver y foco de búsqueda con doble toque.
 
 Resultado: **80 pruebas locales superadas**, sin fallos ni omisiones; compilaciones debug/release y lint de ambas variantes correctos. El formateador revisó 98 archivos. En el realme RMX3370 se comprobó la distribución radial sin solapamientos, la aplicación y persistencia de negrita en el cuerpo normal, el panel nuevo con H6 y la eliminación de casillas marcadas y vacías. Deshacer recuperó sus identificadores y estado; eliminar todas conservó el cuerpo y la negrita. Se eliminó la nota exclusiva de prueba y la comparación de las 12 notas originales y la carpeta confirmó todos sus campos intactos. Las imágenes del repositorio son capturas sintéticas.
+
+## Integración de IA (28 de noviembre de 2026)
+
+Rama `feat/ai-integration`, creada desde `feat/figma-complete-ui`. La suite ampliada incluye **106 pruebas JVM/Robolectric**, 26 nuevas para validaciones, API HTTPS con MockWebServer, ajustes, cancelación, privacidad del payload, propuestas, aceptación explícita, protección frente a borradores antiguos y recuperación de errores al guardar. Se mantiene la cobertura existente del cuaderno y el editor.
+
+Se han comprobado `testDebugUnitTest`, `assembleDebug`, `lintDebug` y la compilación/empaquetado de las pruebas instrumentadas. Lint no añade avisos en los archivos nuevos de IA; los avisos existentes de la base continúan.
+
+`EncryptedAiSettingsTest` se ha ejecutado correctamente en un emulador Android API 35, con Android Keystore real: configuración cifrada, lectura desde otra instancia, IV diferente al volver a guardar, error explícito ante corrupción y borrado/recuperación. Utiliza un directorio de prueba aislado, sin alterar la configuración de uso de la app.
+
+No se ha llamado a una API externa con credenciales reales. La prueba desde **Ajustes → Inteligencia artificial → Probar conexión** permite validar la cuenta y el modelo configurados. El contrato, los límites y los comandos están en [IA](ia.md).
