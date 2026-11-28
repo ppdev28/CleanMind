@@ -51,6 +51,7 @@ fun EditNoteScreen(
 	val dictate = rememberVoiceDictation(controller)
 	val attachFiles =
 		rememberFileAttachments(document, controller) { onEvent(EditNoteEvent.EnteredContent(it)) }
+	val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
 	val enabled = !state.isLoading && !state.loadFailed && !state.isClosing
 	var focus by rememberSaveable { mutableStateOf(false) }
 	var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
@@ -206,7 +207,7 @@ fun EditNoteScreen(
 		}
 	Scaffold(
 		containerColor = androidx.compose.ui.graphics.Color.Transparent,
-		modifier = Modifier.imePadding(),
+		contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
 		snackbarHost = { DesignSnackbarHost(snackbar) },
 		topBar = {
 			Row(
@@ -257,34 +258,40 @@ fun EditNoteScreen(
 		bottomBar = {
 			AnimatedVisibility(!focus, enter = AppMotion.reveal(), exit = AppMotion.conceal()) {
 				Surface(color = MaterialTheme.colorScheme.background) {
-					Column(Modifier.navigationBarsPadding()) {
+					Column(Modifier.windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars))) {
 						HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-						Row(
-							Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-							horizontalArrangement = Arrangement.spacedBy(8.dp),
+						AnimatedVisibility(
+							!keyboardVisible,
+							enter = AppMotion.reveal(),
+							exit = AppMotion.conceal()
 						) {
-							CaptureTool(
-								"Lista",
-								MindIcons.List,
-								enabled,
-								Modifier.weight(1f),
-								::addItem,
-							)
-							CaptureTool(
-								"Imagen",
-								MindIcons.Image,
-								enabled && !controller.importing,
-								Modifier.weight(1f),
+							Row(
+								Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+								horizontalArrangement = Arrangement.spacedBy(8.dp),
 							) {
-								imageMenu = true
-							}
-							CaptureTool(
-								"Recordar",
-								MindIcons.Notifications,
-								enabled,
-								Modifier.weight(1f),
-							) {
-								reminder = true
+								CaptureTool(
+									"Lista",
+									MindIcons.List,
+									enabled,
+									Modifier.weight(1f),
+									::addItem,
+								)
+								CaptureTool(
+									"Imagen",
+									MindIcons.Image,
+									enabled && !controller.importing,
+									Modifier.weight(1f),
+								) {
+									imageMenu = true
+								}
+								CaptureTool(
+									"Recordar",
+									MindIcons.Notifications,
+									enabled,
+									Modifier.weight(1f),
+								) {
+									reminder = true
+								}
 							}
 						}
 						Row(
@@ -297,6 +304,18 @@ fun EditNoteScreen(
 									Icon(MindIcons.MoreVert, "Más opciones")
 								}
 								DropdownMenu(more, { more = false }) {
+									DropdownMenuItem(
+										text = { Text("Añadir casilla") },
+										enabled = enabled,
+										onClick = { more = false; addItem() })
+									DropdownMenuItem(
+										text = { Text("Imágenes y archivos") },
+										enabled = enabled && !controller.importing,
+										onClick = { more = false; imageMenu = true })
+									DropdownMenuItem(
+										text = { Text("Recordatorio") },
+										enabled = enabled,
+										onClick = { more = false; reminder = true })
 									DropdownMenuItem(
 										text = { Text("Compartir") },
 										onClick = {
@@ -339,6 +358,8 @@ fun EditNoteScreen(
 			Column(
 				Modifier.fillMaxSize()
 					.padding(padding)
+					.consumeWindowInsets(padding)
+					.then(if (focus) Modifier.imePadding() else Modifier)
 					.verticalScroll(rememberScrollState())
 					.padding(horizontal = 24.dp)
 					.padding(top = 16.dp, bottom = 24.dp),

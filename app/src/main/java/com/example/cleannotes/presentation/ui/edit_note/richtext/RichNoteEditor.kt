@@ -106,8 +106,12 @@ class RichNoteEditor(context: Context) : EditText(context) {
 			notifyEditorState()
 			return
 		}
+		val textChanged = document.text != value.text || document.marks != value.marks ||
+				document.lineSpacing != value.lineSpacing || document.extraLineSpacing != value.extraLineSpacing ||
+				document.paragraphSpacing != value.paragraphSpacing || document.textAlignment != value.textAlignment
 		document = value
-		render()
+		// Metadata updates must not replace the Editable or restart an IME composition.
+		if (textChanged) render() else notifyEditorState()
 	}
 
 	private fun render() {

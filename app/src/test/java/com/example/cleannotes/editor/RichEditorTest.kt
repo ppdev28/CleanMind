@@ -18,6 +18,22 @@ import org.robolectric.annotation.Config
 @Config(sdk = [28], application = Application::class)
 class RichEditorTest {
 	@Test
+	fun metadataChangesKeepTheEditableSelectionAndImeComposition() {
+		val editor = RichNoteEditor(RuntimeEnvironment.getApplication())
+		val original = NoteDocument(text = "Composición", images = listOf("photo.jpg"))
+		editor.bind(original)
+		editor.setSelection(3, 7)
+		val editable = editor.text
+		val composition = Any()
+		editable!!.setSpan(composition, 2, 8, android.text.Spanned.SPAN_COMPOSING)
+		editor.bind(original.copy(subtitle = "Nuevo", pinned = true))
+		assertSame(editable, editor.text)
+		assertEquals(3, editor.selectionStart)
+		assertEquals(7, editor.selectionEnd)
+		assertEquals(2, editor.text!!.getSpanStart(composition))
+	}
+
+	@Test
 	fun nativeEditorRemainsAvailableToAccessibilityServices() {
 		val editor = RichNoteEditor(RuntimeEnvironment.getApplication())
 		assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_YES, editor.importantForAccessibility)

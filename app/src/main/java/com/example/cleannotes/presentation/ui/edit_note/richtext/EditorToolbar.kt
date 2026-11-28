@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.model.NoteDocument
@@ -24,6 +25,7 @@ fun RichFormatBar(
 	modifier: Modifier = Modifier
 ) {
 	var expanded by rememberSaveable { mutableStateOf(false) }
+	val keyboard = LocalSoftwareKeyboardController.current
 	val editor = controller.editor
 	val active = controller.activeFormats
 	Row(modifier) {
@@ -63,7 +65,7 @@ fun RichFormatBar(
 				"strike" in active
 			) { editor?.format("strike") }
 		}
-		IconButton(onClick = { expanded = true }, enabled = enabled) {
+		IconButton(onClick = { keyboard?.hide(); expanded = true }, enabled = enabled) {
 			Icon(
 				MindIcons.Tune,
 				"Más formato y espaciado"
