@@ -25,10 +25,10 @@ import androidx.compose.ui.Modifier
 
 private val LightColors =
 	lightColorScheme(
-		primary = Gray900,
+		primary = AccentBlue,
 		onPrimary = Gray0,
-		primaryContainer = Gray200,
-		onPrimaryContainer = Gray900,
+		primaryContainer = BlueContainer,
+		onPrimaryContainer = BlueInk,
 		inversePrimary = AccentBlueLight,
 		secondary = Gray600,
 		onSecondary = Gray0,
@@ -38,16 +38,16 @@ private val LightColors =
 		onTertiary = Gray0,
 		tertiaryContainer = BlueContainer,
 		onTertiaryContainer = BlueInk,
-		background = Gray100,
-		onBackground = Gray900,
-		surface = Gray50,
-		onSurface = Gray900,
+		background = Color(0xFFF0F0F0),
+		onBackground = Color(0xFF3C3C3C),
+		surface = Color(0xFFF6F6F6),
+		onSurface = Color(0xFF3C3C3C),
 		surfaceVariant = Gray150,
-		onSurfaceVariant = Gray600,
+		onSurfaceVariant = Color(0xFF656565),
 		surfaceDim = Gray200,
 		surfaceBright = Gray0,
 		surfaceContainerLowest = Gray0,
-		surfaceContainerLow = Gray50,
+		surfaceContainerLow = Color(0xFFF6F6F6),
 		surfaceContainer = Gray150,
 		surfaceContainerHigh = Gray150,
 		surfaceContainerHighest = Gray200,
@@ -55,7 +55,7 @@ private val LightColors =
 		inverseSurface = Gray800,
 		inverseOnSurface = Gray100,
 		outline = Gray500,
-		outlineVariant = Gray300,
+		outlineVariant = Color(0xFFDADADA),
 		error = Color(0xFFB3261E),
 		onError = Gray0,
 		errorContainer = Color(0xFFFCE8E6),
@@ -77,10 +77,10 @@ private val LightColors =
 
 private val DarkColors =
 	darkColorScheme(
-		primary = Color(0xFFF2F2F2),
-		onPrimary = Color(0xFF101010),
-		primaryContainer = Color(0xFF303030),
-		onPrimaryContainer = Color(0xFFF2F2F2),
+		primary = AccentBlueLight,
+		onPrimary = Color(0xFF21313D),
+		primaryContainer = Color(0xFF2B3B46),
+		onPrimaryContainer = Color(0xFFD4DFE7),
 		inversePrimary = AccentBlue,
 		secondary = Gray300,
 		onSecondary = Gray900,
@@ -90,24 +90,24 @@ private val DarkColors =
 		onTertiary = BlueInk,
 		tertiaryContainer = BlueContainerDark,
 		onTertiaryContainer = BlueInkDark,
-		background = Color.Black,
-		onBackground = Color.White,
-		surface = Color(0xFF141414),
-		onSurface = Color.White,
+		background = Color(0xFF181818),
+		onBackground = Color(0xFFDCDCDC),
+		surface = Color(0xFF202020),
+		onSurface = Color(0xFFDCDCDC),
 		surfaceVariant = Gray800,
-		onSurfaceVariant = Gray300,
+		onSurfaceVariant = Color(0xFFB3B3B3),
 		surfaceDim = Gray950,
 		surfaceBright = Gray750,
-		surfaceContainerLowest = Color.Black,
-		surfaceContainerLow = Color(0xFF141414),
-		surfaceContainer = Gray850,
+		surfaceContainerLowest = Color(0xFF181818),
+		surfaceContainerLow = Color(0xFF202020),
+		surfaceContainer = Color(0xFF282828),
 		surfaceContainerHigh = Gray800,
 		surfaceContainerHighest = Gray750,
 		surfaceTint = Color.Transparent,
 		inverseSurface = Gray200,
 		inverseOnSurface = Gray900,
 		outline = Gray500,
-		outlineVariant = Color(0xFF404040),
+		outlineVariant = Color(0xFF363636),
 		error = Color(0xFFF2B8B5),
 		onError = Color(0xFF601410),
 		errorContainer = Color(0xFF5C2523),
@@ -129,7 +129,7 @@ private val DarkColors =
 
 internal fun themedColors(dark: Boolean, appearance: Appearance): ColorScheme {
 	val base = if (dark && appearance.selected.id == "gray") DarkColors.copy(
-		background = Gray950, surfaceContainerLowest = Gray950
+		background = Color(0xFF1C1C1C), surfaceContainerLowest = Color(0xFF1C1C1C)
 	) else if (dark) DarkColors else LightColors
 	val raw = appearance.selected.accent?.toInt() ?: return base
 	val hsl = FloatArray(3); ColorUtils.colorToHSL(raw, hsl)

@@ -15,6 +15,23 @@ import org.robolectric.annotation.Config
 @Config(sdk = [35], application = Application::class)
 class ThemePaletteTest {
 	@Test
+	fun softerPalettesKeepTextAndActionsReadable() {
+		for (dark in listOf(false, true)) for (preset in Appearance.presets) {
+			val colors = themedColors(dark, Appearance(preset.id))
+			listOf(
+				colors.onSurface to colors.surface, colors.onBackground to colors.background,
+				colors.onSurfaceVariant to colors.surfaceContainerHighest,
+				colors.primary to colors.surface, colors.onPrimary to colors.primary
+			).forEach { (text, background) ->
+				assertTrue(
+					"${preset.id}, dark=$dark: text contrast",
+					ColorUtils.calculateContrast(text.toArgb(), background.toArgb()) >= 4.5
+				)
+			}
+		}
+	}
+
+	@Test
 	fun grayPaletteUsesNeutralRolesInBothAppearances() {
 		for (dark in listOf(false, true)) {
 			val colors = themedColors(dark, Appearance("gray"))
