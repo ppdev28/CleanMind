@@ -8,6 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import com.example.cleannotes.R
 import com.example.cleannotes.presentation.ui.design.MindIcons
@@ -42,10 +44,10 @@ fun CustomTopBar(
 				horizontalArrangement = Arrangement.spacedBy(8.dp)
 			) {
 				if (title == null) Icon(
-					MindIcons.FountainPen,
+					painterResource(R.drawable.ic_launcher_foreground),
 					null,
-					Modifier.size(24.dp),
-					tint = MaterialTheme.colorScheme.tertiary
+					Modifier.size(32.dp).scale(1.5f),
+					tint = MaterialTheme.colorScheme.onSurface
 				)
 				Text(
 					title ?: stringResource(R.string.app_name),
