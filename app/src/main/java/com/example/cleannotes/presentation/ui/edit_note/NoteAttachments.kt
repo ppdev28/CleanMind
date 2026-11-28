@@ -88,7 +88,7 @@ fun NoteFileList(
 						onClick = {
 							onChange(
 								document.copy(files = document.files.filterNot { it.name == attachment.name })
-								.encode()
+									.encode()
 							)
 						}) { Icon(MindIcons.Close, "Quitar archivo ${attachment.displayName}") }
 				}
