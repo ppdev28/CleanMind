@@ -33,6 +33,19 @@ class SettingsViewModelTest {
 			val repository =
 				object : UserPreferencesRepository {
 					override val themeMode = MutableStateFlow(ThemeMode.DARK)
+					override val appearance = MutableStateFlow(com.example.cleannotes.model.Appearance())
+					override suspend fun selectPalette(id: String) {
+						appearance.value = appearance.value.copy(selectedId = id)
+					}
+
+					override suspend fun saveCustomTheme(theme: com.example.cleannotes.model.CustomTheme) {
+						error("unused")
+					}
+
+					override suspend fun deleteCustomTheme(id: String) {
+						error("unused")
+					}
+
 					var fail = true
 
 					override suspend fun setThemeMode(mode: ThemeMode) {

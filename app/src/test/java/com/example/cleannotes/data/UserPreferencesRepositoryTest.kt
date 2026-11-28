@@ -25,6 +25,28 @@ class UserPreferencesRepositoryTest {
 	val directory = TemporaryFolder()
 
 	@Test
+	fun customPalettesSurviveReopeningAndDeletingTheActiveOneResetsSelection() = runBlocking {
+		val file = File(directory.root, "palettes.preferences_pb")
+		var scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+		var store = PreferenceDataStoreFactory.create(scope = scope, produceFile = { file })
+		val theme = com.example.cleannotes.model.CustomTheme("custom-1", "Mi azul", 0xFF3E7194)
+		DataStoreUserPreferencesRepository(store).saveCustomTheme(theme)
+		scope.cancel(); scope.coroutineContext[Job]!!.join()
+		scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+		try {
+			store = PreferenceDataStoreFactory.create(scope = scope, produceFile = { file })
+			val repo = DataStoreUserPreferencesRepository(store)
+			assertEquals(theme, repo.appearance.first().customThemes.single())
+			assertEquals(theme.id, repo.appearance.first().selectedId)
+			repo.deleteCustomTheme(theme.id)
+			assertEquals("default", repo.appearance.first().selectedId)
+			assertTrue(repo.appearance.first().customThemes.isEmpty())
+		} finally {
+			scope.cancel(); scope.coroutineContext[Job]!!.join()
+		}
+	}
+
+	@Test
 	fun legacyThemeMigratesAndNewSelectionSurvivesReopening() = runBlocking {
 		val context = RuntimeEnvironment.getApplication()
 		context

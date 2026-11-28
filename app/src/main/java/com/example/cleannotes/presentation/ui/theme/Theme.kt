@@ -9,6 +9,11 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
+import androidx.compose.material3.ColorScheme
+import androidx.core.graphics.ColorUtils
+import androidx.compose.ui.graphics.toArgb
+import com.example.cleannotes.model.Appearance
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -122,9 +127,57 @@ private val DarkColors =
 		onTertiaryFixedVariant = BlueInk,
 	)
 
+internal fun themedColors(dark: Boolean, appearance: Appearance): ColorScheme {
+	val base = if (dark) DarkColors else LightColors
+	val raw = appearance.selected.accent?.toInt() ?: return base
+	val hsl = FloatArray(3); ColorUtils.colorToHSL(raw, hsl)
+	var primary = raw
+	repeat(51) {
+		if (ColorUtils.calculateContrast(primary, base.surface.toArgb()) < 4.5) {
+			hsl[2] = (hsl[2] + if (dark) 0.02f else -0.02f).coerceIn(0f, 1f)
+			primary = ColorUtils.HSLToColor(hsl)
+		}
+	}
+	fun ink(color: Int): Color = if (ColorUtils.calculateContrast(
+			android.graphics.Color.BLACK,
+			color
+		) >= ColorUtils.calculateContrast(android.graphics.Color.WHITE, color)
+	) Color.Black else Color.White
+
+	val container = ColorUtils.blendARGB(base.surface.toArgb(), raw, if (dark) 0.28f else 0.15f)
+	return base.copy(
+		primary = Color(primary),
+		onPrimary = ink(primary),
+		primaryContainer = Color(container),
+		onPrimaryContainer = ink(container),
+		secondary = Color(primary),
+		onSecondary = ink(primary),
+		secondaryContainer = Color(container),
+		onSecondaryContainer = ink(container),
+		tertiary = Color(primary),
+		onTertiary = ink(primary),
+		tertiaryContainer = Color(container),
+		onTertiaryContainer = ink(container),
+		inversePrimary = Color(primary),
+		primaryFixed = Color(container),
+		primaryFixedDim = Color(container),
+		onPrimaryFixed = ink(container),
+		onPrimaryFixedVariant = ink(container),
+		secondaryFixed = Color(container),
+		secondaryFixedDim = Color(container),
+		onSecondaryFixed = ink(container),
+		onSecondaryFixedVariant = ink(container),
+		tertiaryFixed = Color(container),
+		tertiaryFixedDim = Color(container),
+		onTertiaryFixed = ink(container),
+		onTertiaryFixedVariant = ink(container)
+	)
+}
+
 @Composable
 fun CleanMindTheme(
 	darkTheme: Boolean = isSystemInDarkTheme(),
+	appearance: Appearance = Appearance(),
 	content: @Composable () -> Unit,
 ) {
 	val view = LocalView.current
@@ -139,7 +192,7 @@ fun CleanMindTheme(
 		}
 	}
 	MaterialTheme(
-		colorScheme = if (darkTheme) DarkColors else LightColors,
+		colorScheme = remember(darkTheme, appearance) { themedColors(darkTheme, appearance) },
 		typography = Typography,
 		content = {
 			CompositionLocalProvider(

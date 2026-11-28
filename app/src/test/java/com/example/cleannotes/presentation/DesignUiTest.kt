@@ -436,6 +436,25 @@ class DesignUiTest {
 	}
 
 	@Test
+	fun settingsCanSelectAndApplyAnAccentPalette() {
+		var appearance = com.example.cleannotes.model.Appearance()
+		compose.setContent {
+			var value by remember { mutableStateOf(appearance) }
+			CleanMindTheme(darkTheme = true, appearance = value) {
+				com.example.cleannotes.presentation.ui.settings.SettingsScreen(
+					com.example.cleannotes.presentation.ui.settings.SettingsUiState(
+						isLoading = false,
+						appearance = value
+					), {}, {}, {}, storageContent = {},
+					onPaletteSelected = { id -> value = value.copy(selectedId = id); appearance = value })
+			}
+		}
+		compose.onNodeWithText("Azul acero").performScrollTo().performClick()
+		compose.onNodeWithText("Azul acero").assertIsSelected()
+		assertEquals("steel", appearance.selectedId)
+	}
+
+	@Test
 	fun settingsShowAppearanceAndStorageDirectly() {
 		val storage =
 			com.example.cleannotes.presentation.ui.settings.StorageSettingsViewModel(
