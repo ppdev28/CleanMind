@@ -117,7 +117,9 @@ La selección del tema se aplica al guardarse y se conserva en DataStore, sin co
 
 ### Asistente de IA
 
-En **Ajustes → Inteligencia artificial**, introduce una URL base HTTPS, el modelo y tu clave de API. Usa **Probar conexión** y después **Guardar configuración de IA**. La clave se guarda cifrada en el dispositivo; **Eliminar clave y configuración** desactiva la integración.
+Para usar tu cuenta de ChatGPT, entra en **Ajustes → Usar mi cuenta de ChatGPT → Continuar con ChatGPT**. En el navegador de OpenAI elige Google si es tu método habitual, autoriza el uso del plan, vuelve a la app y selecciona un modelo. Consulta [Cuenta de ChatGPT](chatgpt.md).
+
+Para usar una clave de API independiente, en **Ajustes → Inteligencia artificial**, introduce una URL base HTTPS, el modelo y tu clave de API. Usa **Probar conexión** y después **Guardar configuración de IA**. La clave se guarda cifrada en el dispositivo; **Eliminar clave y configuración** desactiva la integración.
 
 Abre una nota y pulsa **IA** en la cabecera. Elige **Resumir**, **Mejorar redacción**, **Extraer tareas** o **Instrucción propia** y pulsa **Generar**. La instrucción propia también permite escribir desde una nota vacía. Revisa el resultado y pulsa **Añadir a la nota** para incorporarlo al final mediante el autoguardado habitual. **Cerrar** descarta la propuesta; **Cancelar generación** interrumpe la espera. Si cambias la nota, genera una propuesta nueva antes de añadirla.
 

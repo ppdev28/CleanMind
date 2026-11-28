@@ -32,7 +32,11 @@ fun SettingsScreen(
 	onBack: () -> Unit,
 	onRetry: () -> Unit,
 	storageContent: @Composable () -> Unit = { StorageSettings() },
-	aiContent: @Composable () -> Unit = { AiSettings() },
+	aiContent: @Composable () -> Unit = {
+		com.example.cleannotes.presentation.ui.chatgpt.ChatGptSettings()
+		HorizontalDivider(Modifier.padding(vertical = 20.dp))
+		AiSettings()
+	},
 ) {
 	val context = LocalContext.current
 	Scaffold(

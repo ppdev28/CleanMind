@@ -30,6 +30,7 @@ fun AiAssistantSheet(
 	onDismiss: () -> Unit,
 ) {
 	if (!state.visible) return
+	val context = androidx.compose.ui.platform.LocalContext.current
 	AppBottomSheet(onDismissRequest = onDismiss) {
 		Column(
 			Modifier.fillMaxWidth()
@@ -43,12 +44,20 @@ fun AiAssistantSheet(
 			if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
 			else if (!state.configured) {
 				Text(
-					"Añade tu clave de API y elige un modelo en Ajustes para usar la IA en tus notas."
+					if (state.usesChatGpt) "Revisa la sesión y el modelo de tu cuenta de ChatGPT en Ajustes."
+					else "Conecta tu cuenta de ChatGPT o configura una clave de API en Ajustes para usar la IA en tus notas."
 				)
 				Button(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
 					Text("Configurar IA")
 				}
 			} else {
+				if (state.usesChatGpt) {
+					Text("Usando tu plan de ChatGPT", style = MaterialTheme.typography.titleMedium)
+					TextButton(onClick = {
+						context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW,
+							android.net.Uri.parse("https://chatgpt.com/settings/usage")))
+					}) { Text("Gestionar uso en ChatGPT") }
+				}
 				Text(
 					"Se enviará el título y el texto de esta nota a ${state.provider}. No se incluyen imágenes. Revisa la propuesta antes de añadirla; las peticiones pueden tener coste.",
 					style = MaterialTheme.typography.bodySmall,
@@ -152,6 +161,7 @@ fun AiAssistantSheet(
 					color = MaterialTheme.colorScheme.error,
 				)
 			}
+			if (state.configured) TextButton(onClick = onSettings, modifier = Modifier.fillMaxWidth()) { Text("Ajustes de IA") }
 			TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) { Text("Cerrar") }
 		}
 	}

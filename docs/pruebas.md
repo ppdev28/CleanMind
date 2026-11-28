@@ -220,10 +220,12 @@ Se han comprobado `testDebugUnitTest`, `assembleDebug`, `lintDebug` y la compila
 
 No se ha llamado a una API externa con credenciales reales. La prueba desde **Ajustes → Inteligencia artificial → Probar conexión** permite validar la cuenta y el modelo configurados. El contrato, los límites y los comandos están en [IA](ia.md).
 
-## Prueba de la rama de IA en Xiaomi
+## Acceso con ChatGPT y Google (28 de noviembre de 2026)
 
-Se compiló `feat/ai-integration` y se instaló su APK debug en el Xiaomi Redmi Note 8 Pro conectado, Android API 36, sin desinstalar ni borrar datos. Pasaron las **26 pruebas locales específicas de IA**, lint debug y la prueba instrumentada `EncryptedAiSettingsTest` sobre el Android Keystore real. Esta última usa un archivo temporal independiente, verifica persistencia cifrada, IV nuevo, detección de corrupción y borrado, y retira sus datos al terminar.
+La rama incorpora el acceso oficial con ChatGPT para usar el plan autorizado, con Google como opción dentro del navegador de OpenAI. La suite completa pasa con **133 pruebas JVM/Robolectric**, 27 adicionales respecto al acceso con clave. `assembleDebug`, `lintDebug` y `assembleDebugAndroidTest` finalizan correctamente; lint mantiene avisos, incluidos consejos de estilo KTX en la nueva UI, sin errores.
 
-Se abrió Ajustes en la sección de IA y se comprobó el campo enmascarado. La comparación tras la actualización conservó todos los campos de las **10 notas y 2 carpetas originales**. No se enviaron notas ni credenciales reales a un proveedor durante estas comprobaciones. La prueba con una cuenta real requiere introducir la configuración del proveedor.
+Las pruebas nuevas cubren PKCE S256, estado/nonce, firma y claims OIDC, registro dinámico, retorno real por loopback, modelo disponible por cuenta, contrato de Responses con streaming, rechazo de respuestas parciales, renovación concurrente, permisos de identidad separados del uso del plan, registro retenido tras un intercambio fallido, cierre de sesión y ausencia de cambio automático a facturación de API. Los dobles de identidad se firman con claves de prueba y la red HTTPS utiliza MockWebServer con certificado local.
 
-Esta rama parte de `7a4b43a`, anterior a las revisiones posteriores de navegación, temas y barra de formato; su interfaz refleja esa base.
+Las **dos pruebas instrumentadas** de `EncryptedAiSettingsTest` pasan en el emulador Android API 35: compatibilidad y cifrado de la configuración de API, y persistencia/rotación/borrado de los tokens de ChatGPT en un archivo aislado. Se ha arrancado el APK y abierto Ajustes en ese emulador sin errores de ejecución.
+
+No se ha completado el acceso con una cuenta real de Google/ChatGPT ni se han consumido peticiones del plan de una cuenta real. Esa validación requiere que su titular elija la cuenta y autorice la integración en OpenAI. Consulta [Cuenta de ChatGPT](chatgpt.md).

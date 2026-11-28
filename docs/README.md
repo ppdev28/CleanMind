@@ -37,3 +37,5 @@ Consulta [Superficies y contraste Material 3](glass-ui.md) para el material comp
 Los valores de versión son los configurados en este proyecto; no implican que cada dependencia sea la última publicada. Si cambian las fuentes, actualiza los documentos afectados.
 
 [Volver al proyecto](../README.md).
+
+El acceso con una cuenta de ChatGPT y Google, independiente de las claves de API, está descrito en [Cuenta de ChatGPT](chatgpt.md).
