@@ -377,7 +377,7 @@ class DesignUiTest {
 		compose.onNodeWithContentDescription("Compartir nota").assertIsDisplayed()
 		compose.onNodeWithContentDescription("Deshacer").assertExists()
 		compose.onNodeWithContentDescription("Rehacer").assertExists()
-		compose.onNodeWithContentDescription("Más formato y espaciado").performClick()
+		compose.onNodeWithContentDescription("Más formato y espaciado").performScrollTo().performClick()
 		compose.onNodeWithText("Casilla").assertDoesNotExist()
 		compose.onNodeWithText("H6").assertExists()
 	}
@@ -402,7 +402,7 @@ class DesignUiTest {
 		compose.onNodeWithText("Markdown").assertDoesNotExist()
 		compose.onNodeWithText("Vista previa").assertDoesNotExist()
 		compose.onNodeWithContentDescription("Negrita").assertIsDisplayed()
-		compose.onNodeWithContentDescription("Más formato y espaciado").performClick()
+		compose.onNodeWithContentDescription("Más formato y espaciado").performScrollTo().performClick()
 		compose.onNodeWithText("Formato de texto").assertIsDisplayed()
 		compose.onNodeWithText("H6").assertExists()
 		screenshot("normal-format-panel-dark", dialog = true)
@@ -463,7 +463,12 @@ class DesignUiTest {
 			}
 		}
 		compose.onNodeWithContentDescription("Negrita").assertIsDisplayed()
-		compose.onNodeWithContentDescription("Más formato y espaciado").assertIsDisplayed()
+		listOf(
+			"Deshacer", "Rehacer", "Negrita", "Cursiva", "Subrayado", "Lista con viñetas",
+			"Lista numerada", "Tachado", "Más formato y espaciado"
+		).forEach { label ->
+			compose.onNodeWithContentDescription(label).performScrollTo().assertIsDisplayed()
+		}
 		listOf("Dictar", "Lista", "Imagen", "Recordar").forEach { label ->
 			val layouts = mutableListOf<TextLayoutResult>()
 			compose.onNodeWithText(label).assertIsDisplayed().performSemanticsAction(

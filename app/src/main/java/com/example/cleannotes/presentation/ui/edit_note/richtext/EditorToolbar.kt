@@ -28,54 +28,52 @@ fun RichFormatBar(
 	val keyboard = LocalSoftwareKeyboardController.current
 	val editor = controller.editor
 	val active = controller.activeFormats
-	Row(modifier) {
-		Row(Modifier.weight(1f).horizontalScroll(rememberScrollState())) {
-			IconButton(onClick = { editor?.undoEdit() }, enabled = enabled && controller.canUndo) {
-				Icon(
-					MindIcons.Undo,
-					"Deshacer"
-				)
-			}
-			IconButton(onClick = { editor?.redoEdit() }, enabled = enabled && controller.canRedo) {
-				Icon(
-					MindIcons.Redo,
-					"Rehacer"
-				)
-			}
-			FormatAction(
-				MindIcons.FormatBold,
-				"Negrita",
-				enabled,
-				"bold" in active
-			) { editor?.format("bold") }
-			FormatAction(MindIcons.FormatItalic, "Cursiva", enabled, "italic" in active) {
-				editor?.format(
-					"italic"
-				)
-			}
-			FormatAction(
-				MindIcons.FormatUnderlined,
-				"Subrayado",
-				enabled,
-				"underline" in active
-			) { editor?.format("underline") }
-			FormatAction(
-				MindIcons.FormatListBulleted,
-				"Lista con viñetas",
-				enabled
-			) { editor?.list("• ") }
-			FormatAction(
-				MindIcons.FormatListNumbered,
-				"Lista numerada",
-				enabled
-			) { editor?.list("number") }
-			FormatAction(
-				MindIcons.StrikethroughS,
-				"Tachado",
-				enabled,
-				"strike" in active
-			) { editor?.format("strike") }
+	Row(modifier.horizontalScroll(rememberScrollState())) {
+		IconButton(onClick = { editor?.undoEdit() }, enabled = enabled && controller.canUndo) {
+			Icon(
+				MindIcons.Undo,
+				"Deshacer"
+			)
 		}
+		IconButton(onClick = { editor?.redoEdit() }, enabled = enabled && controller.canRedo) {
+			Icon(
+				MindIcons.Redo,
+				"Rehacer"
+			)
+		}
+		FormatAction(
+			MindIcons.FormatBold,
+			"Negrita",
+			enabled,
+			"bold" in active
+		) { editor?.format("bold") }
+		FormatAction(MindIcons.FormatItalic, "Cursiva", enabled, "italic" in active) {
+			editor?.format(
+				"italic"
+			)
+		}
+		FormatAction(
+			MindIcons.FormatUnderlined,
+			"Subrayado",
+			enabled,
+			"underline" in active
+		) { editor?.format("underline") }
+		FormatAction(
+			MindIcons.FormatListBulleted,
+			"Lista con viñetas",
+			enabled
+		) { editor?.list("• ") }
+		FormatAction(
+			MindIcons.FormatListNumbered,
+			"Lista numerada",
+			enabled
+		) { editor?.list("number") }
+		FormatAction(
+			MindIcons.StrikethroughS,
+			"Tachado",
+			enabled,
+			"strike" in active
+		) { editor?.format("strike") }
 		IconButton(onClick = { keyboard?.hide(); expanded = true }, enabled = enabled) {
 			Icon(
 				MindIcons.Tune,

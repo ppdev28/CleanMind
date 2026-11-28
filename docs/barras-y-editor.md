@@ -17,7 +17,7 @@ La pulsación larga selecciona directamente una nota o recordatorio, sin hoja in
 
 La fila inferior ofrece **Dictar, Lista, Imagen y Recordar**. Con teclado usa iconos compactos y con texto grande puede distribuirse en dos filas para evitar recortes.
 
-Se retira el menú global de tres puntos: Compartir está en la cabecera, Deshacer/Rehacer en la barra de formato y las inserciones en la fila inferior. El panel completo de formato y las opciones propias de cada imagen permanecen disponibles.
+Se retira el menú global de tres puntos: Compartir está en la cabecera, Deshacer/Rehacer en la barra de formato y las inserciones en la fila inferior. Todos los botones de la barra de formato, incluido Más formato y espaciado, comparten el mismo scroll horizontal; no hay un botón fijo que recorte las opciones al pasar por debajo. El panel completo de formato y las opciones propias de cada imagen permanecen disponibles.
 
 Las casillas se crean con Lista, mantienen su edición, borrado y Deshacer. Se retiran los accesos de casilla en la fila de formato y en su panel; las viñetas, números, estilos y espaciado permanecen disponibles.
 

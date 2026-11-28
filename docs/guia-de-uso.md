@@ -25,7 +25,7 @@ La barra inferior fija muestra **Inicio, Notas, Nueva nota, Recordar y Buscar**.
 
 También puedes crear la primera nota desde el botón del estado vacío.
 
-El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelves con cambios válidos pendientes, intenta guardarlos antes de cerrar. La barra de formato muestra directamente Deshacer, Rehacer, negrita, cursiva, subrayado y listas; **Más formato y espaciado** abre el panel completo del editor normal.
+El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelves con cambios válidos pendientes, intenta guardarlos antes de cerrar. La barra de formato muestra directamente Deshacer, Rehacer, negrita, cursiva, subrayado y listas. Desliza horizontalmente la barra para acceder a todas sus opciones, incluido **Más formato y espaciado**, que abre el panel completo del editor normal.
 
 ## Entender el guardado
 
