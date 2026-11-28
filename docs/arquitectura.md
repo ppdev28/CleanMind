@@ -71,7 +71,7 @@ com/example/cleannotes/
 | `MainActivity` | Instalar la splash nativa, activar edge-to-edge e instalar `NotesApp`. |
 | `NotesApplication` | Punto de entrada de Hilt. |
 | `NotesApp` | Aplicar el tema, gestionar el back stack, obtener ViewModels y conectar estado y callbacks. |
-| `NotesViewModel` | Observar notas/carpetas, derivar colecciones y búsqueda, conservar consulta/pestaña/carpeta y gestionar mutaciones y errores. |
+| `NotesViewModel` | Observar notas/carpetas, conservar consulta/pestaña/carpeta y gestionar mutaciones y errores. |
 | `EditNoteViewModel` | Cargar una nota, mantener el borrador, coordinar autoguardado y solicitar la salida mediante estado. |
 | `SettingsViewModel` | Observar la apariencia y gestionar fallos de lectura o escritura. |
 | Pantallas Compose | Representar estado, controlar interacciones visuales locales y emitir callbacks. |
@@ -89,7 +89,7 @@ Los ViewModels exponen valores inmutables a través de `StateFlow`:
 
 | Estado | Datos principales |
 | --- | --- |
-| `NotesUiState` | Colección completa, notas, recordatorios, resultados, consulta, pestaña, carga y error. |
+| `NotesUiState` | Colección completa, carpetas, consulta, pestaña, carpeta seleccionada, carga, errores y operaciones. |
 | `EditNoteUiState` | Título, contenido, tipo, guardado, carga, cierre, cambios y solicitud de salida. |
 | `SettingsUiState` | Tema, carga y presencia de error. |
 
@@ -173,7 +173,7 @@ El cuerpo del editor integra `RichNoteEditor`, un EditText nativo dentro de Comp
 
 `NoteExport` encapsula TXT UTF-8, PDF A4 con saltos de página e imágenes, archivos compartidos en caché y escritura mediante DocumentsContract. El permiso persistente SAF limita el acceso a la carpeta elegida; no se solicitan permisos generales de almacenamiento. `ExportMenu` realiza IO en background. Room sigue siendo la fuente de verdad; las copias TXT no restauran formatos ni adjuntos.
 
-La agenda de Inicio se presenta con `HomeAgenda`, agrupando por `Note.creationTimestamp()`. El repositorio conserva la creación dentro del documento independientemente del timestamp de edición. `CustomTopBar` conserva `exitUntilCollapsed` y `NotebookFab` concentra la navegación y creación. `HomeAgenda` mantiene estados independientes para la cuadrícula y la agenda vertical. Ajustes expone de nuevo apariencia y almacenamiento directamente.
+La agenda de Inicio se presenta con `HomeAgenda`, agrupando por `Note.creationTimestamp()`. El repositorio conserva la creación dentro del documento independientemente del timestamp de edición. `CustomTopBar` se oculta al descender y solo reaparece al llegar al inicio; `NotebookBottomBar` concentra la navegación y abre `NoteCreationSheet` para crear notas o recordatorios. `HomeAgenda` mantiene estados independientes para la cuadrícula y la agenda vertical. Ajustes expone de nuevo apariencia y almacenamiento directamente.
 
 ## Recordatorios como tareas
 
@@ -212,3 +212,11 @@ El efecto de pulsación de `DesignNoteCard` se dibuja dentro de Surface, que rec
 La fila inferior incorpora Dictar, Lista, Imagen y Recordar; con IME abierto usa iconos compactos y con fuente grande permite dos filas. El menú de formato mantiene estilos, viñetas, números y espaciado, sin insertar casillas. El editor ya no conserva un modo de concentración ni expone acciones de archivo.
 
 `NoteDocument.archived` permanece únicamente por compatibilidad de serialización e historial. Las colecciones no lo utilizan para ocultar notas y no se reescriben documentos al retirar la función. `visibleNotes` sigue siendo la proyección compartida entre tarjetas y selección múltiple.
+
+## Limpieza y trabajo reutilizado
+
+`visibleNotes` es la única proyección de filtros y búsqueda; `NotebookScreen` la memoriza por colección, pestaña, carpeta, consulta y filtro. Esa misma colección alimenta las tarjetas y Seleccionar visibles. Los conteos por carpeta, los IDs seleccionados y la ordenación de recordatorios se calculan al cambiar sus entradas. `NotesUiState` evita almacenar tres listas derivadas que repetían este trabajo.
+
+Cada instancia inmutable de `Note` decodifica su `document` y obtiene su `searchableText` de forma perezosa. Una copia editada crea sus propias cachés; no se guardan en Room ni forman parte de igualdad o serialización. La búsqueda conserva compatibilidad con documentos Markdown y nombres de adjuntos. Los formateadores de fecha se reutilizan por hilo y se renuevan al cambiar idioma o zona horaria.
+
+El borrado individual y múltiple comparten `deleteNotes`, con transacción del DAO y retirada de metadatos de alarmas en un solo commit por lote, en IO. Los iconos vectoriales generados solo contienen los símbolos utilizados. Los campos antiguos de archivo, Markdown, alineación y color se mantienen para leer instalaciones anteriores.

@@ -170,3 +170,5 @@ El borrado múltiple divide los IDs en bloques de 900 dentro de una sola transac
 
 
 La revisión posterior de barras y editor retira el archivo de la interfaz. `archived` sigue leyéndose para conservar los documentos anteriores, pero deja de filtrar las colecciones. No requiere migración ni modificación de filas existentes.
+
+Las propiedades derivadas `Note.document` y `Note.searchableText` son cachés por instancia inmutable para lectura y búsqueda. No son columnas de Room ni campos del documento, y no cambian el esquema 4. Copiar una nota editada inicia nuevas cachés.

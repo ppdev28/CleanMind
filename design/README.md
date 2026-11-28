@@ -10,7 +10,7 @@ Para regenerar, descarga el TTF y los codepoints oficiales y ejecuta `scripts/up
 
 ## Marca monocroma y arranque
 
-`branding/clean-mind-monochrome.svg` es la versión monocroma editable. La pluma conserva la silueta original en blanco sobre gris carbón; los originales de color se guardan únicamente como referencia histórica. El launcher usa vectores adaptativos y una máscara monocroma para iconos temáticos, con un fallback vectorial desde API 24. La imagen de tienda también se ha regenerado desde el vector.
+`branding/clean-mind-monochrome.svg` es la versión monocroma editable. La pluma conserva la silueta original en blanco sobre gris carbón; los originales de color se guardan únicamente como referencia histórica. El launcher usa vectores adaptativos y una máscara monocroma para iconos temáticos, con un fallback vectorial desde API 24. La imagen de tienda también se ha regenerado desde el vector. `CustomTopBar` reutiliza `ic_launcher_foreground` como pluma monocroma junto al nombre, sin sustituirla por un símbolo de biblioteca.
 
 `ic_splash_mark.xml` muestra la pluma sin recuadro, en el color de texto del tema del sistema. `Theme.CleanMind.Starting` utiliza AndroidX SplashScreen 1.2.0 y vuelve a `Theme.CleanMind` al dibujar el contenido. Solo espera la lectura real de preferencias; no añade un temporizador de permanencia. La salida dura 180 ms y se omite cuando Android tiene los animadores desactivados.
 

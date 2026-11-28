@@ -13,19 +13,19 @@ Clean Mind permite guardar ideas y apuntes personales en Android. No necesitas u
 | Editor | Título, subtítulo opcional, cuerpo de la nota, estado de guardado y acciones. |
 | Ajustes | Selección de apariencia e información sobre almacenamiento y recordatorios. |
 
-La barra inferior fija muestra **Inicio, Notas, Nueva nota, Recordar y Buscar**. Nueva nota abre el editor directamente; Buscar enfoca el campo de consulta. La barra se oculta mientras se escribe una búsqueda y vuelve al cerrar el teclado. Durante una selección múltiple, sus acciones quedan desactivadas hasta cancelar o completar la selección. La cabecera se oculta al bajar y reaparece al llegar al inicio; el cambio de vista está junto al engranaje de Ajustes. Una pluma estilográfica acompaña al nombre Clean Mind.
+La barra inferior fija muestra **Inicio, Notas, Nueva nota, Recordar y Buscar**. Nueva nota abre una hoja con **Nueva nota** y **Nuevo recordatorio**, disponible también desde Inicio; Buscar enfoca el campo de consulta. La barra se oculta mientras se escribe una búsqueda y vuelve al cerrar el teclado. Durante una selección múltiple, sus acciones quedan desactivadas hasta cancelar o completar la selección. La cabecera se oculta al bajar y reaparece al llegar al inicio; el cambio de vista está junto al engranaje de Ajustes. La pluma del propio icono de la app acompaña al nombre Clean Mind.
 
 ## Crear una nota
 
 1. Pulsa **Nueva nota** en el centro de la barra inferior.
-2. Se abre directamente el editor.
+2. Elige **Nueva nota** en la hoja de creación.
 3. Escribe un título opcional; si lo dejas vacío, la app utiliza una primera línea legible al guardar.
 4. Añade un subtítulo opcional y el texto de la nota.
 5. Comprueba el estado de guardado en la cabecera o pulsa la flecha de volver, que guarda y cierra el editor.
 
 También puedes crear la primera nota desde el botón del estado vacío.
 
-El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelves con cambios válidos pendientes, intenta guardarlos antes de cerrar. La barra de formato muestra directamente negrita, cursiva, subrayado y listas; **Más formato y espaciado** abre el panel completo del editor normal.
+El editor guarda después de aproximadamente 600 ms sin nuevos cambios. Si vuelves con cambios válidos pendientes, intenta guardarlos antes de cerrar. La barra de formato muestra directamente Deshacer, Rehacer, negrita, cursiva, subrayado y listas; **Más formato y espaciado** abre el panel completo del editor normal.
 
 ## Entender el guardado
 
@@ -45,7 +45,7 @@ No uses el borrador temporal como sustituto del guardado: antes de cerrar o forz
 
 En Inicio las tarjetas se agrupan por día de creación, con un separador horizontal y la fecha completa. No hay círculos ni etiquetas de día independientes. Muestran título, subtítulo si se ha escrito y conteo de imágenes; no muestran el cuerpo. La fecha de cada grupo no cambia al editar una nota. Las notas antiguas utilizan su fecha ya almacenada como referencia porque no hay un historial de creación. Las notas antiguas no obtienen un subtítulo a partir del contenido: puedes escribirlo en el editor.
 
-Mantén pulsada una tarjeta para abrir las opciones **Compartir nota** (texto o PDF) y **Eliminar**. Eliminar sigue solicitando confirmación. La pulsación normal abre la nota. El menú también ofrece **Seleccionar** para iniciar una selección múltiple.
+Mantén pulsada una tarjeta para seleccionarla inmediatamente. Toca otras tarjetas para añadirlas o retirarlas de la selección. Con una sola seleccionada, **Más acciones de selección** ofrece **Compartir nota**, **Mover a carpeta** y fijar/desfijar. La pulsación normal fuera de la selección abre la nota.
 
 Toca una tarjeta para abrir su contenido. Los cambios se guardan en la misma nota, manteniendo su identificador. Las colecciones conservan la fecha de última escritura para su orden habitual. La agenda de Inicio utiliza la fecha de creación independiente.
 
@@ -55,13 +55,13 @@ La elección de vista pertenece al estado de cada pestaña. No hay un ajuste glo
 
 ## Crear un recordatorio
 
-1. Abre **Recordar** y pulsa el **+** de la cabecera de la colección (**Nuevo recordatorio**).
+1. Desde Inicio, pulsa **Nueva nota → Nuevo recordatorio** en la barra inferior. También puedes abrir **Recordar** y pulsar el **+** de su cabecera.
 2. Escribe **¿Qué quieres recordar?**.
 3. Activa **Avisarme** y elige la fecha y la hora, o desactívalo para guardar un pendiente sin notificación.
 4. Añade un detalle opcional y pulsa **Guardar recordatorio**.
 5. Consúltalo desde **Recordar**.
 
-Los recordatorios independientes usan un formulario de tarea, sin herramientas de formato, fotografías ni archivo de notas. Se guardan al pulsar el botón; si vuelves con cambios pendientes, la app pide confirmar si quieres descartarlos. La lista muestra una casilla para completar, el título y la hora. El reloj permite posponer y la pulsación larga abre las opciones, incluida selección y eliminación. No aparecen como tarjetas en la agenda de Inicio.
+Los recordatorios independientes usan un formulario de tarea, sin herramientas de formato, fotografías ni archivo de notas. Se guardan al pulsar el botón; si vuelves con cambios pendientes, la app pide confirmar si quieres descartarlos. La lista muestra una casilla para completar, el título y la hora. El reloj permite posponer y la pulsación larga inicia la selección para compartir o eliminar. No aparecen como tarjetas en la agenda de Inicio.
 
 **Repetición y opciones de aviso** permite configurar el mensaje, repetición (una vez o cada 1–365 minutos, horas, días, semanas o meses), sonido, vibración, prioridad y minutos de posposición. Puedes elegir el tono desde **Personalizar tono en Android**; Android controla los canales y puede silenciarlos.
 
@@ -73,7 +73,7 @@ Pulsa la notificación para abrir su nota o **Posponer** (duración configurable
 
 ## Organizar en carpetas
 
-En **Notas** las carpetas aparecen en cuadrícula. El icono de carpeta con **+** abre **Gestionar carpetas**, donde puedes crearlas o renombrarlas. Selecciona una para consultar sus notas; el botón **Nueva nota** de la barra inferior utiliza esa carpeta. La pulsación larga de una nota ofrece **Mover a carpeta**. **Sin carpeta** reúne las notas sin asignación. Eliminar una carpeta conserva sus notas. Notas no muestra una barra de búsqueda; utiliza la pestaña **Buscar**. Estas carpetas son independientes del directorio de copias TXT de Ajustes. Consulta [Carpetas](carpetas.md).
+En **Notas** las carpetas aparecen en cuadrícula. El icono de carpeta con **+** abre **Gestionar carpetas**, donde puedes crearlas o renombrarlas. Selecciona una para consultar sus notas; el botón **Nueva nota** de la barra inferior utiliza esa carpeta. Mantén pulsada una nota y abre **Más acciones de selección → Mover a carpeta**. **Sin carpeta** reúne las notas sin asignación. Eliminar una carpeta conserva sus notas. Notas no muestra una barra de búsqueda; utiliza la pestaña **Buscar**. Estas carpetas son independientes del directorio de copias TXT de Ajustes. Consulta [Carpetas](carpetas.md).
 
 ## Buscar
 
@@ -89,13 +89,13 @@ El botón de borrar vacía la consulta. Si no hay resultados, prueba con un frag
 
 ## Eliminar
 
-Mantén pulsada una tarjeta o un recordatorio y elige **Eliminar**. Para borrar varios, elige **Seleccionar** y toca los demás elementos. La barra muestra el total y ofrece **Seleccionar visibles**, **Eliminar seleccionados** y cancelar. El filtro actual limita qué añade Seleccionar visibles. Confirma **Eliminar selección** en el diálogo; cancelar no borra nada. Un error mantiene la selección para reintentar y los controles se bloquean mientras se completa la operación. Borrar recordatorios cancela sus notificaciones programadas.
+Mantén pulsada una tarjeta o un recordatorio para seleccionarlo y toca los demás elementos que quieras añadir. La barra muestra el total y ofrece **Seleccionar visibles**, **Eliminar seleccionados** y cancelar. El filtro actual limita qué añade Seleccionar visibles. Confirma **Eliminar selección** en el diálogo; cancelar no borra nada. Un error mantiene la selección para reintentar y los controles se bloquean mientras se completa la operación. Borrar recordatorios cancela sus notificaciones programadas.
 
 La eliminación es permanente en la base de datos de la app: no hay papelera ni función de deshacer. Si falla, se muestra un mensaje y la nota sigue disponible para volver a intentarlo.
 
 ## Compartir
 
-En el editor, abre **Más opciones → Compartir**. Android permite elegir la aplicación receptora.
+En el editor, pulsa **Compartir** en la cabecera. También puedes mantener pulsada una nota en una colección y abrir **Más acciones de selección → Compartir nota**. Android permite elegir la aplicación receptora.
 
 La hoja **Comparte tu nota** muestra una vista previa y permite elegir **Texto** o **PDF**. La acción principal cambia a **Compartir texto** o **Compartir PDF**. Texto envía directamente título, subtítulo y cuerpo, sin adjuntos, para pegarlo fácilmente en otras aplicaciones. PDF envía el documento con formatos básicos, páginas e imágenes, concediendo acceso temporal al archivo.
 

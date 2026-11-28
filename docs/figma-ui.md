@@ -62,7 +62,7 @@ El recuento actualizado de la suite está en [Pruebas](pruebas.md). Además de l
 
 ## Ajustes solicitados el 24 de noviembre
 
-Home deja de utilizar las secciones «A mano» y «Recientes» de Figma y recupera la agenda anterior. Las barras y Ajustes también se restauran por petición expresa del usuario; estas diferencias visuales son intencionadas. La pulsación larga sigue dando acceso a compartir, fijar, archivar y eliminar.
+Home deja de utilizar las secciones «A mano» y «Recientes» de Figma y recupera la agenda anterior. Las barras y Ajustes también se restauran por petición expresa del usuario; estas diferencias visuales son intencionadas. La pulsación larga inicia selección; con un elemento seleccionado, el menú contextual permite compartir, mover y fijar. Archivo se retiró en una revisión posterior.
 
 La agenda agrupa por `NoteDocument.createdAt`, no por la última edición. El repositorio fija ese valor al crear una nota y lo conserva al guardarla de nuevo, incluso si el borrador omite el campo. Las notas anteriores no tienen historial de creación: se utiliza su timestamp ya almacenado como referencia y se fija en la primera actualización. No se inventa una fecha histórica ni se modifica el esquema Room.
 

@@ -62,7 +62,7 @@ Estos comandos no instalan ni abren la aplicación en un teléfono o emulador. C
 | `:app:assembleRelease` | APK release en `app/build/outputs/apk/release/` |
 | `:app:bundleRelease` | AAB en `app/build/outputs/bundle/release/` |
 
-No existe una configuración de firma release en el módulo. Generar un artefacto no implica que esté preparado para publicarse. La variante release tiene desactivada la minificación.
+No existe una configuración de firma release en el módulo. Generar un artefacto no implica que esté preparado para publicarse. La variante release activa R8 y reducción de recursos con las reglas optimizadas de Android. Las bibliotecas aportan sus reglas de consumidor; evita reglas globales que impidan la optimización. Comprueba también el APK optimizado en un dispositivo antes de distribuirlo. Referencia: [optimización de aplicaciones Android](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization).
 
 ## Dependencias
 

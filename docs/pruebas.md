@@ -35,14 +35,14 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | Clase | Casos | Comportamiento comprobado |
 | --- | --- | --- |
 | `EditNoteViewModelTest` | 14 | Autoguardados sobre la misma fila, salida inmediata, escritura lenta, fallos y reintento, guardado explícito de recordatorios, salida repetida, reversión del texto, título vacío, borrador restaurado, texto literal `Remember` y fallo de carga; creación de una nota en la carpeta seleccionada y nota de solo archivo, incluida retirada de su último adjunto. |
-| `NotesViewModelTest` | 11 | Filtros y búsqueda, reintento de carga, error de eliminación, detención de observación sin suscriptores y restauración de consulta/pestaña/carpeta, creación de carpetas, fallo/reintento de movimientos y borrado múltiple con error, reintento y bloqueo de envíos duplicados; acceso a notas antiguas archivadas sin reescritura. |
+| `NotesViewModelTest` | 12 | Filtros y búsqueda, reintento de carga, error de eliminación, detención de observación sin suscriptores y restauración de consulta/pestaña/carpeta, creación de carpetas, fallo/reintento de movimientos y borrado múltiple con error, reintento y bloqueo de envíos duplicados; acceso a notas antiguas archivadas sin reescritura y renovación de búsqueda/metadatos en copias editadas. |
 | `SettingsViewModelTest` | 1 | Conservación del tema persistido cuando falla una escritura y recuperación al reintentar. |
 | `NoteStorageTest` | 6 | Migración 2→4 con SQLite y operaciones de repositorio con IDs estables y orden de consulta; rollback entre bloques de borrado y cancelación de avisos seleccionados. |
 | `FolderStorageTest` | 3 | Migración 3→4 conservando todos los campos; creación/renombrado/borrado, movimientos y guardados obsoletos, duplicados con acentos, carpetas desaparecidas y separación de recordatorios. |
 | `SampleNoteCollectionTest` | 3 | Seis estrofas breves, importación repetida y reintento parcial sin duplicar, conservación de notas/metadatos y reutilización de carpetas existentes. |
 | `UserPreferencesRepositoryTest` | 2 | Migración del tema anterior a DataStore y conservación de una nueva selección al reabrir y creación/eliminación persistente de temas propios. |
 | `DestinationTest` | 1 | Serialización y deserialización de destinos con argumentos tipados. |
-| `DateUtilsTest` | 2 | Agrupación de fechas de años distintos y detección de hoy/ayer. |
+| `DateUtilsTest` | 3 | Agrupación de fechas de años distintos, detección de hoy/ayer y reutilización de formatos por hilo con cambio de idioma/zona horaria. |
 | `RichEditorTest` | 13 | Compatibilidad con texto antiguo, serialización, reapertura con negrita, deshacer/rehacer, limpieza parcial, listas, casillas, espaciado, color con selección conservada y estado de la barra y continuación/salida de listas con Intro, subtítulos y conservación de metadatos al deshacer y disponibilidad del campo nativo para accesibilidad y conservación del Editable/composición IME al cambiar metadatos. |
 | `MarkdownCompatibilityTest` | 5 | Documentos normales sin cambios, lectura de documentos Markdown como texto con formato conservando metadatos y destinos de enlaces, estilos/tablas/tareas anteriores, HTML literal y texto legible para buscar/compartir. |
 | `VoiceDictationTest` | 2 | Intent de reconocimiento, resultados cancelados/vacíos, inserción en selección y deshacer conservando adjuntos. |
@@ -52,7 +52,7 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
 | `DesignUiTest` | 23 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, herramientas inferiores del editor, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras; aplicación de una paleta y borrado múltiple confirmado en Home y recordatorios sin completar avisos; navegación inferior de cinco acciones, creación contextual de avisos y ubicación del dictado, manteniendo Lista y retirando las casillas del formato. |
 
-Total actual: **98 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
+Total actual: **100 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
 Las pruebas de ViewModel usan `kotlinx-coroutines-test` para controlar la ejecución y el tiempo virtual. `FakeNoteRepository` permite simular lentitud, errores y cambios observables.
 
@@ -71,7 +71,7 @@ Las carpetas `build/` contienen salidas generadas. No forman parte de la documen
 
 ## Estado conocido
 
-La validación de la revisión de «To Dos» se documenta al final de esta página. Lint conserva avisos sobre versiones de dependencias y recursos.
+Las revisiones y comprobaciones físicas se documentan al final de esta página. Lint conserva avisos sobre versiones de dependencias y recursos.
 
 La comprobación de formato de Android Studio usa el estilo compartido; la revisión del 28 de noviembre abarca 108 archivos.
 
@@ -245,3 +245,11 @@ Los accesos y la referencia oficial están en [Barras, Home y editor](barras-y-e
 
 
 En el Xiaomi Redmi Note 8 Pro, API 36, conectado en esta revisión, se instalaron los cambios y se verificaron navegación, editor, listas, panel de formato, búsqueda, scroll, cambio de vista y ambos modos de apariencia. **Dos pruebas instrumentadas superadas**, incluida la del portapapeles nativo. Tras retirar la nota de prueba y su copia TXT, la comparación conserva idénticos los campos de las 9 notas y las 2 carpetas originales; DataStore y las preferencias de avisos coinciden con la copia inicial. El teléfono queda en Home y sin APK de pruebas, sin crashes del paquete en el buffer conservado. No se realizó una nueva prueba física en el realme en esta revisión.
+
+## Revisión: selección directa, creación desde Inicio y limpieza · 28 de noviembre de 2026
+
+Las **100 pruebas locales** pasaron sin fallos ni omisiones. Debug y release compilaron y completaron lint sin errores; permanecen recomendaciones de dependencias/API/KTX. Las regresiones comprueban selección inmediata sin diálogo intermedio, creación de ambos tipos desde la hoja, ausencia de «Tu agenda», compartir directo, Deshacer/Rehacer y dos inserciones de Lista sin perder el cuerpo. Se añadieron comprobaciones de copias editadas tras inicializar la búsqueda y de formateadores concurrentes con cambios de idioma y zona horaria.
+
+La variante release activa R8 y reducción de recursos. Se instaló en el Xiaomi Redmi Note 8 Pro, Android API 36, firmada con la clave local de desarrollo solo para la prueba; no se configura una firma de distribución. Se verificaron lectura de notas anteriores, selección con pulsación larga y segundo toque, la hoja Crear desde Inicio y el guardado de una nota y un recordatorio independiente. En el editor se comprobaron Deshacer/Rehacer, dos casillas persistentes, el panel con H6, ausencia del menú global duplicado y acceso directo a Compartir. El PDF generado abrió el selector de Android; se canceló sin enviar. El archivo resultó válido y su título y cuerpo fueron extraíbles, aunque la extracción de la ligadura «fi» no fue fiel; esta revisión no certifica una extracción Unicode completa del PDF nativo.
+
+Se reinstaló debug, se verificó la serialización real en Room y se eliminaron la nota y el recordatorio de prueba mediante selección múltiple y confirmación desde Buscar. Las **dos pruebas instrumentadas** pasaron, incluida imagen pegada desde el portapapeles real, con restauración del portapapeles y eliminación de su archivo. No se incorporó contenido del dispositivo a las capturas publicadas. Al terminar se compararon todos los campos de las **10 notas originales** y las **2 carpetas**, las preferencias de apariencia, la carpeta de exportación y la programación de avisos: permanecieron idénticos. Se eliminaron los dos TXT y el PDF temporales, se retiraron las copias privadas de verificación y no hubo crashes del paquete. El dispositivo quedó en Inicio, modo agenda y con la preferencia de apariencia original.

@@ -4,7 +4,7 @@ En **Notas → Carpetas → Gestionar** puedes crear, renombrar y eliminar carpe
 
 Las carpetas aparecen en una cuadrícula adaptable, con nombre y conteo de notas. Selecciona una para ver sus notas. **Todas las notas** reúne el cuaderno y **Sin carpeta** muestra las notas sin asignación. Los filtros de archivo, fijado e imágenes se combinan con la carpeta seleccionada. La pantalla Notas no tiene barra de búsqueda; la pestaña Buscar sigue consultando todo el cuaderno.
 
-Mantén pulsada una nota en Inicio o Notas y pulsa **Mover a carpeta**. Puedes elegir otra carpeta o **Sin carpeta**. Crear una nota desde el botón central mientras estás en una carpeta la guarda directamente allí. Los recordatorios independientes continúan separados de las carpetas.
+Mantén pulsada una nota en Inicio o Notas y abre **Más acciones de selección → Mover a carpeta**. Puedes elegir otra carpeta o **Sin carpeta**. Crear una nota desde el botón central mientras estás en una carpeta la guarda directamente allí. Los recordatorios independientes continúan separados de las carpetas.
 
 Eliminar una carpeta solicita confirmación y conserva todas sus notas en **Sin carpeta**. Mover una nota no cambia su contenido, su ID ni sus fechas. Una edición abierta anteriormente no revierte un movimiento posterior.
 
