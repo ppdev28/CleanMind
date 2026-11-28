@@ -28,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -412,7 +413,7 @@ fun NotebookScreen(
 												.forEach { label ->
 													Surface(
 														modifier =
-															Modifier.selectable(
+															Modifier.clip(RoundedCornerShape(12.dp)).selectable(
 																filter == label,
 																role = Role.Tab,
 																onClick = { filter = label },
@@ -747,6 +748,7 @@ private fun ReminderCollection(
 					)
 					Column(
 						Modifier.weight(1f)
+							.clip(RoundedCornerShape(12.dp))
 							.combinedClickable(
 								onClick = {
 									if (selecting || note.isReminder) onOpen(note) else editing = note

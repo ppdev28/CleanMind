@@ -14,6 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -96,6 +98,10 @@ fun DesignNoteCard(
 	selectionMode: Boolean = false,
 	selected: Boolean = false,
 ) {
+	val interactions = remember { MutableInteractionSource() }
+	val pressed by interactions.collectIsPressedAsState()
+	val scale by animateFloatAsState(if (pressed) 0.985f else 1f, tween(120), label = "notePress")
+	val selectionChecked = selected
 	val doc = NoteDocument.decode(note.content)
 	val detail = buildList {
 		if (doc.pinned) add("Fijada")
@@ -110,13 +116,21 @@ fun DesignNoteCard(
 		.joinToString(" · ")
 	Surface(
 		modifier =
-			modifier.noteActions(onClick, onLongClick)
+			modifier.graphicsLayer { scaleX = scale; scaleY = scale }
 				.appSurface(RoundedCornerShape(22.dp), selected = selected),
 		shape = RoundedCornerShape(22.dp),
 		color = Color.Transparent,
 	) {
 		Column(
-			Modifier.fillMaxWidth().heightIn(min = 112.dp).padding(16.dp),
+			Modifier.fillMaxWidth().heightIn(min = 112.dp)
+				// Keep the indication inside Surface, whose rounded shape clips its drawing.
+				.combinedClickable(
+					interactionSource = interactions, indication = LocalIndication.current,
+					onClick = onClick, onLongClick = onLongClick,
+					onLongClickLabel = if (selectionMode) "Alternar selección" else "Opciones de la nota"
+				)
+				.semantics { if (selectionMode) this.selected = selectionChecked }
+				.padding(16.dp),
 			verticalArrangement = Arrangement.spacedBy(4.dp),
 		) {
 			Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -141,24 +155,6 @@ fun DesignNoteCard(
 			)
 		}
 	}
-}
-
-@Composable
-private fun Modifier.noteActions(onClick: () -> Unit, onLongClick: () -> Unit): Modifier {
-	val interactions = remember { MutableInteractionSource() }
-	val pressed by interactions.collectIsPressedAsState()
-	val scale by animateFloatAsState(if (pressed) 0.985f else 1f, tween(120), label = "notePress")
-	return this.graphicsLayer {
-		scaleX = scale
-		scaleY = scale
-	}
-		.combinedClickable(
-			interactionSource = interactions,
-			indication = LocalIndication.current,
-			onClick = onClick,
-			onLongClick = onLongClick,
-			onLongClickLabel = "Opciones de la nota",
-		)
 }
 
 @Composable
