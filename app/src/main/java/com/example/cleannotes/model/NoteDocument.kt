@@ -25,6 +25,7 @@ data class NoteDocument(
 	val createdAt: Long? = null,
 	val markdown: Boolean = false,
 	val textAlignment: Int = 0,
+	val files: List<NoteFile> = emptyList(),
 ) {
 	fun completeReminder(now: Long): NoteDocument {
 		val next = reminder?.let { it.nextAfter(maxOf(now, it.at)) }
@@ -58,6 +59,7 @@ data class NoteDocument(
 				listOf(
 					it.subtitle,
 					if (it.markdown) MarkdownText.plain(it.text) else it.text,
+					it.files.joinToString("\n") { file -> file.displayName },
 					it.checklist.joinToString("\n") { item ->
 						(if (item.done) "☑ " else "☐ ") + item.text
 					},
@@ -109,3 +111,6 @@ data class ReminderConfig(
 		return calendar.timeInMillis
 	}
 }
+
+@Serializable
+data class NoteFile(val name: String, val displayName: String, val mimeType: String, val size: Long)

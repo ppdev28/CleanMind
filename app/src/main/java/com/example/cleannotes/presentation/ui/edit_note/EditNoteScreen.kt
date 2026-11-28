@@ -49,6 +49,8 @@ fun EditNoteScreen(
 	val controller =
 		rememberRichEditorController(document) { onEvent(EditNoteEvent.EnteredContent(it)) }
 	val dictate = rememberVoiceDictation(controller)
+	val attachFiles =
+		rememberFileAttachments(document, controller) { onEvent(EditNoteEvent.EnteredContent(it)) }
 	val enabled = !state.isLoading && !state.loadFailed && !state.isClosing
 	var focus by rememberSaveable { mutableStateOf(false) }
 	var reminder by rememberSaveable { mutableStateOf(state.isReminder && state.content.isEmpty()) }
@@ -177,7 +179,8 @@ fun EditNoteScreen(
 				Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
 				verticalArrangement = Arrangement.spacedBy(12.dp),
 			) {
-				Text("Añadir imagen", style = MaterialTheme.typography.titleLarge)
+				Text("Imágenes y archivos", style = MaterialTheme.typography.titleLarge)
+				DesignRow("Adjuntar archivo", MindIcons.AttachFile) { imageMenu = false; attachFiles() }
 				DesignRow("Elegir imagen", MindIcons.Image) {
 					imageMenu = false
 					controller.chooseImage()
@@ -520,6 +523,8 @@ fun EditNoteScreen(
 					}
 				}
 				NoteImageStrip(document, enabled) { onEvent(EditNoteEvent.EnteredContent(it)) }
+				NoteFileList(document, enabled, controller) { onEvent(EditNoteEvent.EnteredContent(it)) }
+				NoteLinkPreviews(state.title, document, controller)
 				if (document.images.isNotEmpty())
 					Text(
 						"${document.images.size} ${if (document.images.size == 1) "imagen" else "imágenes"}",

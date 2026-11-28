@@ -36,6 +36,29 @@ class EditNoteViewModelTest {
 	) = EditNoteViewModel(repository, state, noteId, reminder)
 
 	@Test
+	fun fileOnlyNotesPersistAndTheLastAttachmentCanBeRemoved() = runTest(dispatcher) {
+		val editor = editor()
+		val doc = com.example.cleannotes.model.NoteDocument(
+			files = listOf(
+				com.example.cleannotes.model.NoteFile(
+					"test.bin",
+					"Informe.pdf",
+					"application/pdf",
+					12
+				)
+			)
+		)
+		editor.onEvent(EditNoteEvent.EnteredContent(doc.encode())); advanceUntilIdle()
+		assertEquals("Informe.pdf", repository.notes.values.single().title)
+		editor.onEvent(
+			EditNoteEvent.EnteredContent(
+				doc.copy(files = emptyList()).encode()
+			)
+		); advanceUntilIdle()
+		assertTrue(com.example.cleannotes.model.NoteDocument.decode(repository.notes.values.single().content).files.isEmpty())
+	}
+
+	@Test
 	fun repeatedAutosavesUpdateTheInsertedNote() =
 		runTest(dispatcher) {
 			val editor = editor()

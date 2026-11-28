@@ -141,6 +141,7 @@ constructor(
 				(if (document.markdown) com.example.cleannotes.model.MarkdownText.plain(document.text) else document.text)
 					.lineSequence().firstOrNull { it.isNotBlank() }.orEmpty(),
 				document.checklist.firstOrNull()?.text.orEmpty(),
+				document.files.firstOrNull()?.displayName.orEmpty(),
 			)
 				.firstOrNull { it.isNotBlank() }
 				?.take(80) ?: "Sin título"
@@ -149,7 +150,8 @@ constructor(
 			document.text.isBlank() &&
 			document.subtitle.isBlank() &&
 			document.images.isEmpty() &&
-			document.checklist.isEmpty()
+			document.checklist.isEmpty() &&
+			document.files.isEmpty() && currentNoteId == null
 		)
 			return@withLock true
 		_uiState.update { it.copy(saveStatus = SaveStatus.SAVING) }

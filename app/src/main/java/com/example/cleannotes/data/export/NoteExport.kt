@@ -31,6 +31,7 @@ object NoteExport {
 			document.subtitle,
 			if (document.markdown) com.example.cleannotes.model.MarkdownText.plain(document.text) else document.text,
 			document.checklist.joinToString("\n") { (if (it.done) "☑ " else "☐ ") + it.text },
+			document.files.joinToString("\n") { it.displayName },
 		)
 			.filter { it.isNotBlank() }
 			.joinToString("\n\n")
@@ -155,6 +156,11 @@ object NoteExport {
 				12f,
 				false,
 			)
+		if (document.files.isNotEmpty()) text(
+			"Archivos adjuntos:\n" + document.files.joinToString("\n") { it.displayName },
+			12f,
+			false
+		)
 		document.images.forEach { name ->
 			val bitmap =
 				android.graphics.BitmapFactory.decodeFile(

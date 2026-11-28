@@ -21,6 +21,7 @@ serialization = "1.9.0"
 robolectric = "4.18.1"
 
 [libraries]
+jsoup = { module = "org.jsoup:jsoup", version = "1.24.1" }
 commonmark = { module = "org.commonmark:commonmark", version = "0.32.0" }
 commonmark-tables = { module = "org.commonmark:commonmark-ext-gfm-tables", version = "0.32.0" }
 commonmark-strike = { module = "org.commonmark:commonmark-ext-gfm-strikethrough", version = "0.32.0" }

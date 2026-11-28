@@ -5,6 +5,10 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -164,13 +168,35 @@ fun NoteImageStrip(document: NoteDocument, enabled: Boolean, onChange: (String) 
 		key(name) {
 			var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 			var menu by remember { mutableStateOf(false) }
+			var fullScreen by remember { mutableStateOf(false) }
 			LaunchedEffect(name) { bitmap = NoteImages.preview(context, name) }
+			if (fullScreen && bitmap != null) Dialog(
+				onDismissRequest = { fullScreen = false },
+				properties = DialogProperties(usePlatformDefaultWidth = false)
+			) {
+				Box(
+					Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
+						.systemBarsPadding()
+				) {
+					Image(
+						requireNotNull(bitmap).asImageBitmap(),
+						"Imagen ${index + 1}",
+						Modifier.fillMaxSize().padding(16.dp),
+						contentScale = ContentScale.Fit
+					)
+					FilledTonalIconButton(
+						onClick = { fullScreen = false },
+						modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)
+					) { Icon(MindIcons.Close, "Cerrar imagen") }
+				}
+			}
 			Box(Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
 				bitmap?.let {
 					Image(
 						it.asImageBitmap(),
 						"Imagen ${index + 1} de la nota",
-						Modifier.fillMaxWidth().height(144.dp).clip(RoundedCornerShape(16.dp)),
+						Modifier.fillMaxWidth().height(144.dp).clip(RoundedCornerShape(16.dp))
+							.clickable { fullScreen = true },
 						contentScale = ContentScale.Crop,
 					)
 				} ?: Text("Imagen no disponible", Modifier.padding(24.dp))

@@ -318,6 +318,7 @@ class RichNoteEditor(context: Context) : EditText(context) {
 		value.copy(
 			subtitle = document.subtitle,
 			images = document.images,
+			files = document.files,
 			reminder = document.reminder,
 			backgroundColor = document.backgroundColor,
 			pinned = document.pinned,

@@ -3,6 +3,9 @@
     <files-path
         name="note_images"
         path="note_images/" />
+    <files-path
+        name="note_files"
+        path="note_files/" />
     <cache-path
         name="exports"
         path="exports/" />

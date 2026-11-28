@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+	implementation(libs.jsoup)
 	implementation(libs.commonmark)
 	implementation(libs.commonmark.tables)
 	implementation(libs.commonmark.strike)
