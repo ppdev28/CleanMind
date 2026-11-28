@@ -12,12 +12,12 @@ La interfaz está construida con Jetpack Compose y Material 3. La arquitectura u
 - Guardar automáticamente mientras escribes y mostrar el estado de guardado.
 - Eliminar casillas y recuperarlas con Deshacer; herramientas visibles y un panel único de formato.
 - Consultar la actividad por fecha o cambiar a una cuadrícula adaptable.
-- Navegar y crear desde las opciones radiales del FAB; doble toque en la lupa para buscar directamente por título y contenido.
+- Navegar con la barra inferior Inicio, Notas, Nueva nota, Recordar y Buscar; búsqueda con foco directo y cambio de vista junto a Ajustes.
 - Organizar notas en [carpetas](docs/carpetas.md) en cuadrícula, con creación, renombrado y movimiento.
 - Crear recordatorios con formulario propio de tarea, fecha y hora y guardado explícito.
 - Compartir texto mediante el selector de aplicaciones de Android.
 - Elegir modo claro, oscuro o del dispositivo, paletas de acento, un tema Gris o temas personalizados.
-- Arranque monocromo, [superficies Material 3](docs/glass-ui.md) y transiciones breves entre pantallas, pestañas y herramientas.
+- Arranque monocromo, [superficies Material 3 de contraste suave](docs/glass-ui.md) y transiciones breves entre pantallas, pestañas y herramientas.
 - Conservar el tema y restaurar determinados estados de navegación y edición.
 
 Los recordatorios permiten notificaciones configurables, repetición y posposición. Se pueden guardar y compartir TXT/PDF y mantener copias TXT en una carpeta elegida. La app no incluye cuentas, sincronización propia, restauración de copias completas ni papelera. Consulta los detalles en la [guía de uso](docs/guia-de-uso.md).
@@ -76,10 +76,12 @@ Se ha revisado la app en un Xiaomi Redmi Note 8 Pro con Android API 36: creació
 
 ## Rama de UI de Figma
 
-`feat/figma-complete-ui` implementa el nuevo flujo de Inicio, Notas, Recordatorios, editor y concentración. Consulta [implementación, capturas y límites de fidelidad](docs/figma-ui.md).
+`feat/figma-complete-ui` implementa el nuevo flujo de Inicio, Notas, Recordatorios, editor. Consulta [implementación, capturas y límites de fidelidad](docs/figma-ui.md).
 
 Los últimos ajustes de marca, agenda, iconos, formato y recordatorios están descritos en [Cambios de Clean Mind](docs/cambios-clean-mind.md).
 
 La variante debug incluye [seis notas científicas breves](docs/ciencia-breve.md), que se incorporan una sola vez sin sobrescribir contenido. Release no instala muestras. La revisión se verificó localmente y en un realme RMX3370 tras recuperar la conexión USB; consulta los [resultados de pruebas](docs/pruebas.md).
 
 La revisión de la nota del dispositivo está descrita en [To Dos · 28 de noviembre](docs/to-dos-28-noviembre.md). Se implementan sus puntos 2–8; la biometría queda excluida por indicación del usuario.
+
+La revisión de [barras, Home y editor](docs/barras-y-editor.md) restaura la navegación inferior Material 3 Expressive, mueve el dictado y retira concentración y archivo.

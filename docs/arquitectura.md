@@ -190,7 +190,7 @@ La pantalla vuelve al editor normal con `RichNoteEditor` y `EditorToolbar`. `Ric
 
 `MarkdownText` y `MarkdownRendering` permanecen únicamente como lectores para búsqueda, exportación y compatibilidad. No hay edición de sintaxis, vista previa ni comandos Markdown en la interfaz. Se retiró `MarkdownEditing`. El esquema Room continúa en versión 4.
 
-`NotebookFab` presenta dos arcos radiales concéntricos de tres acciones a 108 y 216 dp del centro del botón. Los objetivos táctiles circulares de 72 dp quedan separados incluso a 320 dp de ancho. La expansión anima la distancia, la escala y la opacidad; el botón permanece anclado. Volver cierra el menú antes de navegar. `HomeAgenda` conserva sus celdas adaptables de 128 dp y los estados independientes de cuadrícula y agenda.
+`NotebookBottomBar` presenta Inicio, Notas, Nueva nota, Recordar y Buscar. Usa `ShortNavigationBar` y elementos seleccionables para los cuatro destinos; la creación central conserva semántica de botón. El estado de pestaña sigue perteneciendo a NotesViewModel. Buscar solicita foco con un contador de petición; la creación de recordatorios está en la cabecera de su colección. `HomeAgenda` conserva sus celdas adaptables de 128 dp y estados separados de cuadrícula y agenda. El control de vista se compone en `CustomTopBar`, junto a Ajustes. Se retira NotebookFab.
 
 `EditNoteScreen` permite eliminar casillas por identificador. El aviso de deshacer reinserta la misma casilla en su posición, conservando las modificaciones posteriores de las demás. Un nuevo borrado sustituye el aviso anterior. Las operaciones siguen el evento de contenido y el autoguardado habitual del ViewModel.
 
@@ -205,3 +205,10 @@ La barra inferior del editor consume la unión de insets de teclado y navegació
 La selección visual se conserva con `rememberSaveable`; `NoteDeletion` expone ocupado/error/revisión desde el ViewModel. El DAO borra en una transacción y el repositorio cancela los avisos por ID. La revisión solo avanza tras éxito, cerrando la confirmación y vaciando la selección. `visibleNotes` comparte el filtro entre tarjetas y Seleccionar visibles.
 
 El efecto de pulsación de `DesignNoteCard` se dibuja dentro de Surface, que recorta su contenido al contorno redondeado. El escalado breve permanece fuera de esa interacción.
+
+
+## Simplificación de editor y archivo
+
+La fila inferior incorpora Dictar, Lista, Imagen y Recordar; con IME abierto usa iconos compactos y con fuente grande permite dos filas. El menú de formato mantiene estilos, viñetas, números y espaciado, sin insertar casillas. El editor ya no conserva un modo de concentración ni expone acciones de archivo.
+
+`NoteDocument.archived` permanece únicamente por compatibilidad de serialización e historial. Las colecciones no lo utilizan para ocultar notas y no se reescriben documentos al retirar la función. `visibleNotes` sigue siendo la proyección compartida entre tarjetas y selección múltiple.

@@ -167,3 +167,6 @@ DataStore añade `palette` (ID seleccionado) y `custom_palettes` (JSON de `Custo
 `cacheDir/link_previews` contiene metadatos de hasta cinco URLs por nota: caducan después de un día si se resolvieron y cinco minutos si fallaron. Cada solicitud limita respuesta, tiempo y redirecciones. Esta caché no es una fuente de verdad y el sistema puede eliminarla.
 
 El borrado múltiple divide los IDs en bloques de 900 dentro de una sola transacción Room. Un fallo en cualquier bloque revierte todos; después de confirmar la transacción se cancelan las alarmas y notificaciones seleccionadas. Los archivos privados sin referencia aún no tienen recolección automática.
+
+
+La revisión posterior de barras y editor retira el archivo de la interfaz. `archived` sigue leyéndose para conservar los documentos anteriores, pero deja de filtrar las colecciones. No requiere migración ni modificación de filas existentes.

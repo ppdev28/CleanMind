@@ -8,7 +8,7 @@
 - Lista/cuadrícula y recordatorios: aparición, retirada y reordenación con claves estables y `animateItem`.
 - Agenda y estados vacíos: ajuste animado de tamaño.
 - Tarjetas: respuesta de pulsación sutil, manteniendo ripple y pulsación larga.
-- Concentración y herramientas de formato: expansión/contracción sin reemplazar el editor de texto ni su historial.
+- Herramientas de formato: apertura y cierre del panel sin reemplazar el editor de texto ni su historial. La concentración se ha retirado.
 - Formulario de recordatorio: fecha y hora aparecen dentro del formulario al activar Avisarme.
 - Hojas inferiores, chips y controles: mantienen las transiciones nativas de Material 3. Los diálogos de fecha/hora pertenecen a Android.
 

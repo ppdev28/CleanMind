@@ -35,7 +35,7 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | Clase | Casos | Comportamiento comprobado |
 | --- | --- | --- |
 | `EditNoteViewModelTest` | 14 | Autoguardados sobre la misma fila, salida inmediata, escritura lenta, fallos y reintento, guardado explícito de recordatorios, salida repetida, reversión del texto, título vacío, borrador restaurado, texto literal `Remember` y fallo de carga; creación de una nota en la carpeta seleccionada y nota de solo archivo, incluida retirada de su último adjunto. |
-| `NotesViewModelTest` | 10 | Filtros y búsqueda, reintento de carga, error de eliminación, detención de observación sin suscriptores y restauración de consulta/pestaña/carpeta, creación de carpetas, fallo/reintento de movimientos y borrado múltiple con error, reintento y bloqueo de envíos duplicados. |
+| `NotesViewModelTest` | 11 | Filtros y búsqueda, reintento de carga, error de eliminación, detención de observación sin suscriptores y restauración de consulta/pestaña/carpeta, creación de carpetas, fallo/reintento de movimientos y borrado múltiple con error, reintento y bloqueo de envíos duplicados; acceso a notas antiguas archivadas sin reescritura. |
 | `SettingsViewModelTest` | 1 | Conservación del tema persistido cuando falla una escritura y recuperación al reintentar. |
 | `NoteStorageTest` | 6 | Migración 2→4 con SQLite y operaciones de repositorio con IDs estables y orden de consulta; rollback entre bloques de borrado y cancelación de avisos seleccionados. |
 | `FolderStorageTest` | 3 | Migración 3→4 conservando todos los campos; creación/renombrado/borrado, movimientos y guardados obsoletos, duplicados con acentos, carpetas desaparecidas y separación de recordatorios. |
@@ -47,12 +47,12 @@ Los filtros mostrados corresponden a las clases presentes en el repositorio.
 | `MarkdownCompatibilityTest` | 5 | Documentos normales sin cambios, lectura de documentos Markdown como texto con formato conservando metadatos y destinos de enlaces, estilos/tablas/tareas anteriores, HTML literal y texto legible para buscar/compartir. |
 | `VoiceDictationTest` | 2 | Intent de reconocimiento, resultados cancelados/vacíos, inserción en selección y deshacer conservando adjuntos. |
 | `AttachmentsAndLinksTest` | 3 | Serialización, historial, copia privada independiente y validación de rutas, extracción de URLs y metadatos HTML. |
-| `ThemePaletteTest` | 2 | Contraste de acentos extremos en ambos modos y roles monocromos del tema Gris. |
+| `ThemePaletteTest` | 3 | Contraste de acentos extremos en ambos modos y roles monocromos del tema Gris y legibilidad de las paletas suavizadas. |
 | `ExampleUnitTest` | 1 | Prueba aritmética de ejemplo del proyecto; no valida funcionalidad de Clean Mind. |
 | `ReminderExportTest` | 5 | Repetición y serialización, programación/recuperación/cancelación de alarmas, TXT UTF-8 y paginación visual de exportación. |
-| `DesignUiTest` | 23 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, concentración, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras; aplicación de una paleta y borrado múltiple confirmado en Home y recordatorios sin completar avisos. |
+| `DesignUiTest` | 23 | Capturas locales, privacidad de previews, compartir con pulsación larga, búsqueda/cuadrícula, herramientas inferiores del editor, completado, ajustes, selección de fecha/hora y formulario independiente con confirmación al descartar y filtrado/movimiento de notas entre carpetas y exclusión de Volver en destinos ocultos, carpetas en cuadrícula y ausencia de búsqueda en Notas y botones del editor sin palabras partidas ni truncadas a 320 dp con fuente 1.35; ocultación al descender, permanencia oculta al invertir el scroll a mitad de la lista y reapertura al llegar al inicio, conservando los límites del contenido fuera de las barras; aplicación de una paleta y borrado múltiple confirmado en Home y recordatorios sin completar avisos; navegación inferior de cinco acciones, creación contextual de avisos y ubicación del dictado, manteniendo Lista y retirando las casillas del formato. |
 
-Total actual: **96 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
+Total actual: **98 pruebas locales**, de las cuales una es el ejemplo aritmético original. Esta cifra describe la suite actual y debe revisarse al añadir o retirar casos; no es un porcentaje de cobertura de código.
 
 Las pruebas de ViewModel usan `kotlinx-coroutines-test` para controlar la ejecución y el tiempo virtual. `FakeNoteRepository` permite simular lentitud, errores y cambios observables.
 
@@ -233,3 +233,15 @@ En el realme RMX3370, API 33, conectado por USB, se verificaron:
 El micrófono del editor está accesible y el dispositivo resuelve el Intent de reconocimiento de voz. Los resultados, cancelación e inserción se comprobaron en pruebas locales; no se grabó audio ambiente en esta revisión.
 
 Se eliminaron las notas, recordatorios, archivos privados y medios temporales de prueba y el APK instrumentado. La comparación final conserva idénticos todos los campos de las **12 notas originales y la carpeta**, incluida To Dos. El teléfono queda en Inicio y no aparecen crashes del paquete en el buffer conservado. Las capturas y copias privadas del dispositivo no se incorporan al repositorio.
+
+
+## Barras y editor simplificados · 28 de noviembre de 2026
+
+La revisión sustituye el FAB radial por navegación inferior Material 3 Expressive, retira la búsqueda de Home y mueve el cambio de vista a la cabecera. El dictado pasa a la fila inferior del editor; se conservan las casillas de Lista y se retiran del menú de formato. No quedan acciones de concentración ni archivo.
+
+Las **98 pruebas locales**, compilaciones debug/release y lint de ambas variantes finalizaron correctamente. La regresión de navegación comprueba objetivos sin solapamientos a 320 dp y escala 1.35; la de scroll vuelve a comprobar los límites superior e inferior del viewport. El caso de compatibilidad conserva accesibles las notas archivadas antiguas sin modificar sus datos. La paleta suavizada mantiene el contraste de texto/acciones comprobado por la suite.
+
+Los accesos y la referencia oficial están en [Barras, Home y editor](barras-y-editor.md).
+
+
+En el Xiaomi Redmi Note 8 Pro, API 36, conectado en esta revisión, se instalaron los cambios y se verificaron navegación, editor, listas, panel de formato, búsqueda, scroll, cambio de vista y ambos modos de apariencia. **Dos pruebas instrumentadas superadas**, incluida la del portapapeles nativo. Tras retirar la nota de prueba y su copia TXT, la comparación conserva idénticos los campos de las 9 notas y las 2 carpetas originales; DataStore y las preferencias de avisos coinciden con la copia inicial. El teléfono queda en Home y sin APK de pruebas, sin crashes del paquete en el buffer conservado. No se realizó una nueva prueba física en el realme en esta revisión.

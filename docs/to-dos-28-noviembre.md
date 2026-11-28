@@ -22,3 +22,5 @@ Las vistas previas de enlaces dependen de conexión y metadatos publicados por c
 
 
 En el realme se verificaron los temas, la barra sobre el teclado, formato persistido, archivo privado, fotografía completa, metadatos HTTPS y borrado múltiple de notas y recordatorios con cancelación de avisos. Las dos pruebas instrumentadas también finalizaron correctamente. Se retiraron los datos de prueba y la comparación conserva idénticas las 12 notas originales y la carpeta. [Resultados y límites de la revisión](pruebas.md#to-dos--28-de-noviembre-de-2026).
+
+La revisión posterior de [barras y editor](barras-y-editor.md) mueve el dictado a la fila inferior, restaura la navegación fija y retira archivo y concentración.

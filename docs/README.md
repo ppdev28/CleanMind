@@ -22,6 +22,8 @@ Consulta [Superficies y contraste Material 3](glass-ui.md) para el material comp
 
 Consulta [To Dos · 28 de noviembre](to-dos-28-noviembre.md) para dictado, temas, adjuntos, enlaces y selección múltiple.
 
+Consulta [Barras, Home y editor](barras-y-editor.md) para la revisión actual de navegación y contraste.
+
 ## Fuentes de verdad
 
 | Información | Fuente |

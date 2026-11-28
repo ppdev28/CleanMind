@@ -6,12 +6,11 @@ Referencia: [Clean Mind, archivo de Figma](https://www.figma.com/design/qokv6yTT
 
 ## Implementación
 
-- Inicio con búsqueda y cuadrícula adaptable, con opción de agenda vertical: separador horizontal y fecha completa, sin círculos ni etiquetas laterales y todas las notas creadas en ese día. No se limita a diez notas.
-- Cabecera opaca con ocultación al bajar y reapertura al llegar al inicio. Un FAB despliega la navegación y la creación desde el propio botón; doble toque en la lupa enfoca la búsqueda. Se mantienen colores y tipografía del estilo actual.
-- Filtros Todas, Fijadas, Con imágenes y Archivadas; vistas de lista y cuadrícula.
+- Inicio sin barra de búsqueda y con cuadrícula adaptable, con opción de agenda vertical: separador horizontal y fecha completa, sin círculos ni etiquetas laterales y todas las notas creadas en ese día. No se limita a diez notas.
+- Cabecera opaca con ocultación al bajar y reapertura al llegar al inicio. La navegación inferior ofrece Inicio, Notas, Nueva nota, Recordar y Buscar; Buscar enfoca el campo y el cambio de vista se encuentra junto a Ajustes. Se mantienen colores y tipografía del estilo actual.
+- Filtros Todas, Fijadas y Con imágenes; vistas de lista y cuadrícula.
 - Tarjetas de título, subtítulo y metadatos. Se mantiene la petición anterior de ocultar el cuerpo en Home: las vistas previas de la referencia reciben el subtítulo independiente, no una extracción del contenido.
-- Editor con guardado visible, fijado, archivo, deshacer archivo, captura de listas/imágenes y hoja de recordatorio. Las herramientas de formato, compartir y exportar permanecen disponibles.
-- Concentración sin herramientas inferiores; volver cierra este modo antes de abandonar la nota.
+- Editor con guardado visible, fijado, dictado en la fila inferior, captura de listas/imágenes y hoja de recordatorio. Las herramientas de formato, compartir y exportar permanecen disponibles.
 - Listas de casillas editables, con estado independiente por elemento, además de las listas de texto ya existentes.
 - Recordatorios con opciones rápidas Más tarde y Mañana, fecha/hora personalizadas, configuración avanzada, posposición y completado sin eliminar la nota. Una recurrencia completada avanza a la siguiente ocurrencia.
 - Ajustes anteriores recuperados: apariencia y carpeta de copias visibles directamente, información de la app y enlace a notificaciones de Android.
@@ -52,11 +51,11 @@ La familia Inter se distribuye localmente en cuatro pesos, generados a partir de
 
 `NoteDocument` añade `pinned`, `archived`, `reminderCompleted`, `checklist` y `createdAt` con valores predeterminados compatibles. No cambia el esquema Room. Las actualizaciones de metadatos se serializan y vuelven a leer la nota actual para no perder cambios concurrentes. Deshacer el cuerpo preserva estos metadatos. Las casillas se incluyen al buscar y exportar TXT/PDF.
 
-Una notificación puede pertenecer a una nota normal o a un recordatorio explícito. Al completar un aviso único se cancela su programación; al completar uno periódico se guarda y programa la siguiente ocurrencia. Las notas archivadas se consultan desde su filtro. Archivar no elimina adjuntos ni cancela automáticamente un aviso ya configurado.
+Una notificación puede pertenecer a una nota normal o a un recordatorio explícito. Al completar un aviso único se cancela su programación; al completar uno periódico se guarda y programa la siguiente ocurrencia. La revisión actual retira las opciones de archivo y concentración. Las notas archivadas antiguas aparecen en las colecciones normales, conservando el campo para compatibilidad.
 
 ## Verificación
 
-`DesignUiTest` utiliza Compose y Robolectric con gráficos nativos, sin teléfono ni emulador. Comprueba ocultación del cuerpo, pulsación larga, búsqueda/cuadrícula, entrada/salida de concentración, completar sin eliminar, ajustes y selección de fecha/hora. Las capturas se generan en `/tmp/cleanmind-ui-*.png`; una selección está en [ui-preview](ui-preview/).
+`DesignUiTest` utiliza Compose y Robolectric con gráficos nativos, sin teléfono ni emulador. Comprueba ocultación del cuerpo, pulsación larga, búsqueda/cuadrícula, navegación inferior y herramientas del editor, completar sin eliminar, ajustes y selección de fecha/hora. Las capturas se generan en `/tmp/cleanmind-ui-*.png`; una selección está en [ui-preview](ui-preview/).
 
 El recuento actualizado de la suite está en [Pruebas](pruebas.md). Además de los flujos comprobados anteriormente en Xiaomi, en el realme RMX3370 se verificaron cristal acelerado, carpetas, edición, imágenes de galería/cámara, portapapeles nativo, notificación en segundo plano y escritura SAF de TXT/PDF y copias automáticas. Consulta [Pruebas](pruebas.md) para el alcance y los casos pendientes.
 
@@ -91,3 +90,5 @@ Se restaura el editor normal y su formato visual. La compatibilidad de lectura c
 ## Formato conservado, casillas y FAB radial
 
 Se recuperan la fila visible de formato y el panel único, aplicados al editor normal. Cada casilla incorpora eliminación y deshacer. El FAB pasa a dos arcos radiales de tres acciones, con controles circulares y animación desde el centro del botón; conserva navegación, creación, cierre y doble toque de búsqueda. Estas adaptaciones son posteriores a la referencia Figma.
+
+La revisión actual de [barras y editor](barras-y-editor.md) sustituye el FAB radial y elimina archivo y concentración. Sus capturas sintéticas se han actualizado.

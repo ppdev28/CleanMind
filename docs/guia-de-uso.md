@@ -13,12 +13,12 @@ Clean Mind permite guardar ideas y apuntes personales en Android. No necesitas u
 | Editor | Título, subtítulo opcional, cuerpo de la nota, estado de guardado y acciones. |
 | Ajustes | Selección de apariencia e información sobre almacenamiento y recordatorios. |
 
-El botón flotante **+** despliega seis acciones en dos arcos radiales: Inicio, Notas, Recordar, Buscar, Nueva nota y Nuevo aviso (nuevo recordatorio). El botón gira a **×** para cerrarlas; Volver también cierra el despliegue sin cambiar de pantalla. Un doble toque en la lupa abre Buscar con el campo enfocado para escribir. La cabecera se oculta al bajar y reaparece al llegar al inicio; el engranaje abre Ajustes.
+La barra inferior fija muestra **Inicio, Notas, Nueva nota, Recordar y Buscar**. Nueva nota abre el editor directamente; Buscar enfoca el campo de consulta. La barra se oculta mientras se escribe una búsqueda y vuelve al cerrar el teclado. Durante una selección múltiple, sus acciones quedan desactivadas hasta cancelar o completar la selección. La cabecera se oculta al bajar y reaparece al llegar al inicio; el cambio de vista está junto al engranaje de Ajustes. Una pluma estilográfica acompaña al nombre Clean Mind.
 
 ## Crear una nota
 
-1. Pulsa el botón flotante **+**.
-2. Elige **Nueva nota**.
+1. Pulsa **Nueva nota** en el centro de la barra inferior.
+2. Se abre directamente el editor.
 3. Escribe un título opcional; si lo dejas vacío, la app utiliza una primera línea legible al guardar.
 4. Añade un subtítulo opcional y el texto de la nota.
 5. Comprueba el estado de guardado en la cabecera o pulsa la flecha de volver, que guarda y cierra el editor.
@@ -55,7 +55,7 @@ La elección de vista pertenece al estado de cada pestaña. No hay un ajuste glo
 
 ## Crear un recordatorio
 
-1. Pulsa **+ → Nuevo aviso**.
+1. Abre **Recordar** y pulsa el **+** de la cabecera de la colección (**Nuevo recordatorio**).
 2. Escribe **¿Qué quieres recordar?**.
 3. Activa **Avisarme** y elige la fecha y la hora, o desactívalo para guardar un pendiente sin notificación.
 4. Añade un detalle opcional y pulsa **Guardar recordatorio**.
@@ -73,7 +73,7 @@ Pulsa la notificación para abrir su nota o **Posponer** (duración configurable
 
 ## Organizar en carpetas
 
-En **Notas** las carpetas aparecen en cuadrícula. El icono de carpeta con **+** abre **Gestionar carpetas**, donde puedes crearlas o renombrarlas. Selecciona una para consultar sus notas; el botón **+ → Nueva nota** utiliza esa carpeta. La pulsación larga de una nota ofrece **Mover a carpeta**. **Sin carpeta** reúne las notas sin asignación. Eliminar una carpeta conserva sus notas. Notas no muestra una barra de búsqueda; utiliza la pestaña **Buscar**. Estas carpetas son independientes del directorio de copias TXT de Ajustes. Consulta [Carpetas](carpetas.md).
+En **Notas** las carpetas aparecen en cuadrícula. El icono de carpeta con **+** abre **Gestionar carpetas**, donde puedes crearlas o renombrarlas. Selecciona una para consultar sus notas; el botón **Nueva nota** de la barra inferior utiliza esa carpeta. La pulsación larga de una nota ofrece **Mover a carpeta**. **Sin carpeta** reúne las notas sin asignación. Eliminar una carpeta conserva sus notas. Notas no muestra una barra de búsqueda; utiliza la pestaña **Buscar**. Estas carpetas son independientes del directorio de copias TXT de Ajustes. Consulta [Carpetas](carpetas.md).
 
 ## Buscar
 
@@ -127,7 +127,7 @@ El historial de pruebas físicas está en [Pruebas](pruebas.md). Consulta la rev
 
 ## Formato y fotografías
 
-La fila de formato permanece visible sobre el teclado. Mientras escribes se ocultan los tres accesos grandes de inserción; **Más opciones** conserva Añadir casilla, Imágenes y archivos y Recordatorio. Abrir el panel completo retira el teclado para mostrar sus controles sin perder la selección. Muestra negrita, cursiva, subrayado y listas; deslízala horizontalmente para acceder a las demás herramientas. **Más formato y espaciado** abre un único panel con tamaños H1–H6 y Normal, estilos, listas, alineación, sangría e interlineado y espacios. Los ajustes de espaciado afectan a toda la nota. Se mantiene el editor visual normal, con selección de texto y sin escribir sintaxis Markdown.
+La fila de formato permanece visible sobre el teclado. La fila **Dictar, Lista, Imagen y Recordar** conserva sus cuatro acciones mientras escribes, con iconos compactos sobre el teclado. Con texto grande se distribuye en dos filas para mantener las etiquetas completas. Abrir el panel completo retira el teclado para mostrar sus controles sin perder la selección. Muestra negrita, cursiva, subrayado y listas; deslízala horizontalmente para acceder a las demás herramientas. **Más formato y espaciado** abre un único panel con tamaños H1–H6 y Normal, estilos, listas, alineación, sangría e interlineado y espacios. Los ajustes de espaciado afectan a toda la nota. Se mantiene el editor visual normal, con selección de texto y sin escribir sintaxis Markdown.
 
 Cada casilla de la lista tiene una **×** a la derecha para eliminarla, esté vacía, escrita o marcada. El aviso **Casilla eliminada · Deshacer** permite recuperarla con su contenido, estado y posición. La eliminación no cambia el cuerpo ni el resto de la lista.
 
@@ -144,17 +144,17 @@ El estado de guardado se consulta en la cabecera; los errores también aparecen 
 
 Las notas que se hubieran guardado en Markdown se abren en el editor normal con texto y formato básico, sin mostrar código Markdown. Los destinos de enlaces se conservan visibles en el texto. Abrirlas no escribe cambios; una edición posterior guarda el documento normal, conservando adjuntos, casillas y metadatos.
 
-## Fijado, archivo y concentración
+## Fijado y listas
 
-La pulsación larga abre Compartir, Fijar a mano, Archivar y Eliminar. Las notas fijadas permanecen en su día de la agenda y también se encuentran con el filtro **Fijadas**. El filtro **Archivadas** permite abrir y restaurar notas archivadas. El aviso de archivo ofrece **Deshacer** después de confirmarse el cambio.
+La pulsación larga abre Seleccionar, Mover a carpeta, Compartir, Fijar a mano y Eliminar. Las notas fijadas permanecen en su día de la agenda y también se encuentran con el filtro **Fijadas**. Se retiran la concentración y la opción de archivar, incluido el filtro Archivadas. Las notas archivadas por versiones anteriores aparecen en las colecciones normales sin reescribir sus datos.
 
-En el editor, **Concentrarme** oculta las herramientas. La acción de cerrar concentración vuelve al editor sin perder el borrador. **Lista** añade una casilla editable; se conserva la continuación de viñetas/números de las listas de texto.
+**Lista** añade una casilla editable con su propia **×** para quitarla. Las casillas se gestionan desde esta acción y no desde el menú de formato. Se conservan viñetas y numeración en formato, incluida su continuación con Intro.
 
 Apariencia y carpeta de las notas vuelven a estar visibles directamente en Ajustes, sin desplegar una sección adicional.
 
 ## Dictado, archivos y enlaces
 
-El micrófono **Dictar por voz** de la cabecera abre el reconocimiento del sistema. El texto reconocido sustituye la selección del cuerpo o se inserta en el cursor, con espacios cuando hacen falta y disponible en Deshacer. Cancelar no modifica la nota. Requiere una aplicación compatible de reconocimiento instalada; su disponibilidad y uso de red dependen del servicio del dispositivo.
+El micrófono **Dictar** de la fila inferior abre el reconocimiento del sistema. El texto reconocido sustituye la selección del cuerpo o se inserta en el cursor, con espacios cuando hacen falta y disponible en Deshacer. Cancelar no modifica la nota. Requiere una aplicación compatible de reconocimiento instalada; su disponibilidad y uso de red dependen del servicio del dispositivo.
 
 **Imagen → Adjuntar archivo**, o **Más opciones → Imágenes y archivos**, abre el selector de documentos de Android. Se copian los archivos a almacenamiento privado, con un máximo de 25 MB por archivo. La nota muestra el nombre y tamaño; toca la fila para abrirlo con una app compatible o la **×** para quitarlo. Los nombres se incluyen en búsqueda y exportaciones TXT/PDF; esos formatos no empaquetan los archivos binarios. Quitar un adjunto no modifica su original.
 
