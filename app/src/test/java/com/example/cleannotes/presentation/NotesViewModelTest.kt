@@ -30,6 +30,31 @@ class NotesViewModelTest {
 	}
 
 	@Test
+	fun batchDeleteKeepsTheSelectionOnFailureAndCanBeRetried() = runTest(dispatcher) {
+		repository.notes[1] = Note(1, "Nota", "Texto", 1)
+		repository.notes[2] = Note(2, "Aviso", "", 2, true)
+		repository.notes[3] = Note(3, "Conservar", "Original", 3)
+		repository.publish()
+		val vm = NotesViewModel(repository, SavedStateHandle())
+		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect() }
+		runCurrent()
+		repository.failDeletes = true
+		vm.deleteNotes(setOf(1, 2)); runCurrent()
+		assertEquals(3, vm.uiState.value.allNotes.size)
+		assertNotNull(vm.uiState.value.deletion.error)
+		assertEquals(0, vm.uiState.value.deletion.revision)
+		assertFalse(vm.uiState.value.deletion.busy)
+		repository.failDeletes = false; repository.writeDelay = 100
+		vm.deleteNotes(setOf(1, 2)); runCurrent()
+		assertTrue(vm.uiState.value.deletion.busy)
+		vm.deleteNotes(setOf(3)) // Ignore a second submission while the first is pending.
+		advanceTimeBy(101); runCurrent()
+		assertEquals(listOf(3), vm.uiState.value.allNotes.map { it.id })
+		assertNull(vm.uiState.value.deletion.error)
+		assertEquals(1, vm.uiState.value.deletion.revision)
+	}
+
+	@Test
 	fun filtersByExplicitTypeAndSearchesContent() =
 		runTest(dispatcher) {
 			repository.notes[1] = Note(1, "Viaje", "Remember", 10)

@@ -76,6 +76,14 @@ constructor(
 		}
 	}
 
+	override suspend fun deleteNotes(ids: Set<Int>) {
+		if (ids.isEmpty()) return
+		kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable + kotlinx.coroutines.Dispatchers.IO) {
+			dao.deleteNotes(ids.toList())
+			ids.forEach { com.example.cleannotes.data.reminders.ReminderScheduler.cancel(context, it) }
+		}
+	}
+
 	override fun observeFolders() = dao.observeFolders().map { rows -> rows.map { it.toFolder() } }
 
 	override suspend fun createFolder(name: String): Int {

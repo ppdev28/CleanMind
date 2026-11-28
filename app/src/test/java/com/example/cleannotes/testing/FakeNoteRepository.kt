@@ -56,6 +56,13 @@ class FakeNoteRepository : NoteRepository {
 		publish()
 	}
 
+	override suspend fun deleteNotes(ids: Set<Int>) {
+		delay(writeDelay)
+		if (failDeletes) error("Delete failed")
+		ids.forEach { notes.remove(it) }
+		publish()
+	}
+
 	override fun observeFolders() = folders
 
 	override suspend fun createFolder(name: String): Int {

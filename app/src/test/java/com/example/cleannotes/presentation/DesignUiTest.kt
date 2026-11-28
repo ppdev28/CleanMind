@@ -150,6 +150,66 @@ class DesignUiTest {
 	}
 
 	@Test
+	fun homeCanSelectSeveralNotesAndDeleteOnlyAfterConfirmation() {
+		var deleted = emptySet<Int>()
+		compose.setContent {
+			var state by remember { mutableStateOf(NotesUiState(allNotes = sample, isLoading = false)) }
+			CleanMindTheme(darkTheme = true) {
+				NotebookScreen(state, {}, {}, {}, {}, {}, {}, {}, {}, onDeleteSelection = { ids ->
+					deleted = ids
+					state = state.copy(
+						allNotes = state.allNotes.filterNot { it.id in ids },
+						deletion = NoteDeletion(revision = 1)
+					)
+				})
+			}
+		}
+		compose.onNodeWithText(sample[0].title).performTouchInput { longClick() }
+		compose.onNodeWithText("Seleccionar").performClick()
+		compose.onNodeWithText(sample[1].title).performClick()
+		screenshot("selection-home-dark")
+		compose.onNodeWithText("2 seleccionados").assertIsDisplayed()
+		compose.onNodeWithContentDescription("Eliminar seleccionados").performClick()
+		compose.onNodeWithText("Eliminar 2 elementos").assertIsDisplayed()
+		compose.onNodeWithText("Cancelar").performClick()
+		assertTrue(deleted.isEmpty())
+		compose.onNodeWithContentDescription("Eliminar seleccionados").performClick()
+		compose.onNodeWithText("Eliminar selección").performClick()
+		assertEquals(setOf(1, 2), deleted)
+		compose.onNodeWithText(sample[0].title).assertDoesNotExist()
+		compose.onNodeWithText(sample[2].title).assertExists()
+		compose.onNodeWithContentDescription("Cancelar selección").assertDoesNotExist()
+	}
+
+	@Test
+	fun reminderSelectionDoesNotCompleteOrOpenTheReminders() {
+		var completed = false
+		var opened = false
+		var deleted = emptySet<Int>()
+		val reminders = listOf(sample.last(), sample.last().copy(id = 5, title = "Segundo aviso"))
+		compose.setContent {
+			CleanMindTheme(darkTheme = true) {
+				NotebookScreen(
+					NotesUiState(
+						allNotes = reminders,
+						selectedTab = NotesTab.REMINDERS,
+						isLoading = false
+					),
+					{}, {}, {}, {}, {}, { opened = true }, {}, {},
+					onUpdateNote = { _, _ -> completed = true }, onDeleteSelection = { deleted = it })
+			}
+		}
+		compose.onNodeWithText(reminders.first().title).performTouchInput { longClick() }
+		compose.onNodeWithText("Seleccionar").performClick()
+		compose.onNodeWithContentDescription("Seleccionar Segundo aviso").performClick()
+		compose.onNodeWithText("2 seleccionados").assertIsDisplayed()
+		assertFalse(completed); assertFalse(opened)
+		compose.onNodeWithContentDescription("Eliminar seleccionados").performClick()
+		compose.onNodeWithText("Eliminar selección").performClick()
+		assertEquals(setOf(4, 5), deleted)
+	}
+
+	@Test
 	fun homeHidesBodyAndLongPressOffersSharing() {
 		screen()
 		compose.onNodeWithText("CONTENIDO PRIVADO").assertDoesNotExist()

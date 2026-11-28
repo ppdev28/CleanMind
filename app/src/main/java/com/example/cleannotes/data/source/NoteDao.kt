@@ -17,6 +17,15 @@ interface NoteDao {
 	@Delete
 	suspend fun deleteNote(note: NoteEntity): Int
 
+	@Query("DELETE FROM note WHERE id IN (:ids)")
+	suspend fun deleteNoteIds(ids: List<Int>)
+
+	/** One transaction even when the selection exceeds SQLite's bind limit. */
+	@Transaction
+	suspend fun deleteNotes(ids: List<Int>) {
+		ids.distinct().chunked(900).forEach { deleteNoteIds(it) }
+	}
+
 	@Query("SELECT * FROM folder ORDER BY nameKey, id")
 	fun observeFolders(): Flow<List<FolderEntity>>
 

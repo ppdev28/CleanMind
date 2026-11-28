@@ -14,6 +14,9 @@ interface NoteRepository {
 
 	suspend fun deleteNote(note: Note)
 
+	/** Deletes the selection atomically and cancels its scheduled notifications. */
+	suspend fun deleteNotes(ids: Set<Int>)
+
 	fun observeFolders(): Flow<List<NoteFolder>>
 
 	suspend fun createFolder(name: String): Int

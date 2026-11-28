@@ -21,6 +21,7 @@ data class NotesUiState(
 	val folders: List<NoteFolder> = emptyList(),
 	val selectedFolderId: Int? = null,
 	val folderOperation: FolderOperation = FolderOperation(),
+	val deletion: NoteDeletion = NoteDeletion(),
 	val notes: List<Note> = emptyList(),
 	val reminders: List<Note> = emptyList(),
 	val searchResults: List<Note> = emptyList(),
@@ -36,3 +37,6 @@ data class FolderOperation(
 	val error: String? = null,
 	val revision: Int = 0,
 )
+
+/** Selection is cleared only after a confirmed successful batch deletion. */
+data class NoteDeletion(val busy: Boolean = false, val error: String? = null, val revision: Int = 0)

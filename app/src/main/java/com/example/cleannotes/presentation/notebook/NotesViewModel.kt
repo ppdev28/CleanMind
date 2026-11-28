@@ -24,6 +24,7 @@ constructor(
 	private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	private val selectedFolder = savedStateHandle.getStateFlow<Int?>("folder", null)
+	private val deletion = MutableStateFlow(NoteDeletion())
 	private val folderOperation = MutableStateFlow(FolderOperation())
 	private val query = savedStateHandle.getStateFlow("query", "")
 	private val tab = savedStateHandle.getStateFlow("tab", NotesTab.HOME.name)
@@ -78,6 +79,7 @@ constructor(
 			.combine(folderOperation) { state, operation ->
 				state.copy(folderOperation = operation)
 			}
+			.combine(deletion) { state, operation -> state.copy(deletion = operation) }
 			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), NotesUiState())
 
 	private val edits = Mutex()
@@ -163,6 +165,30 @@ constructor(
 
 	fun dismissError() {
 		actionError.value = null
+	}
+
+	fun clearDeletionError() {
+		deletion.update { it.copy(error = null) }
+	}
+
+	fun deleteNotes(ids: Set<Int>) {
+		if (ids.isEmpty() || deletion.value.busy) return
+		deletion.update { it.copy(busy = true, error = null) }
+		viewModelScope.launch {
+			try {
+				edits.withLock { repository.deleteNotes(ids.toSet()) }
+				deletion.update { it.copy(busy = false, revision = it.revision + 1) }
+			} catch (error: CancellationException) {
+				throw error
+			} catch (_: Exception) {
+				deletion.update {
+					it.copy(
+						busy = false,
+						error = "No se pudo eliminar la selección. Vuelve a intentarlo."
+					)
+				}
+			}
+		}
 	}
 
 	fun deleteNote(note: Note) {

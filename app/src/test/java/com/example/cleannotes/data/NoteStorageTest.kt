@@ -18,6 +18,62 @@ import org.robolectric.annotation.Config
 @Config(sdk = [28], application = Application::class)
 class NoteStorageTest {
 	@Test
+	fun largeBatchDeletionRollsBackEveryChunkIfAnyDeleteFails() = runBlocking {
+		val database =
+			Room.inMemoryDatabaseBuilder(RuntimeEnvironment.getApplication(), NoteDatabase::class.java)
+				.build()
+		try {
+			val sql = database.openHelper.writableDatabase
+			sql.execSQL("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x<903) INSERT INTO note(id,title,content,timestamp,isReminder) SELECT x, 'Nota', 'Original', x, 0 FROM n")
+			sql.execSQL("CREATE TRIGGER prevent_delete BEFORE DELETE ON note WHEN OLD.id=902 BEGIN SELECT RAISE(ABORT, 'Unavailable'); END")
+			var failed = false
+			try {
+				database.noteDao.deleteNotes((1..902).toList())
+			} catch (_: Exception) {
+				failed = true
+			}
+			assertTrue(failed)
+			assertEquals(903, database.noteDao.observeNotes().first().size)
+			sql.execSQL("DROP TRIGGER prevent_delete")
+			database.noteDao.deleteNotes((1..902).toList())
+			assertEquals(listOf(903), database.noteDao.observeNotes().first().map { it.id })
+		} finally {
+			database.close()
+		}
+	}
+
+	@Test
+	fun batchDeletionRemovesOnlySelectedNotesAndCancelsTheirAlarms() = runBlocking {
+		val context = RuntimeEnvironment.getApplication()
+		val database = Room.inMemoryDatabaseBuilder(context, NoteDatabase::class.java).build()
+		try {
+			val repository = NoteRepositoryImpl(database.noteDao, context)
+			val plain = repository.saveNote(Note(title = "Nota", content = "Texto", timestamp = 1))
+			val config = com.example.cleannotes.model.ReminderConfig(System.currentTimeMillis() + 60_000)
+			val reminder = repository.saveNote(
+				Note(
+					title = "Aviso",
+					content = com.example.cleannotes.model.NoteDocument(reminder = config).encode(),
+					timestamp = 2,
+					isReminder = true
+				)
+			)
+			val keep = repository.saveNote(Note(title = "Conservar", content = "Original", timestamp = 3))
+			val alarms =
+				org.robolectric.Shadows.shadowOf(context.getSystemService(android.app.AlarmManager::class.java))
+			assertEquals(1, alarms.scheduledAlarms.size)
+			repository.deleteNotes(setOf(plain, reminder))
+			assertEquals(listOf(keep), repository.observeNotes().first().map { it.id })
+			assertEquals(0, alarms.scheduledAlarms.size)
+			assertFalse(
+				context.getSharedPreferences("scheduled_reminders", 0).contains("config_$reminder")
+			)
+		} finally {
+			database.close()
+		}
+	}
+
+	@Test
 	fun versionTwoMigrationPreservesIdsTimestampsAndReminderMeaning() = runBlocking {
 		val context = RuntimeEnvironment.getApplication()
 		val name = "migration-test.db"

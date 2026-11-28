@@ -56,6 +56,7 @@ fun HomeAgenda(
 	onOpen: (Note) -> Unit,
 	onOptions: (Note) -> Unit,
 	onCreate: () -> Unit,
+	selectedIds: Set<Int> = emptySet(),
 	search: @Composable () -> Unit,
 ) {
 	val gridState = rememberLazyGridState()
@@ -96,7 +97,8 @@ fun HomeAgenda(
 						{ onOpen(note) },
 						{ onOptions(note) },
 						compact = gridMode,
-						dateTimestamp = note.creationTimestamp()
+						dateTimestamp = note.creationTimestamp(),
+						selectionMode = selectedIds.isNotEmpty(), selected = note.id in selectedIds
 					)
 				}
 			}

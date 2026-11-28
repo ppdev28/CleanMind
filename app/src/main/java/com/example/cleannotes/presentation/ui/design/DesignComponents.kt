@@ -93,6 +93,8 @@ fun DesignNoteCard(
 	onLongClick: () -> Unit,
 	compact: Boolean = false,
 	dateTimestamp: Long = note.timestamp,
+	selectionMode: Boolean = false,
+	selected: Boolean = false,
 ) {
 	val doc = NoteDocument.decode(note.content)
 	val detail = buildList {
@@ -108,7 +110,8 @@ fun DesignNoteCard(
 		.joinToString(" · ")
 	Surface(
 		modifier =
-			modifier.noteActions(onClick, onLongClick).appSurface(RoundedCornerShape(22.dp)),
+			modifier.noteActions(onClick, onLongClick)
+				.appSurface(RoundedCornerShape(22.dp), selected = selected),
 		shape = RoundedCornerShape(22.dp),
 		color = Color.Transparent,
 	) {
@@ -116,12 +119,13 @@ fun DesignNoteCard(
 			Modifier.fillMaxWidth().heightIn(min = 112.dp).padding(16.dp),
 			verticalArrangement = Arrangement.spacedBy(4.dp),
 		) {
-			Text(
-				note.title,
-				style = MaterialTheme.typography.titleSmall,
-				maxLines = 3,
-				overflow = TextOverflow.Ellipsis,
-			)
+			Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+				Text(
+					note.title, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall,
+					maxLines = 3, overflow = TextOverflow.Ellipsis
+				)
+				if (selectionMode) Checkbox(selected, null, Modifier.size(24.dp))
+			}
 			if (doc.subtitle.isNotBlank())
 				Text(
 					doc.subtitle,

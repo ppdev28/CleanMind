@@ -117,6 +117,8 @@ fun NotesApp(
 									onFolderSelected = viewModel::selectFolder,
 									onSaveFolder = viewModel::saveFolder,
 									onDeleteFolder = viewModel::deleteFolder,
+									onDeleteSelection = viewModel::deleteNotes,
+									onClearDeletionError = viewModel::clearDeletionError,
 									onMoveNote = viewModel::moveNote,
 									onClearFolderError = viewModel::clearFolderError,
 									active = backStack.lastOrNull() == Destination.Notebook,

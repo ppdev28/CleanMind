@@ -75,6 +75,8 @@ fun NotebookScreen(
 	onMoveNote: (Note, Int?) -> Unit = { _, _ -> },
 	onClearFolderError: () -> Unit = {},
 	active: Boolean = true,
+	onDeleteSelection: (Set<Int>) -> Unit = {},
+	onClearDeletionError: () -> Unit = {},
 ) {
 	var searchFocusRequest by rememberSaveable { mutableIntStateOf(0) }
 	val topBarScroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -90,6 +92,37 @@ fun NotebookScreen(
 	var filter by rememberSaveable { mutableStateOf("Todas") }
 	var grid by rememberSaveable { mutableStateOf(false) }
 	var homeGrid by rememberSaveable { mutableStateOf(true) }
+	var selectedIds by rememberSaveable { mutableStateOf(listOf<Int>()) }
+	var confirmSelectionDelete by rememberSaveable { mutableStateOf(false) }
+	var deletionRevision by rememberSaveable { mutableIntStateOf(state.deletion.revision) }
+	val latestState by rememberUpdatedState(state)
+	val selecting = selectedIds.isNotEmpty()
+	val visibleNotes = visibleNotes(state, filter)
+	fun toggleSelection(note: Note) {
+		if (latestState.deletion.busy) return
+		val id = note.id ?: return
+		selectedIds = if (id in selectedIds) selectedIds - id else selectedIds + id
+	}
+
+	fun openOrSelect(note: Note) {
+		if (selectedIds.isNotEmpty()) toggleSelection(note) else onOpenNote(note)
+	}
+	LaunchedEffect(state.deletion.revision) {
+		if (deletionRevision != state.deletion.revision) {
+			selectedIds = emptyList(); confirmSelectionDelete = false; deletionRevision =
+				state.deletion.revision
+		}
+	}
+	LaunchedEffect(state.allNotes, state.isLoading, state.deletion.busy) {
+		if (!state.isLoading && !state.deletion.busy) selectedIds =
+			selectedIds.filter { id -> state.allNotes.any { it.id == id } }
+		if (selectedIds.isEmpty()) confirmSelectionDelete = false
+	}
+	BackHandler(enabled = active && selecting) {
+		if (!state.deletion.busy) {
+			selectedIds = emptyList(); confirmSelectionDelete = false
+		}
+	}
 	var options by remember { mutableStateOf<Note?>(null) }
 	var deleting by remember { mutableStateOf<Note?>(null) }
 	var sharing by remember { mutableStateOf<Note?>(null) }
@@ -155,6 +188,11 @@ fun NotebookScreen(
 				onUpdateNote(saved) { it.copy(archived = pending.second) }
 		}
 	}
+	if (confirmSelectionDelete && selecting) BatchDeleteDialog(
+		selectedIds.size,
+		state.deletion,
+		onDismiss = { confirmSelectionDelete = false },
+		onConfirm = { onDeleteSelection(selectedIds.toSet()) })
 	DeleteNoteDialog(deleting, { deleting = null }, onDelete)
 	sharing?.let { note ->
 		ExportMenu(note.title, NoteDocument.decode(note.content)) {
@@ -172,6 +210,13 @@ fun NotebookScreen(
 				verticalArrangement = Arrangement.spacedBy(8.dp),
 			) {
 				Text(note.title, style = MaterialTheme.typography.titleMedium)
+				TextButton(onClick = {
+					options = null; note.id?.let {
+					selectedIds = listOf(it)
+				}; onClearDeletionError()
+				}) {
+					Icon(MindIcons.CheckBox, null); Spacer(Modifier.width(12.dp)); Text("Seleccionar")
+				}
 				if (!note.isReminder)
 					TextButton(
 						onClick = {
@@ -263,10 +308,17 @@ fun NotebookScreen(
 							NotesTab.SEARCH -> "Buscar"
 						},
 				)
+				if (selecting) NoteSelectionBar(
+					selectedIds.size, !state.deletion.busy,
+					onClose = { selectedIds = emptyList() },
+					onSelectAll = {
+						selectedIds = (selectedIds + visibleNotes.mapNotNull { it.id }).distinct()
+					},
+					onDelete = { onClearDeletionError(); confirmSelectionDelete = true })
 			}
 		},
 		floatingActionButton = {
-			NotebookFab(
+			if (!selecting) NotebookFab(
 				state.selectedTab,
 				{
 					onQueryChange("")
@@ -325,9 +377,10 @@ fun NotebookScreen(
 								notes = activeNotes.filterNot { it.isReminder },
 								grid = homeGrid,
 								onToggle = { homeGrid = !homeGrid },
-								onOpen = onOpenNote,
-								onOptions = { options = it },
+								onOpen = ::openOrSelect,
+								onOptions = { if (selecting) toggleSelection(it) else options = it },
 								onCreate = onQuickCreate,
+								selectedIds = selectedIds.toSet(),
 							) {
 								SearchEntry("", {
 									onQueryChange(it)
@@ -344,35 +397,7 @@ fun NotebookScreen(
 										gridLayoutState.scrollToItem(0)
 									}
 								}
-								val filtered =
-									(if (selectedTab == NotesTab.SEARCH) state.allNotes else notes)
-										.filter { note ->
-											val doc = NoteDocument.decode(note.content)
-											val matchesFilter =
-												when (filter) {
-													"Archivadas" -> doc.archived
-													"Fijadas" -> doc.pinned && !doc.archived
-													"Con imágenes" ->
-														doc.images.isNotEmpty() && !doc.archived
-
-													else -> !doc.archived
-												}
-											matchesFilter &&
-													(selectedTab != NotesTab.NOTES ||
-															state.selectedFolderId == null ||
-															(if (state.selectedFolderId == 0)
-																note.folderId == null
-															else
-																note.folderId == state.selectedFolderId)) &&
-													(selectedTab != NotesTab.SEARCH ||
-															state.query.isBlank() ||
-															note.title.contains(
-																state.query,
-																true,
-															) ||
-															NoteDocument.plainText(note.content)
-																.contains(state.query, true))
-										}
+								val filtered = visibleNotes
 								val header: @Composable () -> Unit = {
 									Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 										if (selectedTab == NotesTab.SEARCH)
@@ -528,8 +553,9 @@ fun NotebookScreen(
 											DesignNoteCard(
 												note,
 												modifier = Modifier.animateItem(),
-												onClick = { onOpenNote(note) },
-												onLongClick = { options = note },
+												onClick = { openOrSelect(note) },
+												onLongClick = { if (selecting) toggleSelection(note) else options = note },
+												selectionMode = selecting, selected = note.id in selectedIds,
 												compact = gridMode,
 											)
 										}
@@ -549,13 +575,10 @@ fun NotebookScreen(
 
 							else ->
 								ReminderCollection(
-									activeNotes,
-									onOpenNote,
-									onCreate,
-									onUpdateNote,
-								) {
-									deleting = it
-								}
+									activeNotes, ::openOrSelect, onCreate, onUpdateNote,
+									selectedIds = selectedIds.toSet(), onToggleSelection = ::toggleSelection,
+									onOptions = { if (selecting) toggleSelection(it) else options = it }
+								)
 						}
 					}
 			}
@@ -643,8 +666,11 @@ private fun ReminderCollection(
 	onOpen: (Note) -> Unit,
 	onCreate: (Boolean) -> Unit,
 	update: NoteChange,
-	onDelete: (Note) -> Unit,
+	selectedIds: Set<Int>,
+	onToggleSelection: (Note) -> Unit,
+	onOptions: (Note) -> Unit,
 ) {
+	val selecting = selectedIds.isNotEmpty()
 	val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
 	var editing by remember { mutableStateOf<Note?>(null) }
 	var snoozing by remember { mutableStateOf<Int?>(null) }
@@ -711,19 +737,22 @@ private fun ReminderCollection(
 					horizontalArrangement = Arrangement.spacedBy(8.dp),
 				) {
 					Checkbox(
-						false,
-						{ update(note) { it.completeReminder(System.currentTimeMillis()) } },
+						if (selecting) note.id in selectedIds else false,
+						{ if (selecting) onToggleSelection(note) else update(note) { it.completeReminder(System.currentTimeMillis()) } },
 						modifier =
-							Modifier.semantics { contentDescription = "Completar ${note.title}" },
+							Modifier.semantics {
+								contentDescription =
+									if (selecting) "Seleccionar ${note.title}" else "Completar ${note.title}"
+							},
 					)
 					Column(
 						Modifier.weight(1f)
 							.combinedClickable(
 								onClick = {
-									if (note.isReminder) onOpen(note) else editing = note
+									if (selecting || note.isReminder) onOpen(note) else editing = note
 								},
-								onLongClick = { onDelete(note) },
-								onLongClickLabel = "Eliminar recordatorio",
+								onLongClick = { onOptions(note) },
+								onLongClickLabel = "Opciones del recordatorio",
 							)
 							.padding(vertical = 12.dp),
 						verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -738,7 +767,7 @@ private fun ReminderCollection(
 							color = MaterialTheme.colorScheme.onSurfaceVariant,
 						)
 					}
-					if (doc.reminder != null)
+					if (doc.reminder != null && !selecting)
 						Box {
 							IconButton(onClick = { snoozing = note.id }) {
 								Icon(
